@@ -2,7 +2,6 @@ require "delegate"
 
 module GovspeakHelper
   include ::Govspeak::ContactsExtractorHelpers
-  include LocalisedUrlPathHelper
 
   BARCHART_REGEXP = /{barchart(.*?)}/
   SORTABLE_REGEXP = /{sortable}/

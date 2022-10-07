@@ -242,7 +242,6 @@ class ActionController::TestCase
 
   include PublicDocumentRoutesHelper
   include Admin::EditionRoutesHelper
-  include LocalisedUrlPathHelper
 
   attr_reader :current_user
 
@@ -281,7 +280,6 @@ class ActionController::TestCase
 end
 
 class ActionDispatch::IntegrationTest
-  include LocalisedUrlPathHelper
   include Warden::Test::Helpers
 
   def login_as(user)
@@ -311,10 +309,6 @@ class ActionView::TestCase
   def setup_view_context
     @view_context = @controller.view_context
   end
-end
-
-class LocalisedUrlTestCase < ActionView::TestCase
-  include LocalisedUrlPathHelper
 end
 
 class PresenterTestCase < ActionView::TestCase
