@@ -9,6 +9,10 @@ module PublicDocumentRoutesHelper
     document_path(edition, options)
   end
 
+  def locale_unless_default
+    I18n.locale unless I18n.default_locale == I18n.locale
+  end
+
   def document_url(edition, options = {}, _builder_options = {})
     return edition.url if edition.is_a?(RummagerDocumentPresenter)
 
