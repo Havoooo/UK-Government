@@ -18,7 +18,10 @@ module PublishingApi
     private
 
       def base_path
-        @base_path ||= Whitehall.url_maker.public_document_path(item, locale: I18n.locale)
+        @base_path ||= Whitehall.url_maker.public_document_path(
+          item,
+          locale: Whitehall.url_maker.locale_unless_default,
+        )
       end
     end
   end

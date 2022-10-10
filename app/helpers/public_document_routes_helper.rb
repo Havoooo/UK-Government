@@ -19,7 +19,8 @@ module PublicDocumentRoutesHelper
     if edition.non_english_edition?
       options[:locale] = edition.primary_locale
     elsif edition.translatable?
-      options[:locale] ||= best_locale_for_edition(edition)
+      locale = best_locale_for_edition(edition)
+      options[:locale] ||= locale unless locale == I18n.default_locale
     else
       options.delete(:locale)
     end

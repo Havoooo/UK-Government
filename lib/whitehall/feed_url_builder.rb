@@ -32,10 +32,11 @@ module Whitehall
   protected
 
     def url_params
+      locale = I18n.locale unless I18n.locale == I18n.default_locale
       params.except(:document_type).reject { |key, value|
         values = Array(value)
         values.empty? || values.all?(&:blank?) || values.include?("all") || invalid_filter_key?(key)
-      }.merge(format: :atom).symbolize_keys
+      }.merge(format: :atom, locale: locale).symbolize_keys
     end
 
     def invalid_filter_key?(filter_key)
