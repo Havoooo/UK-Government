@@ -160,4 +160,31 @@ class PublishingApi::TopicalEventPresenterTest < ActiveSupport::TestCase
 
     assert_equal FeaturedLink::DEFAULT_SET_SIZE, presenter.content.dig(:details, :ordered_featured_documents).length
   end
+
+  test "it doesn't include image if there is no logo" do
+    topical_event = create(:topical_event, name: "Humans going to Mars")
+    presenter = PublishingApi::TopicalEventPresenter.new(topical_event)
+
+    assert_equal nil, presenter.content[:details][:image]
+    assert_valid_against_publisher_schema(presenter.content, "topical_event")
+    assert_valid_against_links_schema({ links: presenter.links }, "topical_event")
+  end
+
+  test "it includes the s300 version of the image if there is a png logo" do
+    topical_event = create(:topical_event_with_png_logo, name: "Humans going to Mars")
+    presenter = PublishingApi::TopicalEventPresenter.new(topical_event)
+
+    assert_includes presenter.content[:details][:image][:url], "s300_minister-of-funk.960x640.jpg"
+    assert_valid_against_publisher_schema(presenter.content, "topical_event")
+    assert_valid_against_links_schema({ links: presenter.links }, "topical_event")
+  end
+
+  test "it includes the image if there is an svg logo" do
+    topical_event = create(:topical_event_with_svg_logo, name: "Humans going to Mars")
+    presenter = PublishingApi::TopicalEventPresenter.new(topical_event)
+
+    assert_includes presenter.content[:details][:image][:url], "test-svg.svg"
+    assert_valid_against_publisher_schema(presenter.content, "topical_event")
+    assert_valid_against_links_schema({ links: presenter.links }, "topical_event")
+  end
 end

@@ -52,7 +52,7 @@ module PublishingApi
 
     def image
       {
-        url: item.logo_url(:s300),
+        url: item.logo_url(:s300) || item.logo_url,
         alt_text: item.logo_alt_text,
       }
     end
