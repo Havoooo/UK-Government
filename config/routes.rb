@@ -1,3 +1,5 @@
+require "sidekiq/web"
+
 class AdminRequest
   def self.matches?(request)
     # Allow access to all routes in development, and restrict to the
@@ -8,6 +10,32 @@ class AdminRequest
   def self.valid_admin_host?(host)
     host.starts_with?("whitehall-admin")
   end
+end
+
+class SidekiqGdsSsoMiddleware
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    status, headers, body = if Rails.env.development?
+                              @app.call(env)
+                            else
+                              authenticated_sidekiq_request(env["warden"])
+                            end
+  end
+
+private
+
+  def authenticated_sidekiq_request(warden, env)
+    warden.authenticate! if !warden.authenticated? || warden.user.remotely_signed_out?
+
+    if warden.user.has_permission?("Sidekiq Web UI")
+      @app.call(env)
+    else
+      [401, {} , "Forbidden"]
+  end
+
 end
 
 Whitehall::Application.routes.draw do
@@ -349,6 +377,7 @@ Whitehall::Application.routes.draw do
         resources :sitewide_settings
         post "/link-checker-api-callback" => "link_checker_api#callback"
       end
+
     end
 
     get "/policy-topics" => redirect("/topics")
@@ -364,6 +393,8 @@ Whitehall::Application.routes.draw do
     Healthcheck::S3,
   )
 
+  mount SidekiqGdsSsoMiddleware.new(Sidekiq::Web), at: "/sidekiq"
+
   get "healthcheck/overdue" => "healthcheck#overdue"
   get "healthcheck/unenqueued_scheduled_editions" => "healthcheck#unenqueued_scheduled_editions"
 
@@ -373,23 +404,6 @@ Whitehall::Application.routes.draw do
   resources :broken_links_export_request, path: "/export/broken_link_reports", param: :export_id, only: [:show]
   resources :document_list_export_request, path: "/export/:document_type_slug", param: :export_id, only: [:show]
 
-  if Rails.env.development?
-    class DisableSlimmer
-      def initialize(app)
-        @app = app
-      end
-
-      def call(*args)
-        status, headers, body = @app.call(*args)
-        headers[Slimmer::Headers::SKIP_HEADER] = "true"
-
-        [status, headers, body]
-      end
-    end
-
-    require "sidekiq/web"
-    mount DisableSlimmer.new(Sidekiq::Web), at: "/sidekiq"
-  end
-
   mount GovukPublishingComponents::Engine, at: "/component-guide" unless Rails.env.production?
+
 end
