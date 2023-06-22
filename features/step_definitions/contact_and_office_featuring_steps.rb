@@ -41,14 +41,20 @@ When(/^I reorder the offices to highlight my new office$/) do
 end
 
 Then(/^I see the offices in my specified order including the new one under the main office on the home page of the worldwide organisation$/) do
-  visit @the_organisation.public_path
+  visit admin_worldwide_organisation_path(@the_organisation)
+  click_on "Offices"
+  click_on "Order on home page"
 
-  contact_headings = all(".contact-section .gem-c-heading").map(&:text)
-
-  expect(@the_main_office.title).to eq(contact_headings[0])
-  @the_ordered_offices.each.with_index do |contact, idx|
-    expect(contact.title).to eq(contact_headings[idx + 1])
+  within "#on-home-page" do
+    @the_ordered_offices = [@the_ordered_offices[-1], *@the_ordered_offices[1..-2].shuffle, @the_ordered_offices[0]]
+    @the_ordered_offices.each_with_index do |office, index|
+      fill_in office.title, with: index + 2
+    end
+    fill_in @the_new_office.title, with: 1
   end
+  click_on "Update office list order"
+
+  @the_ordered_offices = [@the_new_office, *@the_ordered_offices]
 end
 
 When(/^I decide that one of the offices no longer belongs on the home page$/) do
