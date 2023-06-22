@@ -75,6 +75,7 @@ group :development do
   gem "binding_of_caller"
   gem "graphviz_transitions"
   gem "mechanize"
+  gem "mongo"
 end
 
 group :test do
