@@ -7,6 +7,7 @@ class DocumentCollectionNonWhitehallLink::GovukUrl
   validates :document_collection_group, presence: true
   validate :is_internal_url?
   validates_with GovUkUrlValidator
+  validate :was_not_created_on_whitehall?, if: -> { errors.blank? }
 
   def initialize(url:, document_collection_group:)
     @url = url
@@ -56,5 +57,9 @@ private
 
   def parsed_url
     URI.parse(url)
+  end
+
+  def was_not_created_on_whitehall?
+    errors.add(:url, "Content was created in Whitehall") if Document.find_by(content_id:).present?
   end
 end

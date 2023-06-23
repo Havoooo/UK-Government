@@ -102,6 +102,18 @@ class DocumentCollectionNonWhitehallLink::GovukUrlTest < ActiveSupport::TestCase
     assert url.errors.full_messages.include?("Link lookup failed, please try again later")
   end
 
+  test "should be invalid when the document was created on Whitehall" do
+    url = DocumentCollectionNonWhitehallLink::GovukUrl.new(
+      url: "https://www.gov.uk/test",
+      document_collection_group: build(:document_collection_group),
+    )
+
+    create(:document, content_id: @content_id)
+
+    assert_not url.valid?
+    assert url.errors.full_messages.include?("Url Content was created in Whitehall")
+  end
+
   test "#save should create a document collection group membership" do
     group = create(:document_collection_group)
     url = DocumentCollectionNonWhitehallLink::GovukUrl.new(
