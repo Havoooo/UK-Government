@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'ruby-progressbar'
+
 class AssetChecker
   attr_accessor :client
 
   def initialize
     puts "setting pu client"
-    @client = Mongo::Client.new([ 'mongo-3.6:27017' ], :database => 'asset-manager')
+    @client = Mongo::Client.new([ 'mongo-3.6:27017' ], database: 'asset-manager')
     puts @client
   end
 
@@ -13,45 +15,72 @@ class AssetChecker
     @client.close
   end
 
-  def remote_assets_exist(whitehall_asset)
+  def whitehall_asset_state(whitehall_asset)
+    attachment = whitehall_asset.significant_attachment(include_deleted_attachables: true)
+    if !attachment
+      return "missing_attachment"
+    end
+    if attachment.is_a? Attachment::Null
+      return "null_attachment"
+    end
+    edition = Edition.unscoped.find_by_id(attachment.attachable_id)
+    edition ? edition.state : "missing_edition"
+  end
+
+  def add_matching_asset(whitehall_asset, version, am_asset, statistics)
+    key = {version:, whitehall_state: whitehall_asset_state(whitehall_asset), am_state: am_asset["state"], am_draft: am_asset["draft"], whitehall_exists: true, am_exists: true}
+    statistics[key] += 1
+  end
+
+  def add_missing_asset(whitehall_asset, version, statistics)
+    key = {version:, whitehall_state:  whitehall_asset_state(whitehall_asset), am_state: nil, am_draft: nil, whitehall_exists: true, am_exists: false}
+    statistics[key] += 1
+  end
+
+
+  def aggregate_statistics(whitehall_asset, statistics)
     versions = whitehall_asset.file.versions.keys
-    expected_assets = 0
-    remote_assets = 0
-    
+
     # get base asset
-    expected_assets +=1
     root_path = whitehall_asset.file.path
     results = @client[:assets].find({ legacy_url_path: root_path})
     if results.count == 1
-      remote_assets += 1
+      add_matching_asset(whitehall_asset, :base, results.first, statistics)
+    else
+      add_missing_asset(whitehall_asset, :base, statistics)
     end
-    
+
     versions.map do |version|
       next unless whitehall_asset.file.versions[version].file
-      expected_assets +=1 
       path = whitehall_asset.file.versions[version].file.path
       results = @client[:assets].find({ legacy_url_path: path})
       if results.count == 1
-        remote_assets += 1
+        add_matching_asset(whitehall_asset, version, results.first, statistics)
+      else
+        add_missing_asset(whitehall_asset, version, statistics)
       end
     end
-    expected_assets == remote_assets
+  end
+
+  def suppress_sql_logs
+    ActiveRecord::Base.logger.level = 1
+  end
+  def restore_sql_logs
+    ActiveRecord::Base.logger.level = 0
   end
 
   def check_all()
-    # AttachmentData.where(created_at: 1.year.ago..).take(5).each do |att|
-    #   remote_assets_exist(att)
-    # end
-    good_count = 0
-    bad_count = 0
-    AttachmentData.take(100000).each do |attachment|
-      if remote_assets_exist(attachment)
-        good_count += 1
-      else
-        bad_count += 1
-      end
+    statistics = Hash.new(0)
+
+    total_attachments = AttachmentData.unscoped.count
+    max_attachments = 1000 # or total for full run
+    puts "Total attachments: #{total_attachments} limiting to #{max_attachments}"
+    progressbar = ProgressBar.create(total: max_attachments, throttle_rate: 0.1, format: " %E	%t: |%B|")
+    AttachmentData.unscoped.take(max_attachments).each_with_index do |attachment, row_index|
+      progressbar.increment
+      aggregate_statistics(attachment, statistics)
     end
-    puts "Good attachments: #{good_count} bad attachments #{bad_count}"
+    pp statistics
   end
 
 end
