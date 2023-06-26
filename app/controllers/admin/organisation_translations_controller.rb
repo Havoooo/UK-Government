@@ -10,7 +10,7 @@ private
 
   def get_layout
     design_system_actions = %w[confirm_destroy]
-    design_system_actions += %w[index] if preview_design_system?(next_release: false)
+    design_system_actions += %w[index edit] if preview_design_system?(next_release: false)
 
     if design_system_actions.include?(action_name)
       "design_system"
@@ -20,6 +20,7 @@ private
   end
 
   def create_redirect_path
+    binding.pry
     edit_admin_organisation_translation_path(@organisation, id: translation_locale)
   end
 
