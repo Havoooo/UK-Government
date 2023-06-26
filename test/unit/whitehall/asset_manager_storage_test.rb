@@ -117,29 +117,54 @@ class Whitehall::AssetManagerStorageTest < ActiveSupport::TestCase
   describe "invokes worker with necessary arguments to create an asset record" do
     context "attachment is a file" do
       setup do
-        @model = AttachmentData.new(id: 55, file: @file)
+        file = File.open(fixture_path.join("greenpaper.pdf"))
+        @model = build(:attachment_data, file:)
         @uploader.stubs(:model).returns(@model)
       end
 
-      test "calls worker with model_id and default origin asset_version" do
-        version = Asset.versions[:original]
+      context "use_non_legacy_endpoints permission is true" do
+        setup do
+          @model.use_non_legacy_endpoints = true
+        end
 
-        AssetManagerCreateWhitehallAssetWorker.expects(:perform_async).with(anything, anything, @model.id, version, anything, anything, anything, anything)
+        test "calls worker with model_id and default origin asset_version" do
+          version = Asset.versions[:original]
 
-        @uploader.store!(@file)
+          AssetManagerCreateWhitehallAssetWorker.expects(:perform_async).with(anything, anything, @model.id, version, anything, anything, anything, anything)
+
+          @uploader.store!(@file)
+        end
+
+        test "calls worker with model_id and version/thumbnail asset_version" do
+          version = Asset.versions[:thumbnail]
+          @uploader.stubs(:store_path).returns("asset-path/thumbnail_file_name")
+
+          AssetManagerCreateWhitehallAssetWorker.expects(:perform_async).with(anything, anything, @model.id, version, anything, anything, anything, anything)
+
+          @uploader.store!(@file)
+        end
       end
 
-      test "calls worker with model_id and version/thumbnail asset_version" do
-        version = Asset.versions[:thumbnail]
-        @uploader.stubs(:store_path).returns("asset-path/thumbnail_file_name")
+      context "use_non_legacy_endpoints permission is false" do
+        setup do
+          @model.use_non_legacy_endpoints = false
+        end
 
-        AssetManagerCreateWhitehallAssetWorker.expects(:perform_async).with(anything, anything, @model.id, version, anything, anything, anything, anything)
+        test "calls worker with nil model_id and asset_version" do
+          AssetManagerCreateWhitehallAssetWorker.expects(:perform_async).with(anything, anything, nil, nil, nil, nil, anything, anything)
 
-        @uploader.store!(@file)
+          @uploader.store!(@file)
+        end
       end
     end
 
     context "attachment is not a file" do
+      setup do
+        file = File.open(fixture_path.join("big-cheese.960x640.jpg"))
+        @model = build(:image_data, file:)
+        @uploader.stubs(:model).returns(@model)
+      end
+
       test "calls worker with nil model_id and asset_version" do
         AssetManagerCreateWhitehallAssetWorker.expects(:perform_async).with(anything, anything, nil, nil, nil, nil, anything, anything)
 
