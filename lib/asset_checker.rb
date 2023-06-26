@@ -15,26 +15,28 @@ class AssetChecker
     @mongodb_client.close
   end
 
-  def whitehall_asset_state(whitehall_asset)
-    attachment = whitehall_asset.significant_attachment(include_deleted_attachables: true)
-    unless attachment
-      return "missing_attachment"
-    end
-    if attachment.is_a? Attachment::Null
-      return "null_attachment"
-    end
-
-    edition = Edition.unscoped.find_by_id(attachment.attachable_id)
-    edition ? edition.state : "missing_edition"
-  end
+  # This is too slow - and very FileAttachment specific.  Removing for now
+  # def whitehall_asset_state(whitehall_asset)
+  #   attachment = whitehall_asset.significant_attachment(include_deleted_attachables: true)
+  #   unless attachment
+  #     return "missing_attachment"
+  #   end
+  #   if attachment.is_a? Attachment::Null
+  #     return "null_attachment"
+  #   end
+  #
+  #   edition = Edition.unscoped.find_by_id(attachment.attachable_id)
+  #   edition ? edition.state : "missing_edition"
+  # end
 
   def add_matching_asset(whitehall_asset, version, am_asset, statistics)
-    key = { version:, whitehall_state: whitehall_asset_state(whitehall_asset), am_state: am_asset["state"], am_draft: am_asset["draft"], whitehall_exists: true, am_exists: true }
+    # key = { version:, whitehall_exists: true, am_exists: true, am_state: am_asset["state"], am_draft: am_asset["draft"], am_deleted: !am_asset["deleted_at"].nil? }
+    key = { version:, whitehall_exists: true, am_exists: true, am_state: am_asset["state"], am_draft: am_asset["draft"], am_deleted: !am_asset["deleted_at"].nil? }
     statistics[key] += 1
   end
 
   def add_missing_asset(whitehall_asset, version, statistics)
-    key = { version:, whitehall_state: whitehall_asset_state(whitehall_asset), am_state: nil, am_draft: nil, whitehall_exists: true, am_exists: false }
+    key = { version:, whitehall_exists: true, am_exists: false, am_state: nil, am_draft: nil, am_deleted: nil }
     statistics[key] += 1
   end
 
@@ -75,13 +77,19 @@ class AssetChecker
     statistics = Hash.new(0)
 
     total_attachments = AttachmentData.unscoped.count
-    max_attachments = 1000 # or total for full run
+    max_attachments = 10000 # or total for full run
     puts "Total attachments: #{total_attachments} limiting to #{max_attachments}"
-    progressbar = ProgressBar.create!(total: max_attachments, throttle_rate: 0.1, format: " %E	%t: |%B|")
+    progressbar = ProgressBar.create(total: max_attachments, throttle_rate: 0.1, format: " %E	%t: |%B|")
     AttachmentData.unscoped.take(max_attachments).each_with_index do |attachment, _row_index|
       progressbar.increment
       aggregate_statistics(attachment, statistics)
     end
-    pp statistics
+    # pp statistics
+    CSV.open("asset_stats.csv","w") do |csv|
+      csv << %w(count version whitehall_exists am_exists am_state am_draft am_deleted)
+      statistics.each { |(stats, count)|
+        csv << [count, stats[:version], stats[:whitehall_exists], stats[:am_exists], stats[:am_state], stats[:am_draft], stats[:am_deleted]]
+      }
+    end
   end
 end
