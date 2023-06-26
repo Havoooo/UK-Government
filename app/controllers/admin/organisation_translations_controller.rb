@@ -20,7 +20,6 @@ private
   end
 
   def create_redirect_path
-    binding.pry
     edit_admin_organisation_translation_path(@organisation, id: translation_locale)
   end
 
