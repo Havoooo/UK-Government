@@ -7,7 +7,7 @@ class AssetManagerDeleteAssetWorkerTest < ActiveSupport::TestCase
   end
 
   test "it calls AssetManager::AssetDeleter" do
-    AssetManager::AssetDeleter.expects(:call).with(@legacy_url_path)
+    AssetManager::AssetDeleter.expects(:call).with(nil, @legacy_url_path)
 
     @worker.perform(@legacy_url_path)
   end
