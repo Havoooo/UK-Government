@@ -284,6 +284,6 @@ class TopicalEventTest < ActiveSupport::TestCase
     topical_event = build(:topical_event, logo: svg_logo)
 
     assert_not topical_event.valid?
-    assert_equal topical_event.errors.first.full_message, "Logo is not of an allowed type"
+    assert_equal topical_event.errors.first.full_message, "Logo You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
   end
 end

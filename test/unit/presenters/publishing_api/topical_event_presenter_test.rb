@@ -53,7 +53,7 @@ class PublishingApi::TopicalEventPresenterTest < ActiveSupport::TestCase
         body: Whitehall::GovspeakRenderer.new.govspeak_to_html(topical_event.description),
         emphasised_organisations: [first_lead_org.content_id, second_lead_org.content_id],
         image: {
-          url: topical_event.logo_url(:s300),
+          url: topical_event.logo_url,
           alt_text: topical_event.logo_alt_text,
         },
         start_date: topical_event.start_date.rfc3339,
