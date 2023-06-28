@@ -17,7 +17,7 @@ class TakePartPage < ApplicationRecord
 
   validates :image, presence: true, on: :create
   validates :image_alt_text, presence: true, allow_blank: true, length: { maximum: 255 }, on: :create
-  validates_with ImageValidator, method: :image, size: [960, 640], if: :image_changed?
+  validates_with ImageValidator, method: :image, if: :image_changed?
 
   include Searchable
   searchable title: :title,
