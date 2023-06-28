@@ -33,11 +33,15 @@ class Admin::FinancialReportsController < Admin::BaseController
     redirect_to admin_organisation_financial_reports_path(@organisation), notice: "Deleted Successfully"
   end
 
+  def confirm_destroy
+    @financial_report = @organisation.financial_reports.find(params[:id])
+  end
+
 private
 
   def get_layout
     design_system_actions = []
-    design_system_actions += %w[index] if preview_design_system?(next_release: false)
+    design_system_actions += %w[index confirm_destroy] if preview_design_system?(next_release: false)
 
     if design_system_actions.include?(action_name)
       "design_system"
