@@ -191,11 +191,7 @@ private
 
     {
       field: "Default news image",
-      value: image_tag(default_news_image_url),
+      value: image_tag(organisation.default_news_image.file.url(:s300)),
     }
-  end
-
-  def default_news_image_url
-    organisation.default_news_image.file.url(:s300) || organisation.default_news_image.file.url
   end
 end

@@ -66,8 +66,7 @@
         </td>
       </tr>
       <% if @organisation.default_news_image %>
-        <% default_news_image_url = @organisation.default_news_image.file.url(:s300) || @organisation.default_news_image.file.url %>
-        <tr><th>Default news image</th><td><%= image_tag default_news_image_url %></td></tr>
+        <tr><th>Default news image</th><td><%= image_tag @organisation.default_news_image.file.url(:s300) %></td></tr>
       <% end %>
     </table>
 
