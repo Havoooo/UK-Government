@@ -11,7 +11,7 @@ When(/^I add a "([^"]*)" social media link "([^"]*)" to the (worldwide organisat
   click_link "Social media accounts"
   click_link using_design_system? ? "Create new account" : "Add"
   select social_service, from: "Service"
-  fill_in "Url", with: url
+  fill_in using_design_system? ? "URL (required)" : "Url", with: url
   click_on "Save"
 end
 
@@ -24,7 +24,7 @@ When(/^I add a "([^"]*)" social media link "([^"]*)" with the title "([^"]+)" to
   click_link "Social media accounts"
   click_link using_design_system? ? "Create new account" : "Add"
   select social_service, from: "Service"
-  fill_in "Url", with: url
+  fill_in using_design_system? ? "URL (required)" : "Url", with: url
   fill_in "Title", with: title
   click_on "Save"
 end
