@@ -42,4 +42,12 @@ class FeatureTest < ActiveSupport::TestCase
     assert feature.end!
     assert_equal Time.zone.now, feature.reload.ended_at
   end
+
+  test "rejects SVG logo uploads" do
+    svg_image = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    feature = build(:feature, image: svg_image)
+
+    assert_not feature.valid?
+    assert_includes feature.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
+  end
 end

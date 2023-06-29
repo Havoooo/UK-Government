@@ -20,4 +20,13 @@ class PromotionalFeatureTest < ActiveSupport::TestCase
     assert_equal feature1.ordering, 1
     assert_equal feature2.ordering, 2
   end
+
+  test "rejects SVG logo uploads" do
+    svg_logo = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    promotional_feature = build(:promotional_feature_item, image: svg_logo)
+
+    assert_not promotional_feature.valid?
+    binding.pry
+    assert promotional_feature.errors.include?("Image is not of an allowed type")
+  end
 end

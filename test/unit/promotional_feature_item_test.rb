@@ -76,6 +76,14 @@ class PromotionalFeatureItemTest < ActiveSupport::TestCase
     end
   end
 
+  test "rejects SVG logo uploads" do
+    svg_image = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    promotional_feature = build(:promotional_feature_item, image: svg_image)
+
+    assert_not promotional_feature.valid?
+    assert_includes promotional_feature.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
+  end
+
 private
 
   def string_of_length(length)

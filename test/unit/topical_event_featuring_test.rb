@@ -30,4 +30,13 @@ class TopicalEventFeaturingTest < ActiveSupport::TestCase
     Whitehall::PublishingApi.expects(:republish_async).with(topical_event).once
     feature.destroy!
   end
+
+  test "rejects SVG logo uploads" do
+    svg_image = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    image_data = build(:topical_event_featuring_image_data, file: svg_image)
+    topical_event_featuring = build(:topical_event_featuring, topical_event_featuring_image_data: image_data)
+
+    assert_not topical_event_featuring.valid?
+    assert_includes topical_event_featuring.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
+  end
 end

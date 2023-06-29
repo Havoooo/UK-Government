@@ -233,4 +233,12 @@ class PersonTest < ActiveSupport::TestCase
 
     assert_equal "Prime Minister and Big Cheese", person.current_role_appointments_title
   end
+
+  test "rejects SVG logo uploads" do
+    svg_image = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    person = build(:person, image: svg_image)
+
+    assert_not person.valid?
+    assert_includes person.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
+  end
 end
