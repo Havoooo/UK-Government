@@ -1,0 +1,47 @@
+<%= render "govuk_publishing_components/components/input", {
+  label: {
+    text: "Year (required)"
+  },
+  name: "financial_report[year]",
+  id: "financial_report_year",
+  value: form.object.year,
+  width: 4,
+  heading_level: 2,
+  heading_size: "l",
+  error_items: errors_for(form.object.errors, :year)
+} %>
+
+<%= render "govuk_publishing_components/components/input", {
+  label: {
+    text: "Funding"
+  },
+  name: "financial_report[funding]",
+  id: "financial_report_funding",
+  value: form.object.funding,
+  width: 10,
+  heading_level: 2,
+  heading_size: "l",
+  error_items: errors_for(form.object.errors, :funding)
+} %>
+
+<div class="govuk-!-margin-bottom-8">
+  <%= render "govuk_publishing_components/components/input", {
+    label: {
+      text: "Spending"
+    },
+    name: "financial_report[spending]",
+    id: "financial_report_spending",
+    value: form.object.spending,
+    width: 10,
+    heading_level: 2,
+    heading_size: "l",
+    error_items: errors_for(form.object.errors, :spending)
+  } %>
+</div>
+
+<div class="govuk-button-group">
+  <%= render "govuk_publishing_components/components/button", {
+    text: "Save"
+  } %>
+  <%= link_to("Cancel", admin_organisation_financial_reports_path, class: "govuk-link govuk-link--no-visited-state") %>
+</div>
