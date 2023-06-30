@@ -84,6 +84,21 @@ class PromotionalFeatureItemTest < ActiveSupport::TestCase
     assert_includes promotional_feature.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
   end
 
+  test "rejects non-image file uploads" do
+    non_image_file = File.open(Rails.root.join("test/fixtures/folders.zip"))
+    promotional_feature_item = build(:promotional_feature_item, image: non_image_file)
+
+    assert_not promotional_feature_item.valid?
+    assert_includes promotional_feature_item.errors.map(&:full_message), "Image You are not allowed to upload \"zip\" files, allowed types: jpg, jpeg, gif, png"
+  end
+
+  test "accepts valid image uploads" do
+    jpg_image = File.open(Rails.root.join("test/fixtures/big-cheese.960x640.jpg"))
+    promotional_feature_item = build(:promotional_feature_item, image: jpg_image)
+
+    assert promotional_feature_item
+    assert_empty promotional_feature_item.errors
+  end
 private
 
   def string_of_length(length)

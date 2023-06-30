@@ -1,21 +1,21 @@
 require "test_helper"
 
-class BitmapUploaderTest < ActiveSupport::TestCase
+class FeaturedImageUploaderTest < ActiveSupport::TestCase
   include ActionDispatch::TestProcess
-  setup { BitmapUploader.enable_processing = true }
-  teardown { BitmapUploader.enable_processing = false }
+  setup { FeaturedImageUploader.enable_processing = true }
+  teardown { FeaturedImageUploader.enable_processing = false }
 
   test "uses the asset manager and quarantined file storage engine" do
-    assert_equal Whitehall::AssetManagerStorage, BitmapUploader.storage
+    assert_equal Whitehall::AssetManagerStorage, FeaturedImageUploader.storage
   end
 
   test "should only allow JPG, GIF, PNG images" do
-    uploader = BitmapUploader.new
+    uploader = FeaturedImageUploader.new
     assert_equal %w[jpg jpeg gif png], uploader.extension_allowlist
   end
 
   test "should send correctly resized versions of a bitmap image to asset manager" do
-    @uploader = BitmapUploader.new(FactoryBot.create(:person), "mounted-as")
+    @uploader = FeaturedImageUploader.new(FactoryBot.create(:person), "mounted-as")
 
     Services.asset_manager.stubs(:create_whitehall_asset)
     Services.asset_manager.expects(:create_whitehall_asset).with do |value|
@@ -29,12 +29,12 @@ class BitmapUploaderTest < ActiveSupport::TestCase
   end
 
   test "should store uploads in a directory that persists across deploys" do
-    uploader = BitmapUploader.new(Person.new(id: 1), "mounted-as")
+    uploader = FeaturedImageUploader.new(Person.new(id: 1), "mounted-as")
     assert_match %r{^system}, uploader.store_dir
   end
 
   test "should store all the versions of a bitmap image in asset manager" do
-    @uploader = BitmapUploader.new(FactoryBot.create(:person), "mounted-as")
+    @uploader = FeaturedImageUploader.new(FactoryBot.create(:person), "mounted-as")
 
     Services.asset_manager.stubs(:create_whitehall_asset)
     Services.asset_manager.expects(:create_whitehall_asset).with(file_and_legacy_url_path_matching(/minister-of-funk.960x640.jpg/))

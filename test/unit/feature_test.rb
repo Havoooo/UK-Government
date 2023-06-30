@@ -50,4 +50,20 @@ class FeatureTest < ActiveSupport::TestCase
     assert_not feature.valid?
     assert_includes feature.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
   end
+
+  test "rejects non-image file uploads" do
+    non_image_file = File.open(Rails.root.join("test/fixtures/folders.zip"))
+    feature = build(:feature, image: non_image_file)
+
+    assert_not feature.valid?
+    assert_includes feature.errors.map(&:full_message), "Image You are not allowed to upload \"zip\" files, allowed types: jpg, jpeg, gif, png"
+  end
+
+  test "accepts valid image uploads" do
+    jpg_image = File.open(Rails.root.join("test/fixtures/big-cheese.960x640.jpg"))
+    feature = build(:feature, image: jpg_image)
+
+    assert feature
+    assert_empty feature.errors
+  end
 end

@@ -226,5 +226,21 @@ class TakePartPageTest < ActiveSupport::TestCase
     assert_includes take_part_page.errors.map(&:full_message), "Image You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
   end
 
+  test "rejects non-image file uploads" do
+    non_image_file = File.open(Rails.root.join("test/fixtures/folders.zip"))
+    take_part_page = build(:take_part_page, image: non_image_file)
+
+    assert_not take_part_page.valid?
+    assert_includes take_part_page.errors.map(&:full_message), "Image You are not allowed to upload \"zip\" files, allowed types: jpg, jpeg, gif, png"
+  end
+
+  test "accepts valid image uploads" do
+    jpg_image = File.open(Rails.root.join("test/fixtures/big-cheese.960x640.jpg"))
+    take_part_page = build(:take_part_page, image: jpg_image)
+
+    assert take_part_page
+    assert_empty take_part_page.errors
+  end
+
   should_not_accept_footnotes_in :body
 end
