@@ -292,7 +292,7 @@ class TopicalEventTest < ActiveSupport::TestCase
     topical_event = build(:topical_event, logo: non_image_file)
 
     assert_not topical_event.valid?
-    assert_includes topical_event.errors.map(&:full_message), "Image You are not allowed to upload \"zip\" files, allowed types: jpg, jpeg, gif, png"
+    assert_includes topical_event.errors.map(&:full_message), "Logo You are not allowed to upload \"zip\" files, allowed types: jpg, jpeg, gif, png"
   end
 
   test "accepts valid image uploads" do

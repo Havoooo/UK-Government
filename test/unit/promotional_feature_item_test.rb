@@ -99,6 +99,7 @@ class PromotionalFeatureItemTest < ActiveSupport::TestCase
     assert promotional_feature_item
     assert_empty promotional_feature_item.errors
   end
+
 private
 
   def string_of_length(length)
