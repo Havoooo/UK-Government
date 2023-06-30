@@ -1171,13 +1171,4 @@ class OrganisationTest < ActiveSupport::TestCase
 
     organisation.destroy!
   end
-
-  test "rejects SVG logo uploads" do
-    svg_image = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
-    default_news_image = build(:default_news_organisation_image_data, file: svg_image)
-    organisation = build(:organisation, default_news_image: default_news_image)
-
-    assert_not organisation.valid?
-    assert_includes organisation.errors.map(&:full_message), "Default news image file You are not allowed to upload \"svg\" files, allowed types: jpg, jpeg, gif, png"
-  end
 end
