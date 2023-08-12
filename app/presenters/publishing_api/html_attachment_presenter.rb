@@ -5,7 +5,6 @@ module PublishingApi
     def initialize(item, update_type: nil)
       self.item = item
       self.update_type = update_type || "major"
-      item.govspeak_content.try(:render_govspeak!)
     end
 
     delegate :content_id, to: :item
@@ -73,7 +72,7 @@ module PublishingApi
     end
 
     def body
-      govspeak_content.try(:computed_body_html) || ""
+      Whitehall::GovspeakRenderer.new.govspeak_html_attachment_to_html(item)
     end
 
     def first_published_version?
@@ -106,10 +105,6 @@ module PublishingApi
 
     def parent_content_ids
       [parent.document.content_id]
-    end
-
-    def govspeak_content
-      item.govspeak_content
     end
 
     def locale

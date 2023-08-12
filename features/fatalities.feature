@@ -8,8 +8,8 @@ Feature: Fatalities
 
   See the following Examples:
 
-    http://www.mod.uk/DefenceInternet/FactSheets/OperationsFactsheets/OperationsInIraqBritishFatalities.htm
-    http://www.mod.uk/DefenceInternet/FactSheets/OperationsFactsheets/OperationsInAfghanistanBritishFatalities.htm
+  http://www.mod.uk/DefenceInternet/FactSheets/OperationsFactsheets/OperationsInIraqBritishFatalities.htm
+  http://www.mod.uk/DefenceInternet/FactSheets/OperationsFactsheets/OperationsInAfghanistanBritishFatalities.htm
 
   Detail (confirmed by MOD):
 
@@ -37,11 +37,6 @@ Feature: Fatalities
   Scenario: Editor adds field of operation
     When I create a new field of operation called "New Field" with description "Description"
     Then I am able to associate fatality notices with "New Field"
-
-  Scenario: Writer manages casualty entries for a fatality shown on the field of operation page
-    Given there is a fatality notice titled "Death of Joe" in the field "Iraq"
-    When I add a casualty to the fatality notice
-    Then I should see a casualty listed on the field of operation page for "Iraq"
 
   Scenario: Only editors/writers from organisations which handle fatalities can create fatality notices
     Given I am a writer in the organisation "DFT"

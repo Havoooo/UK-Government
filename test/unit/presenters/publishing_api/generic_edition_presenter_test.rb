@@ -18,7 +18,7 @@ module PublishingApi
         secondary_specialist_sector_tags: ["oil-and-gas/licensing"],
       )
 
-      public_path = Whitehall.url_maker.public_document_path(edition)
+      public_path = edition.public_path
 
       expected_hash = {
         base_path: public_path,
@@ -28,7 +28,7 @@ module PublishingApi
         document_type: "press_release",
         locale: "en",
         public_updated_at: edition.updated_at,
-        publishing_app: "whitehall",
+        publishing_app: Whitehall::PublishingApp::WHITEHALL,
         rendering_app: "government-frontend",
         routes: [
           { path: public_path, type: "exact" },
@@ -70,6 +70,33 @@ module PublishingApi
       edition = create(:news_article)
       presented_item = present(edition, update_type: update_type_override)
       assert_equal update_type_override, presented_item.update_type
+    end
+
+    test "presents the correct routes for an edition with a translation" do
+      news_article = create(
+        :news_article,
+        translated_into: %i[en cy],
+      )
+
+      I18n.with_locale(:en) do
+        presented_item = present(news_article)
+
+        assert_equal news_article.base_path, presented_item.content[:base_path]
+
+        assert_equal [
+          { path: news_article.base_path, type: "exact" },
+        ], presented_item.content[:routes]
+      end
+
+      I18n.with_locale(:cy) do
+        presented_item = present(news_article)
+
+        assert_equal "#{news_article.base_path}.cy", presented_item.content[:base_path]
+
+        assert_equal [
+          { path: "#{news_article.base_path}.cy", type: "exact" },
+        ], presented_item.content[:routes]
+      end
     end
   end
 end

@@ -1,6 +1,8 @@
 class Admin::PromotionalFeaturesController < Admin::BaseController
   before_action :load_organisation
-  before_action :load_promotional_feature, only: %i[show edit update destroy]
+  before_action :load_promotional_feature, only: %i[show edit update destroy confirm_destroy]
+  before_action :clean_image_or_youtube_video_url_param, only: %i[create]
+  layout "design_system"
 
   def index
     @promotional_features = @organisation.promotional_features
@@ -14,9 +16,12 @@ class Admin::PromotionalFeaturesController < Admin::BaseController
 
   def create
     @promotional_feature = @organisation.promotional_features.build(promotional_feature_params)
+
     if @promotional_feature.save
+      Whitehall::PublishingApi.republish_async(@organisation)
       redirect_to [:admin, @organisation, @promotional_feature], notice: "Promotional feature created"
     else
+      @promotional_feature.promotional_feature_items.first.links.build if @promotional_feature.promotional_feature_items.first.links.blank?
       render :new
     end
   end
@@ -27,15 +32,33 @@ class Admin::PromotionalFeaturesController < Admin::BaseController
 
   def update
     if @promotional_feature.update(promotional_feature_params)
+      Whitehall::PublishingApi.republish_async(@organisation)
       redirect_to [:admin, @organisation, @promotional_feature], notice: "Promotional feature updated"
     else
-      render :edit
+      render action: :edit
     end
   end
 
+  def confirm_destroy; end
+
   def destroy
     @promotional_feature.destroy!
+    Whitehall::PublishingApi.republish_async(@organisation)
     redirect_to [:admin, @organisation, PromotionalFeature], notice: "Promotional feature deleted."
+  end
+
+  def reorder
+    redirect_to admin_organisation_promotional_features_path(@organisation) and return unless @organisation.promotional_features.many?
+
+    @promotional_features = @organisation.promotional_features
+  end
+
+  def update_order
+    @organisation.reorder_promotional_features(params[:ordering])
+    Whitehall::PublishingApi.republish_async(@organisation)
+    flash[:notice] = "Promotional features reordered successfully"
+
+    redirect_to admin_organisation_promotional_features_path(@organisation)
   end
 
 private
@@ -49,7 +72,7 @@ private
   end
 
   def promotional_feature_params
-    params.require(:promotional_feature).permit(
+    @promotional_feature_params ||= params.require(:promotional_feature).permit(
       :title,
       promotional_feature_items_attributes: [
         :summary,
@@ -57,10 +80,30 @@ private
         :image_alt_text,
         :title,
         :title_url,
-        :double_width,
         :image_cache,
+        :youtube_video_url,
+        :youtube_video_alt_text,
+        :image_or_youtube_video_url,
         { links_attributes: %i[url text _destroy] },
       ],
     )
+  end
+
+  def clean_image_or_youtube_video_url_param
+    return if first_promotional_feature_item_params.blank?
+
+    feature_item_type = first_promotional_feature_item_params.delete(:image_or_youtube_video_url)
+
+    if feature_item_type == "youtube_video_url"
+      first_promotional_feature_item_params["image"] = nil
+      first_promotional_feature_item_params["image_alt_text"] = nil
+    else
+      first_promotional_feature_item_params["youtube_video_url"] = nil
+      first_promotional_feature_item_params["youtube_video_alt_text"] = nil
+    end
+  end
+
+  def first_promotional_feature_item_params
+    @first_promotional_feature_item_params ||= promotional_feature_params.dig("promotional_feature_items_attributes", "0")
   end
 end

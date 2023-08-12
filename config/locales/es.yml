@@ -21,6 +21,15 @@ es:
         nation_inapplicabilities: Naciones excluidas
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: El archivo adjunto
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Número de papel del comando de archivo adjunto
         hoc_paper_number: Número de documento de la Cámara de los Comunes
@@ -39,8 +48,22 @@ es:
       title: Título adjunto
       unique_reference: Referencia única del adjunto
       unnumbered_hoc_paper: Documento de la Cámara de los Comunes sin numerar
-  announcements:
-    heading: Anuncios
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: Si utiliza tecnología de asistencia (como un lector de pantalla) y necesita una versión de este documento en una formato más accesible, envíe un correo electrónico a %{email}. Díganos qué formato necesita. Para nosotros es importante saber qué tecnología de asistencia utiliza.
@@ -68,6 +91,11 @@ es:
     caution:
       subheading: Hemos encontrado algunos problemas con enlaces que pueden indicar errores, debe tener cuidado al vincularse a estos
     title: Vínculos roto
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Cerrado
     closing_today: Cierre hoy
@@ -147,6 +175,12 @@ es:
       blog_post:
         one: Entrada de blog
         other: Publicaciones del blog
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Campaña
         other: Campañas
@@ -156,6 +190,9 @@ es:
       case_study:
         one: Caso de estudio práctico
         other: Casos de estudio práctico
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Consulta cerrada
         other: Consultas cerradas
@@ -258,6 +295,9 @@ es:
       official_statistics:
         one: Estadísticas
         other: Estadísticas
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Consulta abierta
         other: Consultas abiertas
@@ -353,12 +393,6 @@ es:
         other: Declaraciones escritas
     updated: Actualizado
   document_filters:
-    description: Puedes utilizar los filtros para ver sólo los resultados que te interesen
-    no_results:
-      description: Haz una búsqueda más amplio e intentalo de nuevo.
-      title: No se ha producido ningún resultado
-      tna_heading: Contenido antiguo
-      tna_link_html: No todas las publicaciones del departamento de antes de mayo de 2010 se migraron a GOV.UK. Para encontrar publicaciones anteriores a mayo de 2010, intente la búsqueda en <a href='http://webarchive.nationalarchives.gov.uk/adv_search/" class='govuk-link'>los Archivos Nacionales</a>.
     world_locations:
       all: Todos los lugares
       label: Lugares del mundo
@@ -440,20 +474,6 @@ es:
   latest_feed:
     no_updates: No hay actualizaciones
     title: Actualizaciones más recientes
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Acceda a nuestra información
@@ -462,8 +482,7 @@ es:
       organisation_chart: Nuestro organigrama
       transparency: Datos de transparencia
     embassies:
-      find_an_embassy_lowercase: Busque una embajada británica, alto comisionado o consulado
-      find_an_embassy_uppercase: Busque una embajada británica, Alto Comisionado o Consulado
+      find_an_embassy_title:
     headings:
       corporate_information: Información corporativa
       corporate_reports: Informes corporativos
@@ -475,18 +494,15 @@ es:
       works_with: Funciona con
     type:
       courts_and_tribunals: Juzgados y Tribunales
-  publications:
-    heading: Publicaciones
-    recent: Publicaciones recientes
-    statistics:
-      link_to_published_statistics: Busque una lista de estadísticas gubernamentales publicadas y próximas en la sección de estadísticas %{link}.
-      moved_notice: Las publicaciones estadísticas se han movido.
   roles:
     unassigned: No hay nadie asignado a esta función
   see_all:
     announcement: Ver toda nuestra anuncios
     authored_article: Ver toda nuestra artículos de autor
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Ver toda nuestra casos de estudio práctico
+    closed_call_for_evidence:
     closed_consultation: Ver toda nuestra consultas cerradas
     consultation: Ver toda nuestra consultas
     consultation_outcome: Ver toda nuestra resultados de la consulta
@@ -509,6 +525,7 @@ es:
     news_article: Ver toda nuestra artículos
     news_story: Ver toda nuestra noticias
     notice: Ver todos nuestros avisos
+    open_call_for_evidence:
     open_consultation: Ver toda nuestra consultas abiertas
     oral_statement: Ver toda nuestra declaraciones formuladas oralmente
     policy: Ver toda nuestra políticas
@@ -547,15 +564,7 @@ es:
       heading:
       list_link:
     headings:
-      announcements: Nuestros anuncios
-      documents: Documentos
-      featured:
-      mission: Nuestra Misión
-      news: Noticias de situación mundial
-      organisations: Organizaciones
-      publications: Publicaciones
       search: Búsqueda por país o territorio
-      statistics: Nuestras estadísticas
     search_description:
       international_delegation:
       world_location:

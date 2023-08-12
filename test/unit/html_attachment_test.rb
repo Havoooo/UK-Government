@@ -1,16 +1,6 @@
 require "test_helper"
 
 class HtmlAttachmentTest < ActiveSupport::TestCase
-  test "#govspeak_content_body_html returns the computed HTML as an HTML safe string" do
-    Sidekiq::Testing.inline! do
-      attachment = create(:html_attachment, body: "Some govspeak")
-
-      assert attachment.reload.govspeak_content_body_html.html_safe?
-      assert_equivalent_html "<div class=\"govspeak\"><p>Some govspeak</p></div>",
-                             attachment.govspeak_content_body_html
-    end
-  end
-
   test "associated govspeak content is deleted with the html attachment" do
     attachment = create(:html_attachment)
     govspeak_content = attachment.govspeak_content
@@ -28,7 +18,7 @@ class HtmlAttachmentTest < ActiveSupport::TestCase
     assert attachment.id != clone.id
     assert clone.new_record?
     assert_equal attachment.title, clone.title
-    assert_equal attachment.govspeak_content_body, clone.govspeak_content_body
+    assert_equal attachment.body, clone.body
     assert_equal attachment.slug, clone.slug
     assert_equal attachment.content_id, clone.content_id
   end
@@ -40,6 +30,17 @@ class HtmlAttachmentTest < ActiveSupport::TestCase
     expected = "https://draft-origin.test.gov.uk/government/publications/"
     expected += "#{edition.slug}/#{attachment.slug}?preview=#{attachment.id}"
     actual = attachment.url(preview: true, full_url: true)
+
+    assert_equal expected, actual
+  end
+
+  test "#url returns absolute path to the draft stack when previewing with a cachebust" do
+    edition = create(:draft_publication, :with_html_attachment)
+    attachment = edition.attachments.first
+
+    expected = "https://draft-origin.test.gov.uk/government/publications/"
+    expected += "#{edition.slug}/#{attachment.slug}?cachebust=123&preview=#{attachment.id}"
+    actual = attachment.url(preview: true, full_url: true, cachebust: "123")
 
     assert_equal expected, actual
   end
@@ -129,6 +130,12 @@ class HtmlAttachmentTest < ActiveSupport::TestCase
     attachment = consultation.public_feedback.attachments.first
     attachment.update!(locale: "fi")
     assert_equal "/government/consultations/#{consultation.slug}/public-feedback/#{attachment.content_id}", attachment.url
+  end
+
+  test "#url works with call for evidence outcomes" do
+    call_for_evidence = create(:call_for_evidence_with_outcome_html_attachment)
+    attachment = call_for_evidence.outcome.attachments.first
+    assert_equal "/government/calls-for-evidence/#{call_for_evidence.slug}/outcome/#{attachment.slug}", attachment.url
   end
 
   test "slug is copied from previous edition's attachment" do

@@ -1,7 +1,10 @@
 class Admin::WorldLocationNewsController < Admin::BaseController
   before_action :load_world_location, only: %i[edit update show features]
+  layout "design_system"
 
-  def edit; end
+  def edit
+    build_featured_link_if_none_present
+  end
 
   def show; end
 
@@ -13,21 +16,27 @@ class Admin::WorldLocationNewsController < Admin::BaseController
     if @world_location_news.update(world_location_news_params)
       redirect_to [:admin, @world_location_news], notice: "World location updated successfully"
     else
-      render action: :edit
+      build_featured_link_if_none_present
+      render :edit
     end
   end
 
   def features
     @feature_list = @world_location.world_location_news.load_or_create_feature_list(params[:locale])
+    @locale = Locale.new(params[:locale] || :en)
 
-    filter_params = default_filter_params.merge(optional_filter_params).merge(state: "published")
+    filter_params = default_filter_params.merge(
+      optional_filter_params,
+      state: "published",
+      per_page: preview_design_system?(next_release: false) ? Admin::EditionFilter::GOVUK_DESIGN_SYSTEM_PER_PAGE : nil,
+    )
 
     @filter = Admin::EditionFilter.new(Edition, current_user, filter_params)
     @featurable_topical_events = TopicalEvent.active
     @featurable_offsite_links = @world_location.world_location_news.offsite_links
 
     if request.xhr?
-      render partial: "admin/feature_lists/search_results", locals: { feature_list: @feature_list }
+      render partial: "admin/feature_lists/legacy_search_results", locals: { feature_list: @feature_list }
     else
       render :features
     end
@@ -57,5 +66,9 @@ private
       featured_links_attributes: %i[url title id _destroy],
       world_location_attributes: %i[active id world_location_type],
     )
+  end
+
+  def build_featured_link_if_none_present
+    @world_location_news.featured_links.new if @world_location_news.featured_links.blank?
   end
 end

@@ -21,6 +21,15 @@ hu:
         nation_inapplicabilities: Kizárt nemzetek
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: A csatolt fájl
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: A csatolt parancsnoki papír száma
         hoc_paper_number: Angol Alsóházi lapszám
@@ -39,8 +48,22 @@ hu:
       title: Csatolmány címe
       unique_reference: Csatolmány egyedi referenciája
       unnumbered_hoc_paper: Számozatlan Angol Alsóházi lap
-  announcements:
-    heading: Bejelentések
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |-
@@ -70,6 +93,11 @@ hu:
     caution:
       subheading: Olyan problémákat találtunk a hivatkozásokkal kapcsolatban, amelyek problémákra utalhatnak; legyen óvatos a továbbhivatkozásuk során
     title: Nem működő hivatkozások
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Lezárva
     closing_today: Ma zárul
@@ -149,6 +177,12 @@ hu:
       blog_post:
         one: Blogbejegyzés
         other: Blogbejegyzések
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Kampány
         other: Kampányok
@@ -158,6 +192,9 @@ hu:
       case_study:
         one: Esettanulmány
         other: Esettanulmányok
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Lezárt konzultáció
         other: Lezárt konzultációk
@@ -260,6 +297,9 @@ hu:
       official_statistics:
         one: Hivatalos statisztika
         other: Hivatalos statisztikák
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Nyílt konzultáció
         other: Nyílt konzultációk
@@ -355,12 +395,6 @@ hu:
         other: Írásbeli parlamenti nyilatkozatok
     updated: frissítve
   document_filters:
-    description: A szűrők segítséget nyújtanak az érdeklődésének megfelelő eredmények keresésében
-    no_results:
-      description: Próbálja meg kibővíteni a keresési feltételeket.
-      title: Nincs a keresésnek megfelelő dokumentum.
-      tna_heading: Régebbi tartalom
-      tna_link_html: Nem minden 2010. május előtti minisztériumi kiadvány lett migrálva a GOV.UK-ra. Ha 2010. májusa előtti kiadványokat szeretne megtalálni, akkor keressen <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">a Nemzeti Archívumban</a>.
     world_locations:
       all: Minden ország
       label: Helyszínek a világban
@@ -442,20 +476,6 @@ hu:
   latest_feed:
     no_updates: Még nincs frissebb változat.
     title: Legfrissebb
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Hozzáférés információinkhoz
@@ -464,8 +484,7 @@ hu:
       organisation_chart: Szervezeti térképünk
       transparency: Átláthatósági adatok
     embassies:
-      find_an_embassy_lowercase: A brit nagykövetség, a legfelső biztosság vagy a konzulátus keresése
-      find_an_embassy_uppercase: A brit nagykövetség, a Legfelső Biztosság vagy a Konzulátus keresése
+      find_an_embassy_title:
     headings:
       corporate_information: Vállalati adatok
       corporate_reports: Testületi beszámolók
@@ -477,18 +496,15 @@ hu:
       works_with: 'A következővel dolgozik:'
     type:
       courts_and_tribunals: Bíróságok
-  publications:
-    heading: Kiadványok
-    recent: Friss kiadványok
-    statistics:
-      link_to_published_statistics: A %{link} statisztika szekcióban megtalálja a közzétett és hamarosan kiadásra kerülő állami statisztikákat.
-      moved_notice: A statisztikai kiadványok áthelyezésre kerültek.
   roles:
     unassigned: Ehhez a szerepkörhöz senki nincs hozzárendelve
   see_all:
     announcement: Minden bejelentés megtekintése
     authored_article: Minden publicisztika megtekintése
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Minden esettanulmány megtekintése
+    closed_call_for_evidence:
     closed_consultation: Minden lezárt konzultáció megtekintése
     consultation: Minden konzultáció megtekintése
     consultation_outcome: Minden konzultációs eredmény megtekintése
@@ -511,6 +527,7 @@ hu:
     news_article: Minden cikk megtekintése
     news_story: Minden hír megtekintése
     notice: Minden értesítés megtekintése
+    open_call_for_evidence:
     open_consultation: Minden nyílt konzultáció megtekintése
     oral_statement: Minden parlamenti felszólalás megtekintése
     policy: Minden irányelv megtekintése
@@ -549,15 +566,7 @@ hu:
       heading:
       list_link:
     headings:
-      announcements: Híreink
-      documents: Dokumentumok
-      featured:
-      mission: Küldetésünk
-      news: Hírek a világ különböző helyszíneiről
-      organisations: Szervezetek
-      publications: Kiadványaink
       search: Keresés ország vagy terület szerint
-      statistics: Statisztikáink
     search_description:
       international_delegation:
       world_location:

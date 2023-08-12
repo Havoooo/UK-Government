@@ -13,7 +13,7 @@ class PublishingApi::CaseStudyPresenterTest < ActiveSupport::TestCase
       summary: "The summary",
       body: "Some content",
     )
-    public_path = Whitehall.url_maker.public_document_path(case_study)
+    public_path = case_study.public_path
     expected_content = {
       base_path: public_path,
       title: "Case study title",
@@ -22,7 +22,7 @@ class PublishingApi::CaseStudyPresenterTest < ActiveSupport::TestCase
       document_type: "case_study",
       locale: "en",
       public_updated_at: case_study.public_timestamp,
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "government-frontend",
       routes: [
         { path: public_path, type: "exact" },

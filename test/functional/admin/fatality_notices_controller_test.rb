@@ -5,7 +5,6 @@ class Admin::FatalityNoticesControllerTest < ActionController::TestCase
 
   setup do
     login_as :gds_editor
-    @current_user.permissions << "Preview design system"
   end
 
   should_be_an_admin_controller
@@ -15,13 +14,13 @@ class Admin::FatalityNoticesControllerTest < ActionController::TestCase
   should_allow_editing_of :fatality_notice
 
   should_allow_organisations_for :fatality_notice
-  should_allow_attached_images_for :fatality_notice
   should_allow_role_appointments_for :fatality_notice
   should_prevent_modification_of_unmodifiable :fatality_notice
   should_allow_overriding_of_first_published_at_for :fatality_notice
   should_have_summary :fatality_notice
   should_allow_scheduled_publication_of :fatality_notice
   should_allow_access_limiting_of :fatality_notice
+  should_render_govspeak_history_and_fact_checking_tabs_for :fatality_notice
 
   view_test "show renders the summary" do
     draft_fatality_notice = create(:draft_fatality_notice, summary: "a-simple-summary")
@@ -29,7 +28,7 @@ class Admin::FatalityNoticesControllerTest < ActionController::TestCase
 
     get :show, params: { id: draft_fatality_notice }
 
-    assert_select ".page-header .lead", text: "a-simple-summary"
+    assert_select ".page-header .govuk-body-lead", text: "a-simple-summary"
   end
 
   view_test "when creating allows assignment to operational field" do

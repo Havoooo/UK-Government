@@ -25,7 +25,8 @@ Whitehall::Application.configure do
   config.public_file_server.enabled = true
 
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
+  # Can also use `Terser.new(mangle: false)` to disable name mangling
+  config.assets.js_compressor = :terser
 
   # Rather than use a CSS compressor, use the SASS style to perform compression
   config.sass.style = :compressed
@@ -67,8 +68,8 @@ Whitehall::Application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
 
-  # Use a different cache store in production.
-  config.cache_store = :mem_cache_store
+  # Prefix memcache keys to avoid name clashes when sharing a cache.
+  config.cache_store = :mem_cache_store, nil, { namespace: ENV.fetch("MEMCACHE_KEY_PREFIX", "whitehall"), compress: true }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque

@@ -1,14 +1,21 @@
-<% page_title @organisation.name %>
-<div class="organisation-header">
-  <h1><%= @organisation.name %></h1>
-  <%= view_on_website_link_for @organisation %>
-</div>
+<% content_for :page_title, @organisation.name %>
+<% content_for :context, current_user.organisation == @organisation ? "My organisation" : "Organisation" %>
+<% content_for :title, @organisation.name %>
+<% content_for :title_margin_bottom, 4 %>
 
-<section class="organisation-details">
-  <%= tab_navigation_for(@organisation) do %>
-    <%= render partial: 'search_results', locals: { show_export: false } %>
-    <% if @organisation.unused_corporate_information_page_types.any? %>
-      <div><%= link_to "New corporate information page", new_polymorphic_path([:admin, @organisation, CorporateInformationPage.new]), class: "btn btn-default" %></div>
-    <% end %>
-  <% end %>
-</section>
+<p class="govuk-body"><%= view_on_website_link_for @organisation, class: "govuk-link" %></p>
+
+<%= render "components/secondary_navigation", {
+  aria_label: "Organisation navigation tabs",
+  items: secondary_navigation_tabs_items(@organisation, request.path)
+} %>
+
+<% if @organisation.unused_corporate_information_page_types.any? %>
+  <%= render "govuk_publishing_components/components/button", {
+    text: "Create new corporate information page",
+    href: new_polymorphic_path([:admin, @organisation, CorporateInformationPage.new]),
+    margin_bottom: 6,
+  } %>
+<% end %>
+
+<%= render 'admin/editions/search_results', filter: @filter, paginator: @paginator, show_export: false %>

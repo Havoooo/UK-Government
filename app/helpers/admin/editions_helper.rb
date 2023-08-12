@@ -37,7 +37,48 @@ module Admin::EditionsHelper
     "active" if filter_value && disallowed_values.none? { |disallowed_value| filter_value == disallowed_value }
   end
 
-  def admin_organisation_filter_options(current_user, selected_organisation)
+  def admin_organisation_filter_options(selected_organisation)
+    organisations = Organisation.with_translations(:en).order(:name).excluding_govuk_status_closed || []
+    closed_organisations = Organisation.with_translations(:en).closed || []
+    if current_user.organisation
+      organisations = [current_user.organisation] + (organisations - [current_user.organisation])
+    end
+
+    [
+      [
+        "",
+        [
+          {
+            text: "All organisations",
+            value: "",
+            selected: selected_organisation.blank?,
+          },
+        ],
+      ],
+      [
+        "Live organisations",
+        organisations.map do |organisation|
+          {
+            text: organisation.select_name,
+            value: organisation.id,
+            selected: selected_organisation.to_s == organisation.id.to_s,
+          }
+        end,
+      ],
+      [
+        "Closed organisations",
+        closed_organisations.map do |organisation|
+          {
+            text: organisation.select_name,
+            value: organisation.id,
+            selected: selected_organisation.to_s == organisation.id.to_s,
+          }
+        end,
+      ],
+    ]
+  end
+
+  def legacy_admin_organisation_filter_options(current_user, selected_organisation)
     organisations = Organisation.with_translations(:en).order(:name).excluding_govuk_status_closed || []
     closed_organisations = Organisation.with_translations(:en).closed || []
     if current_user.organisation
@@ -62,7 +103,6 @@ module Admin::EditionsHelper
   def admin_state_filter_options
     [
       ["All states", "active"],
-      ["Imported (pre-draft)", "imported"],
       %w[Draft draft],
       %w[Submitted submitted],
       %w[Rejected rejected],
@@ -125,26 +165,13 @@ module Admin::EditionsHelper
     edition.edition_organisations.reject(&:lead?)[index].try(:organisation_id)
   end
 
-  def standard_edition_form(edition, information = nil, preview_design_system: false)
-    initialise_script "GOVUK.adminEditionsForm", selector: ".js-edition-form", right_to_left_locales: Locale.right_to_left.collect(&:to_param)
-    if preview_design_system
-      form_for form_url_for_edition(edition), as: :edition, html: { class: edition_form_classes(edition), multipart: true } do |form|
-        concat render("standard_fields", form:, edition:)
-        yield(form)
-        concat render("access_limiting_fields", form:, edition:)
-        concat render("scheduled_publication_fields", form:, edition:)
-        concat standard_edition_publishing_controls(form, edition)
-      end
-    else
-      form_for form_url_for_edition(edition), as: :edition, html: { class: edition_form_classes(edition) } do |form|
-        concat edition_information(information) if information
-        concat form.errors
-        concat render("legacy_standard_fields", form:, edition:)
-        yield(form)
-        concat render("legacy_access_limiting_fields", form:, edition:)
-        concat render("legacy_scheduled_publication_fields", form:, edition:)
-        concat legacy_standard_edition_publishing_controls(form, edition)
-      end
+  def standard_edition_form(edition)
+    form_for form_url_for_edition(edition), as: :edition, html: { class: edition_form_classes(edition), multipart: true }, data: { module: "EditionForm LocaleSwitcher", "rtl-locales": Locale.right_to_left.collect(&:to_param) } do |form|
+      concat render("standard_fields", form:, edition:)
+      yield(form)
+      concat render("access_limiting_fields", form:, edition:)
+      concat render("scheduled_publication_fields", form:, edition:)
+      concat standard_edition_publishing_controls(form, edition)
     end
   end
 
@@ -165,7 +192,7 @@ module Admin::EditionsHelper
   def tab_url_for_edition(edition)
     if edition.is_a? CorporateInformationPage
       if edition.new_record?
-        url_for([:new, :admin, @organisation, edition.class.model_name.param_key.to_sym]) # rubocop:disable Rails/HelperInstanceVariable
+        url_for([:new, :admin, edition.owning_organisation, edition.class.model_name.param_key.to_sym])
       else
         url_for([:edit, :admin, edition.owning_organisation, edition])
       end
@@ -207,18 +234,12 @@ module Admin::EditionsHelper
     tab_navigation(tabs) { yield blk }
   end
 
-  def edition_edit_headline(edition)
-    if edition.is_a?(CorporateInformationPage)
-      "Edit &lsquo;#{edition.title}&rsquo; page for #{link_to edition.owning_organisation.name, [:admin, edition.owning_organisation]}".html_safe
-    else
-      "Edit #{edition.type.underscore.humanize.downcase}"
+  def call_for_evidence_editing_tabs(edition, &blk)
+    tabs = default_edition_tabs(edition)
+    if edition.persisted?
+      tabs["Outcome"] = admin_call_for_evidence_outcome_path(edition)
     end
-  end
-
-  def edition_information(information)
-    tag.div(class: "alert alert-info") do
-      information
-    end
+    tab_navigation(tabs) { yield blk }
   end
 
   def standard_edition_publishing_controls(form, edition)
@@ -228,18 +249,6 @@ module Admin::EditionsHelper
       end
 
       concat render("save_or_continue_or_cancel", form:, edition:)
-    end
-  end
-
-  def legacy_standard_edition_publishing_controls(form, edition)
-    tag.div(class: "publishing-controls well") do
-      if edition.change_note_required?
-        concat render(
-          partial: "legacy_change_notes",
-          locals: { form:, edition: },
-        )
-      end
-      concat form.save_or_continue_or_cancel
     end
   end
 
@@ -278,11 +287,11 @@ module Admin::EditionsHelper
     links = []
 
     if edition.available_in_english?
-      links << [preview_document_url(edition), "Language: English"]
+      links << [edition.public_url(draft: true), "Language: English"]
     end
 
     links + edition.non_english_translated_locales.map do |locale|
-      [preview_document_url(edition, locale:),
+      [edition.public_url(locale: locale.code, draft: true),
        "Language: #{locale.native_and_english_language_name}"]
     end
   end
@@ -332,5 +341,13 @@ module Admin::EditionsHelper
     # the lower length of a novel (https://en.wikipedia.org/wiki/Word_count#In_fiction).
     # Returning true from the first half of the "or" means the second half doesn't get computed.
     edition_is_a_novel?(edition) || edition_has_links?(edition)
+  end
+
+  def status_text(edition)
+    if edition.unpublishing.present?
+      "#{edition.state.capitalize} (unpublished #{time_ago_in_words(edition.unpublishing.created_at)} ago)"
+    else
+      edition.state.capitalize
+    end
   end
 end

@@ -5,7 +5,6 @@ class Admin::ConsultationsControllerTest < ActionController::TestCase
 
   setup do
     login_as :writer
-    @current_user.permissions << "Preview design system"
     ConsultationResponseForm.any_instance.stubs(:consultation_participation).returns(stub(consultation: stub(auth_bypass_id: "auth bypass id")))
   end
 
@@ -14,13 +13,12 @@ class Admin::ConsultationsControllerTest < ActionController::TestCase
   should_allow_creating_of :consultation
   should_allow_editing_of :consultation
 
-  should_allow_speed_tagging_of :consultation
   should_allow_organisations_for :consultation
-  should_allow_attached_images_for :consultation
   should_prevent_modification_of_unmodifiable :consultation
   should_allow_alternative_format_provider_for :consultation
   should_allow_scheduled_publication_of :consultation
   should_allow_access_limiting_of :consultation
+  should_render_govspeak_history_and_fact_checking_tabs_for :consultation
 
   view_test "new displays consultation fields" do
     get :new
@@ -136,7 +134,17 @@ class Admin::ConsultationsControllerTest < ActionController::TestCase
     stub_publishing_api_expanded_links_with_taxons(draft_consultation.content_id, [])
 
     get :show, params: { id: draft_consultation }
-    assert_select ".page-header .lead", text: "a-simple-summary"
+    assert_select ".page-header .govuk-body-lead", text: "a-simple-summary"
+  end
+
+  view_test "show renders the preview link for foreign only consultations" do
+    french_consultation = create(:draft_consultation, primary_locale: "fr")
+    french_consultation.translations.first.update!(locale: "fr")
+
+    stub_publishing_api_expanded_links_with_taxons(french_consultation.content_id, [])
+
+    get :show, params: { id: french_consultation }
+    assert_select ".app-view-summary__section a", text: "Preview on website  (opens in new tab)", href: french_consultation.public_url(draft: true, locale: "fr")
   end
 
   view_test "edit displays consultation fields" do

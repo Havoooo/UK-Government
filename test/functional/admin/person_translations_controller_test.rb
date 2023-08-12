@@ -9,6 +9,7 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
   end
 
   should_be_an_admin_controller
+  should_render_bootstrap_implementation_with_preview_next_release
 
   view_test "index shows a form to create missing translations" do
     get :index, params: { person_id: @person }
@@ -20,7 +21,7 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
         assert_select "option[value=es]", text: "Español (Spanish)"
       end
 
-      assert_select "input[type=submit]"
+      assert_select "button[type=submit]"
     end
   end
 
@@ -75,9 +76,11 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
     get :index, params: { person_id: person }
 
     edit_translation_path = edit_admin_person_translation_path(person, "fr")
-    view_person_path = person_path(person, locale: "fr")
-    assert_select "a[href=?]", edit_translation_path, text: "Français"
-    assert_select "a[href=?]", Plek.new.website_root + view_person_path, text: "view"
+    view_person_path = person.public_url(locale: :fr)
+    confirm_destroy_url = confirm_destroy_admin_person_translation_path(person, :fr)
+    assert_select "a[href=?]", edit_translation_path, text: "Edit Français (French)"
+    assert_select "a[href=?]", view_person_path, text: "View Français (French)"
+    assert_select "a[href=?]", confirm_destroy_url, text: "Delete Français (French)"
   end
 
   view_test "index does not list the english translation" do
@@ -85,24 +88,6 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
 
     edit_translation_path = edit_admin_person_translation_path(@person, "en")
     assert_select "a[href=?]", edit_translation_path, text: "en", count: 0
-  end
-
-  view_test "index displays delete button for a translation" do
-    person = create(
-      :person,
-      biography: "She was born. She lived. She died.",
-      translated_into: {
-        fr: {
-          biography: "Elle est née. Elle a vécu. Elle est morte.",
-        },
-      },
-    )
-
-    get :index, params: { person_id: person }
-
-    assert_select "form[action=?]", admin_person_translation_path(person, :fr) do
-      assert_select "input[type='submit'][value=?]", "Delete"
-    end
   end
 
   test "create redirects to edit for the chosen language" do
@@ -114,7 +99,8 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
   view_test "edit indicates which language is being translated to" do
     create(:person, translated_into: [:fr])
     get :edit, params: { person_id: @person, id: "fr" }
-    assert_select "h1", text: /Edit ‘Français \(French\)’ translation/
+
+    assert_select "h1", text: "Edit ‘Français(French)’ translation for: #{@person.name}"
   end
 
   view_test "edit presents a form to update an existing translation" do
@@ -132,7 +118,7 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
     translation_path = admin_person_translation_path(person, "fr")
     assert_select "form[action=?]", translation_path do
       assert_select "textarea[name='person[biography]']", text: "Elle est née. Elle a vécu. Elle est morte."
-      assert_select "input[type=submit][value=Save]"
+      assert_select "button[type=submit]", text: "Save"
     end
   end
 
@@ -150,10 +136,8 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
 
     translation_path = admin_person_translation_path(person, "ar")
     assert_select "form[action=?]", translation_path do
-      assert_select "fieldset[class='right-to-left']" do
-        assert_select "textarea[name='person[biography]'][dir='rtl']", text: "ولدت. عاشت. توفيت."
-      end
-      assert_select "input[type=submit][value=Save]"
+      assert_select "textarea[name='person[biography]'][dir='rtl']", text: "ولدت. عاشت. توفيت."
+      assert_select "button[type=submit]", text: "Save"
     end
   end
 

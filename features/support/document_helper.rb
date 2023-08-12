@@ -1,6 +1,6 @@
 ParameterType(
   name: "edition",
-  regexp: /the (document|publication|news article|consultation|consultation response|speech|detailed guide|announcement|world location news article|statistical data set|document collection|corporate information page) "([^"]*)"/,
+  regexp: /the (document|publication|news article|consultation|consultation response|speech|detailed guide|announcement|world location news article|statistical data set|document collection|corporate information page|call for evidence) "([^"]*)"/,
   transformer: ->(document_type, title) { document_class(document_type).latest_edition.find_by!(title:) },
 )
 
@@ -41,7 +41,7 @@ module DocumentHelper
 
       case options[:previously_published]
       when false
-        choose "has never been published before. It is new."
+        choose "has never been published before."
       when true
         choose "has previously been published on another website."
       end
@@ -55,11 +55,6 @@ module DocumentHelper
   def begin_editing_document(title)
     visit_edition_admin title
     click_link "Edit draft"
-  end
-
-  def begin_new_draft_document(title)
-    visit_edition_admin title
-    click_button "Create new edition to edit"
   end
 
   def begin_drafting_news_article(options)
@@ -95,8 +90,13 @@ module DocumentHelper
     create(:role_appointment, person:, role:, started_at: Date.parse("2010-01-01"))
     begin_drafting_document options.merge(type: "speech", summary: "Some summary of the content", previously_published: false)
     select SpeechType::Transcript.singular_name, from: "Speech type"
-    select "Colonel Mustard, Attorney General", from: "Speaker"
-    select_date 1.day.ago.to_s, from: "Delivered on"
+    choose "Speaker has a profile on GOV.UK"
+    select "Colonel Mustard, Attorney General"
+
+    within_fieldset "Delivered on" do
+      select_date 1.day.ago.to_s, base_dom_id: "edition_delivered_on"
+    end
+
     fill_in "Location", with: "The Drawing Room"
   end
 
@@ -110,20 +110,20 @@ module DocumentHelper
 
   def fill_in_news_article_fields(first_published: "2010-01-01", announcement_type: "News story")
     select announcement_type, from: "News article type"
-    choose "has previously been published on another website."
-    select_date first_published, from: "Its original publication date was *"
+    radio_label = "This document has previously been published on another website."
+    choose radio_label
+    within_conditional_reveal radio_label do
+      select_date first_published, base_dom_id: "edition_first_published_at"
+    end
   end
 
   def fill_in_publication_fields(first_published: "2010-01-01", publication_type: "Research and analysis")
-    if using_design_system?
-      within "#edition_first_published_at" do
-        choose "This document has previously been published on another website."
-        fill_in_datetime_field(first_published)
-      end
-    else
-      choose "has previously been published on another website."
-      select_date first_published, from: "Its original publication date was *"
+    radio_label = "This document has previously been published on another website."
+    choose radio_label
+    within_conditional_reveal radio_label do
+      select_date first_published, base_dom_id: "edition_first_published_at"
     end
+
     select publication_type, from: "edition_publication_type_id"
   end
 
@@ -168,39 +168,9 @@ module DocumentHelper
     refute_flash_alerts_exist unless options[:ignore_errors]
   end
 
-  def speed_tag_publication(title)
-    edition = Edition.find_by(title:)
-    visit admin_edition_path(edition)
-
-    expect(page).to have_selector(".speed-tag")
-    within ".speed-tag" do
-      select "Research and analysis", from: "Publication type"
-      click_on "Save"
-      expect(page).to_not have_selector(".speed-tag .alert")
-    end
-  end
-
-  def convert_to_draft(title)
-    edition = Edition.find_by(title:)
-    visit admin_edition_path(edition)
-
-    click_on "Convert to draft"
-    expect(page).to_not have_selector(".speed-tag")
-  end
-
   def preview_document_path(edition, options = {})
     query = { preview: edition.latest_edition.id, cachebust: Time.zone.now.getutc.to_i }
     document_path(edition, options.merge(query))
-  end
-
-  def fill_in_datetime_field(date)
-    date = Time.zone.parse(date)
-
-    select date.year, from: "Year"
-    select date.strftime("%B"), from: "Month"
-    select date.day, from: "Day"
-    select date.strftime("%H"), from: "Hour"
-    select date.strftime("%M"), from: "Minute"
   end
 end
 

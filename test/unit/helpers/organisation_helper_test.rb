@@ -76,149 +76,6 @@ class OrganisationHelperTest < ActionView::TestCase
     assert_select ".js-filter-count", text: "2"
   end
 
-  test "#organisation_govuk_status_description describes an organisation that no longer exists" do
-    organisation = build(:closed_organisation, name: "Beard Ministry")
-
-    assert_equal "Beard Ministry has closed", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description for an organisation that no longer exists includes the closed date if available" do
-    closed_time = 1.day.ago
-    organisation = build(:closed_organisation, name: "Beard Ministry", closed_at: closed_time)
-
-    assert_equal "Beard Ministry closed in November 2011", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation that has been replaced" do
-    superseding_organisation = create(:organisation, name: "Superseding organisation")
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", govuk_closed_status: "replaced", superseding_organisations: [superseding_organisation])
-
-    assert_equal "Beard Ministry was replaced by <a href=\"/government/organisations/superseding-organisation\">Superseding organisation</a>", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description for a replaced organisation includes the closed date if available" do
-    closed_time = 1.day.ago
-    superseding_organisation = create(:organisation, name: "Superseding organisation")
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", closed_at: closed_time, govuk_closed_status: "replaced", superseding_organisations: [superseding_organisation])
-
-    assert_equal "Beard Ministry was replaced by <a href=\"/government/organisations/superseding-organisation\">Superseding organisation</a> in November 2011",
-                 organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation that has been split" do
-    superseding_organisation1 = create(:organisation, name: "Superseding organisation 1")
-    superseding_organisation2 = create(:organisation, name: "Superseding organisation 2")
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", govuk_closed_status: "split", superseding_organisations: [superseding_organisation1, superseding_organisation2])
-
-    assert_equal "Beard Ministry was replaced by <a href=\"/government/organisations/superseding-organisation-1\">Superseding organisation 1</a> and <a href=\"/government/organisations/superseding-organisation-2\">Superseding organisation 2</a>", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description for an organisation that has been split includes the closed date if available" do
-    superseding_organisation1 = create(:organisation, name: "Superseding organisation 1")
-    superseding_organisation2 = create(:organisation, name: "Superseding organisation 2")
-    closed_time = 1.day.ago
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", closed_at: closed_time, govuk_closed_status: "split", superseding_organisations: [superseding_organisation1, superseding_organisation2])
-
-    assert_equal "Beard Ministry was replaced by <a href=\"/government/organisations/superseding-organisation-1\">Superseding organisation 1</a> and <a href=\"/government/organisations/superseding-organisation-2\">Superseding organisation 2</a> in November 2011",
-                 organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation that has merged" do
-    superseding_organisation = create(:organisation, name: "Superseding organisation")
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", govuk_closed_status: "merged", superseding_organisations: [superseding_organisation])
-
-    assert_equal "Beard Ministry is now part of <a href=\"/government/organisations/superseding-organisation\">Superseding organisation</a>", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation that changed its name" do
-    superseding_organisation = create(:organisation, name: "Superseding organisation")
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", govuk_closed_status: "changed_name", superseding_organisations: [superseding_organisation])
-
-    assert_equal "Beard Ministry is now called <a href=\"/government/organisations/superseding-organisation\">Superseding organisation</a>", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation that has left government" do
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", govuk_closed_status: "left_gov")
-
-    assert_equal "Beard Ministry is now independent of the UK government", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation that is devolved" do
-    superseding_organisation = create(:organisation, name: "Superseding organisation")
-    organisation = build(:organisation, name: "Beard Ministry", govuk_status: "closed", govuk_closed_status: "devolved", superseding_organisations: [superseding_organisation])
-
-    assert_equal "Beard Ministry is now run by the <a href=\"/government/organisations/superseding-organisation\">Superseding organisation</a>", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes an organisation which is closed and devolved to regional government, and superseeded by a devolved administration" do
-    superseeding_administration = create(:devolved_administration, name: "Scottish Government")
-    organisation = create(:organisation, name: "Creative Scotland", govuk_status: "closed", govuk_closed_status: "devolved", superseding_organisations: [superseeding_administration])
-
-    assert_equal "Creative Scotland is a body of the <a href=\"/government/organisations/scottish-government\">Scottish Government</a>", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description links to transitioning organisations" do
-    organisation = build(:organisation, name: "Taxidermy Commission", govuk_status: "transitioning", url: "http://taxidermy.uk")
-
-    assert_equal 'Taxidermy Commission is in the process of joining GOV.UK. In the meantime, <a href="http://taxidermy.uk">http://taxidermy.uk</a> remains the official source.',
-                 organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description links to joining organisations when a url is available" do
-    organisation = build(:organisation, name: "Parrot Office", govuk_status: "joining", url: "http://parrot.org")
-
-    assert_equal 'Parrot Office currently has a <a href="http://parrot.org">separate website</a> but will soon be incorporated into GOV.UK',
-                 organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes a joining organisation without a website" do
-    organisation = build(:organisation, name: "Parrot Office", govuk_status: "joining")
-
-    assert_equal "Parrot Office will soon be incorporated into GOV.UK", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description describes exempt organisations without a website" do
-    organisation = build(:organisation, name: "Potato Jazz Association", govuk_status: "exempt")
-
-    assert_equal "Potato Jazz Association has no website", organisation_govuk_status_description(organisation)
-  end
-
-  test "#organisation_govuk_status_description links to exempt organisations when a url is available" do
-    organisation = build(:organisation, name: "Potato Jazz Association", govuk_status: "exempt", url: "http://pots-jazz.fm")
-
-    assert_equal 'Potato Jazz Association has a <a href="http://pots-jazz.fm">separate website</a>', organisation_govuk_status_description(organisation)
-  end
-
-  test "#superseding_organisations_text should return a paragraph listing superseding organisations with the appropriate links" do
-    organisation = build(
-      :organisation,
-      superseding_organisations: [
-        build(:organisation, name: "Ministry of Makeup", slug: "ministry-of-makeup"),
-        build(:organisation, name: "Bureaucracy of Beards", slug: "bureaucracy-of-beards"),
-        build(:organisation, name: "Department of Dandruff", slug: "department-of-dandruff"),
-      ],
-    )
-    text = superseding_organisations_text(organisation)
-    assert_equal "<a href=\"/government/organisations/ministry-of-makeup\">Ministry of Makeup</a>, <a href=\"/government/organisations/bureaucracy-of-beards\">Bureaucracy of Beards</a>, and <a href=\"/government/organisations/department-of-dandruff\">Department of Dandruff</a>", text
-  end
-
-  test '#govuk_status_meta_data_for joining and transitioning orgs should return "moving to GOV.UK"' do
-    rendered = Nokogiri::HTML::DocumentFragment.parse(govuk_status_meta_data_for(build(:organisation, govuk_status: "joining")))
-    assert_equal "moving to GOV.UK", rendered.at_css(".metadata").text
-    rendered = Nokogiri::HTML::DocumentFragment.parse(govuk_status_meta_data_for(build(:organisation, govuk_status: "transitioning")))
-    assert_equal "moving to GOV.UK", rendered.at_css(".metadata").text
-  end
-
-  test '#govuk_status_meta_data_for exempt orgs should return "separate website"' do
-    rendered = Nokogiri::HTML::DocumentFragment.parse(govuk_status_meta_data_for(build(:organisation, govuk_status: "exempt")))
-    assert_equal "separate website", rendered.at_css(".metadata").text
-  end
-
-  test "#govuk_status_meta_data_for live and closed orgs should return nothing" do
-    assert_nil govuk_status_meta_data_for(build(:organisation, govuk_status: "live"))
-    assert_nil govuk_status_meta_data_for(build(:organisation, govuk_status: "closed"))
-  end
-
   test "#show_corporate_information_pages? for organisations that are not live should be false" do
     organisation = create(:organisation, :closed)
 
@@ -391,5 +248,146 @@ class OrganisationHelperDisplayNameWithParentalRelationshipTest < ActionView::Te
     description = organisation_display_name_including_parental_and_child_relationships(organisation)
     assert description.include? "Other Organisation Name"
     assert_not description.include? "is an other"
+  end
+
+  test "#organisation_index_rows returns an array of arrays with the user_organisation first followed by all orgs" do
+    organisation1 = build_stubbed(:executive_office, acronym: "BLAH1", name: "Org 1", govuk_status: "live", url: "https://www.org1.gov.uk")
+    organisation2 = build_stubbed(:ministerial_department, :closed, acronym: "BLAH2", name: "Org 2", url: "https://www.org2.gov.uk")
+    user_organisation = build_stubbed(:devolved_administration, acronym: nil, name: "Org 3", govuk_status: "exempt", url: "https://www.org3.gov.uk")
+
+    expected_output = [
+      [
+        {
+          text: "",
+        },
+        {
+          text: "<a class=\"govuk-link govuk-!-font-weight-bold\" href=\"/government/admin/organisations/#{user_organisation.id}\">Org 3</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Devolved administration</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-margin-top-0\">exempt</p>",
+        },
+        {
+          text: "<a class=\"govuk-link govuk-!-font-weight-bold\" href=\"/government/organisations/\">[gov.uk]</a><a class=\"govuk-link govuk-!-font-weight-bold\" href=\"https://www.org3.gov.uk\">[current site]</a>",
+        },
+      ],
+      [
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation1.id}\">BLAH1</a>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation1.id}\">Org 1</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Executive office</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">live</p>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/organisations/\">[gov.uk]</a>",
+        },
+      ],
+      [
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation2.id}\">BLAH2</a>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation2.id}\">Org 2</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Ministerial department</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">closed</p>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/organisations/\">[gov.uk]</a><a class=\"govuk-link\" href=\"https://www.org2.gov.uk\">[current site]</a>",
+        },
+      ],
+      [
+        {
+          text: "",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{user_organisation.id}\">Org 3</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Devolved administration</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">exempt</p>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/organisations/\">[gov.uk]</a><a class=\"govuk-link\" href=\"https://www.org3.gov.uk\">[current site]</a>",
+        },
+      ],
+    ]
+
+    assert_equal expected_output, organisation_index_rows(user_organisation, [organisation1, organisation2, user_organisation])
+  end
+
+  test "#organisation_index_rows returns an array of arrays for all orgs when no user_organisation is passed in" do
+    organisation1 = build_stubbed(:executive_office, acronym: "BLAH1", name: "Org 1", govuk_status: "live", url: "https://www.org1.gov.uk")
+    organisation2 = build_stubbed(:ministerial_department, :closed, acronym: "BLAH2", name: "Org 2", url: "https://www.org2.gov.uk")
+    user_organisation = build_stubbed(:devolved_administration, acronym: nil, name: "Org 3", govuk_status: "exempt", url: "https://www.org3.gov.uk")
+
+    expected_output = [
+      [
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation1.id}\">BLAH1</a>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation1.id}\">Org 1</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Executive office</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">live</p>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/organisations/\">[gov.uk]</a>",
+        },
+      ],
+      [
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation2.id}\">BLAH2</a>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{organisation2.id}\">Org 2</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Ministerial department</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">closed</p>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/organisations/\">[gov.uk]</a><a class=\"govuk-link\" href=\"https://www.org2.gov.uk\">[current site]</a>",
+        },
+      ],
+      [
+        {
+          text: "",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/admin/organisations/#{user_organisation.id}\">Org 3</a>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">Devolved administration</p>",
+        },
+        {
+          text: "<p class=\"govuk-!-margin-bottom-0 govuk-!-margin-top-0\">exempt</p>",
+        },
+        {
+          text: "<a class=\"govuk-link\" href=\"/government/organisations/\">[gov.uk]</a><a class=\"govuk-link\" href=\"https://www.org3.gov.uk\">[current site]</a>",
+        },
+      ],
+    ]
+
+    assert_equal expected_output, organisation_index_rows(nil, [organisation1, organisation2, user_organisation])
   end
 end

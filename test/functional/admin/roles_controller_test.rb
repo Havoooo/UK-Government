@@ -2,7 +2,7 @@ require "test_helper"
 
 class Admin::RolesControllerTest < ActionController::TestCase
   setup do
-    login_as :writer
+    login_as(:gds_editor)
   end
 
   should_be_an_admin_controller
@@ -13,35 +13,31 @@ class Admin::RolesControllerTest < ActionController::TestCase
     person = create(:person, forename: "person-name")
     ministerial_role = create(:ministerial_role, name: "ministerial-role", cabinet_member: true, organisations: [org_one, org_two])
     create(:role_appointment, role: ministerial_role, person:)
-    management_role = create(:board_member_role, name: "management-role", permanent_secretary: true, organisations: [org_one])
-    military_role = create(:military_role, name: "military-role", organisations: [org_two])
-    chief_professional_officer_role = create(:chief_professional_officer_role, name: "chief-professional-officer-role", organisations: [org_one])
+    create(:board_member_role, name: "management-role", permanent_secretary: true, organisations: [org_one])
+    create(:military_role, name: "military-role", organisations: [org_two])
+    create(:chief_professional_officer_role, name: "chief-professional-officer-role", organisations: [org_one])
     get :index
 
-    assert_select ".roles" do
-      assert_select_object ministerial_role do
-        assert_select ".name", "ministerial-role"
-        assert_select ".role_type", "Cabinet minister"
-        assert_select ".organisations", "org-one and org-two"
-        assert_select ".person", "person-name"
+    assert_select ".govuk-table__body" do
+      assert_select "tr:nth-child(1)" do
+        assert_select "td:nth-child(1).govuk-table__cell", "ministerial-role"
+        assert_select "td:nth-child(2).govuk-table__cell", "org-one and org-two"
+        assert_select "td:nth-child(3).govuk-table__cell", "person-name"
       end
-      assert_select_object management_role do
-        assert_select ".name", "management-role"
-        assert_select ".role_type", "Permanent secretary"
-        assert_select ".organisations", "org-one"
-        assert_select ".person", "No one is assigned to this role"
+      assert_select "tr:nth-child(2)" do
+        assert_select "td:nth-child(1).govuk-table__cell", "chief-professional-officer-role"
+        assert_select "td:nth-child(2).govuk-table__cell", "org-one"
+        assert_select "td:nth-child(3).govuk-table__cell", ""
       end
-      assert_select_object chief_professional_officer_role do
-        assert_select ".name", "chief-professional-officer-role"
-        assert_select ".role_type", "Chief professional officer"
-        assert_select ".organisations", "org-one"
-        assert_select ".person", "No one is assigned to this role"
+      assert_select "tr:nth-child(3)" do
+        assert_select "td:nth-child(1).govuk-table__cell", "management-role"
+        assert_select "td:nth-child(2).govuk-table__cell", "org-one"
+        assert_select "td:nth-child(3).govuk-table__cell", ""
       end
-      assert_select_object military_role do
-        assert_select ".name", "military-role"
-        assert_select ".role_type", "Chief of staff"
-        assert_select ".organisations", "org-two"
-        assert_select ".person", "No one is assigned to this role"
+      assert_select "tr:nth-child(4)" do
+        assert_select "td:nth-child(1).govuk-table__cell", "military-role"
+        assert_select "td:nth-child(2).govuk-table__cell", "org-two"
+        assert_select "td:nth-child(3).govuk-table__cell", ""
       end
     end
   end
@@ -127,11 +123,13 @@ class Admin::RolesControllerTest < ActionController::TestCase
 
     get :index
 
-    assert_select_object role_one do
-      assert_select "a[href='#{edit_admin_role_path(role_one)}']"
-    end
-    assert_select_object role_two do
-      assert_select "a[href='#{edit_admin_role_path(role_two)}']"
+    assert_select ".govuk-table__body" do
+      assert_select "tr:nth-child(1)" do
+        assert_select "a[href='#{edit_admin_role_path(role_one)}']"
+      end
+      assert_select "tr:nth-child(2)" do
+        assert_select "a[href='#{edit_admin_role_path(role_two)}']"
+      end
     end
   end
 
@@ -139,12 +137,14 @@ class Admin::RolesControllerTest < ActionController::TestCase
     role = create(:ministerial_role)
     get :index
 
-    assert_select_object role do
-      assert_select "a[href=?]", admin_role_translations_path(role), text: "Manage translations"
+    assert_select ".govuk-table__body" do
+      assert_select "tr:nth-child(1)" do
+        assert_select "a[href=?]", admin_role_translations_path(role), text: "Manage #{role.name}"
+      end
     end
   end
 
-  view_test "provides delete buttons for destroyable roles" do
+  view_test "provides delete link for destroyable roles" do
     destroyable_role = create(:role_without_organisations)
     edition = create(:edition)
     indestructable_role = create(:ministerial_role)
@@ -152,14 +152,13 @@ class Admin::RolesControllerTest < ActionController::TestCase
 
     get :index
 
-    assert_select_object destroyable_role do
-      assert_select ".delete form[action='#{admin_role_path(destroyable_role)}']" do
-        assert_select "input[name='_method'][value='delete']"
-        assert_select "input[type='submit']"
+    assert_select ".govuk-table__body" do
+      assert_select "tr:nth-child(1)" do
+        assert_select "a[href=?]", confirm_destroy_admin_role_path(destroyable_role), text: "Delete #{destroyable_role.name}"
       end
-    end
-    assert_select_object indestructable_role do
-      refute_select ".delete form[action='#{admin_role_path(indestructable_role)}']"
+      assert_select "tr:nth-child(2)" do
+        refute_select "a[href=?]", confirm_destroy_admin_role_path(indestructable_role), text: "Delete #{destroyable_role.name}"
+      end
     end
   end
 
@@ -170,7 +169,7 @@ class Admin::RolesControllerTest < ActionController::TestCase
       assert_select "input[name='role[name]'][type='text']"
       assert_select "select[name='role[role_type]']"
       assert_select "select[name*='role[organisation_ids]']"
-      assert_select "input[type='submit']"
+      assert_select "button[type='submit']"
     end
   end
 
@@ -257,7 +256,7 @@ class Admin::RolesControllerTest < ActionController::TestCase
   view_test "create with invalid data should display errors" do
     post :create, params: { role: attributes_for(:role, name: nil) }
 
-    assert_select ".form-errors"
+    assert_select ".govuk-error-summary"
   end
 
   view_test "edit should display form for updating an existing role" do
@@ -274,7 +273,7 @@ class Admin::RolesControllerTest < ActionController::TestCase
       assert_select "select[name*='role[organisation_ids]']" do
         assert_select "option[selected='selected']", text: "org-name"
       end
-      assert_select "input[type='submit']"
+      assert_select "button[type='submit']"
     end
   end
 
@@ -319,7 +318,18 @@ class Admin::RolesControllerTest < ActionController::TestCase
 
     put :update, params: { id: role, role: attributes_for(:role, name: nil) }
 
-    assert_select ".form-errors"
+    assert_select ".govuk-error-summary"
+  end
+
+  view_test "confirm_destroy should display form for deleting an existing role" do
+    role = create(:role_without_organisations, name: "Prime Minister")
+
+    get :confirm_destroy, params: { id: role }
+
+    assert_select "form[action='#{admin_role_path(role)}']" do
+      assert_select "button[type='submit']", "Delete"
+      assert_select "a[href=?]", "/government/admin/roles", "Cancel"
+    end
   end
 
   test "should be able to destroy a destroyable role" do

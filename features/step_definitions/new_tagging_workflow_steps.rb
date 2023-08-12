@@ -3,9 +3,7 @@ When(/^I start editing a draft document which can be tagged to the new taxonomy$
   begin_drafting_publication("The Pub")
   stub_taxonomy_data
   stub_patch_links
-  within(".lead-organisations") do
-    select("Taxon Org", from: "Organisation 1")
-  end
+  select("Taxon Org", from: "Lead organisation 1")
 end
 
 Then(/^I should be on the taxonomy tagging page$/) do
@@ -24,9 +22,7 @@ When(/^I start editing a draft document which cannot be tagged to the new taxono
   stub_specialist_sectors
   create(:organisation, content_id: "otherzzz-zzzz-zzzz-zzzz-zzzz0000zzzz", name: "Non Taxon Org")
   begin_drafting_publication("The Pub")
-  within(".lead-organisations") do
-    select("Non Taxon Org", from: "Organisation 1")
-  end
+  select("Taxon Org", from: "Lead organisation 1")
 end
 
 Then(/^I should be on the legacy tagging page$/) do

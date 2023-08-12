@@ -30,6 +30,8 @@ class WorldLocationNews < ApplicationRecord
              only: :active,
              indexable_content: :search_description
 
+  validates :title, presence: true
+
   def search_description
     I18n.t("world_news.uk_updates_in_country", country: name)
   end
@@ -39,7 +41,49 @@ class WorldLocationNews < ApplicationRecord
   end
 
   def search_link
-    Whitehall.url_maker.world_location_news_index_path(world_location)
+    if world_location.world_location?
+      public_path
+    elsif world_location.international_delegation?
+      world_location.public_path
+    end
+  end
+
+  def contacts
+    return [] unless world_location.international_delegation?
+
+    world_location
+      .worldwide_organisations
+      .filter_map(&:main_office)
+      .map(&:contact)
+      .flatten
+  end
+
+  def organisations
+    return [] unless world_location.international_delegation?
+
+    world_location
+      .worldwide_organisations
+      .map(&:sponsoring_organisations)
+      .flatten
+  end
+
+  def worldwide_organisations
+    return [] unless world_location.international_delegation?
+
+    world_location
+      .worldwide_organisations
+  end
+
+  def base_path
+    "/world/#{slug}/news"
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options)
+  end
+
+  def public_url(options = {})
+    Plek.website_root + public_path(options)
   end
 
   extend FriendlyId

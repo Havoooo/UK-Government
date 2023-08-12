@@ -82,30 +82,34 @@ module CssSelectors
   end
 
   def reject_button_selector(document)
-    "form[action='#{reject_admin_edition_path(document, lock_version: document.lock_version)}'] input[type=submit][value=Reject]"
+    "form[action='#{reject_admin_edition_path(document, lock_version: document.lock_version)}'] button[type=submit]"
   end
 
   def schedule_button_selector(document)
-    "form[action='#{schedule_admin_edition_path(document, lock_version: document.lock_version)}'] input[type=submit][value=Schedule]"
+    "form[action='#{schedule_admin_edition_path(document, lock_version: document.lock_version)}'] button[type=submit]"
   end
 
   def unschedule_button_selector(document)
-    "form[action='#{unschedule_admin_edition_path(document, lock_version: document.lock_version)}'] input[type=submit][value=Unschedule]"
+    "a[href='#{confirm_unschedule_admin_edition_path(document, lock_version: document.lock_version)}']"
   end
 
   def force_schedule_button_selector(document)
-    "form[action='#{force_schedule_admin_edition_path(document, lock_version: document.lock_version)}'] input[type=submit][value='Force schedule']"
+    "a[href='#{confirm_force_schedule_admin_edition_path(document, lock_version: document.lock_version)}']"
   end
 
-  def link_to_public_version_selector
-    ".public_version"
+  def link_to_public_version_selector(document)
+    "a[href='#{document.public_url}']"
   end
 
-  def link_to_preview_version_selector
-    ".preview_version"
+  def link_to_preview_version_selector(document)
+    "a[href='#{document.public_url(draft: true)}']"
   end
 
   def policy_group_selector
     ".document-policy-groups"
+  end
+
+  def row_containing(text)
+    page.find("tr", text:)
   end
 end

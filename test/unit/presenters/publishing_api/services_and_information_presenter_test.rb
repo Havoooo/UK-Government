@@ -7,7 +7,7 @@ class PublishingApi::ServicesAndInformationPresenterTest < ActionView::TestCase
 
   test "presents a Services and Information page ready for adding to the publishing API" do
     organisation = create(:organisation, name: "Organisation of Things")
-    public_path = "#{Whitehall.url_maker.organisation_path(organisation)}/services-information"
+    public_path = "#{organisation.public_path}/services-information"
 
     expected_hash = {
       base_path: public_path,
@@ -16,7 +16,7 @@ class PublishingApi::ServicesAndInformationPresenterTest < ActionView::TestCase
       schema_name: "generic",
       document_type: "services_and_information",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: organisation.updated_at,
       routes: [{ path: public_path, type: "exact" }],
@@ -41,5 +41,6 @@ class PublishingApi::ServicesAndInformationPresenterTest < ActionView::TestCase
     assert_equal expected_update_type, presented_item.update_type
 
     assert_valid_against_publisher_schema(presented_item.content, "generic")
+    assert_valid_against_links_schema({ links: presented_item.links }, "generic")
   end
 end

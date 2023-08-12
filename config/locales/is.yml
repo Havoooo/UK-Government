@@ -21,6 +21,15 @@ is:
         nation_inapplicabilities: Undanskildar þjóðir
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Skráin í viðhengi
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Skjal númer fyrirskipana í viðhengi
         hoc_paper_number: Skjal númer neðri deildar Þingsins
@@ -39,8 +48,22 @@ is:
       title: Titill viðhengis
       unique_reference: Einkvæmt auðkenni viðhengis
       unnumbered_hoc_paper: Ónúmerað skjal neðri deildar þingsins
-  announcements:
-    heading: Tilkynningar
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ is:
     caution:
       subheading: Við fundum vandamál með hlekki sem gætu leitt til vandræða, þú ætti að fara varlega í að tengjast þeim
     title: Óvirkir hlekkir
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Lokað
     closing_today: Lokar í dag
@@ -149,6 +177,12 @@ is:
       blog_post:
         one: Bloggfærsla
         other: Bloggfærslur
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Herferð
         other: Herferðir
@@ -158,6 +192,9 @@ is:
       case_study:
         one: Ferilsathugun
         other: Ferilsathuganir
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Lokuð ráðgjöf
         other: Lokaðar ráðgjafir
@@ -260,6 +297,9 @@ is:
       official_statistics:
         one: Opinber tölfræði
         other: Opinber tölfræði
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Opin ráðgjöf
         other: Opnar ráðgjafir
@@ -355,12 +395,6 @@ is:
         other: Skriflegar yfirlýsingar til Þingsins
     updated: uppfært
   document_filters:
-    description: Þú getur notað síur til að sýna bara niðurstöður sem henta þínum áhugsviðum
-    no_results:
-      description: Prófaðu að víkka leitina þína og reyna aftur.
-      title: Það eru engin skjöl sem passa.
-      tna_heading: Eldra efni
-      tna_link_html: Öll útgáfa ráðuneyta frá því fyrir Maí 2010 hefur verið færð yfir á GOV.UK. Til að finna útgáfu frá því fyrir Maí 2010 prófaðu að leita í <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Þjóðskjalasafnið</a>.
     world_locations:
       all: Allar staðsetningar
       label: Staðsetningar í heiminum
@@ -442,20 +476,6 @@ is:
   latest_feed:
     no_updates: Það eru engar uppfærslur.
     title: Nýjasta
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Fáðu aðgang að okkar upplýsingum
@@ -464,8 +484,7 @@ is:
       organisation_chart: Skipurit okkar
       transparency: Gögn um gagnsæi
     embassies:
-      find_an_embassy_lowercase: Finna breskt sendiráð, sendinefnd eða ræðismannsskrifstofu
-      find_an_embassy_uppercase: Finna breskt sendiráð, Sendinefnd eða Ræðismannsskrifstofu
+      find_an_embassy_title:
     headings:
       corporate_information: Upplýsingar um fyrirtæki
       corporate_reports: Skýrslur fyrirtækis
@@ -477,18 +496,15 @@ is:
       works_with: Starfar með
     type:
       courts_and_tribunals: Réttir og dómstólar
-  publications:
-    heading: Útgáfur
-    recent: Nýlegar útgáfur
-    statistics:
-      link_to_published_statistics: Þú finnur lista yfir útgefna og væntanlega opinbera tölfræði í %{link} tölfræði hlutanum.
-      moved_notice: Útgáfa tölfræði hefur verið færð.
   roles:
     unassigned: Enginn er settur í þetta hlutverk
   see_all:
     announcement: Sjá allar okkar tilkynningar
     authored_article: Sjá allar okkar samdar greinar
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Sjá allar okkar ferilsathuganir
+    closed_call_for_evidence:
     closed_consultation: Sjá allar okkar lokaðar ráðgjafir
     consultation: Sjá allar okkar ráðgjafir
     consultation_outcome: Sjá allar okkar útkomur úr ráðgjöfum
@@ -511,6 +527,7 @@ is:
     news_article: Sjá allar fréttagreinar okkar
     news_story: Sjá allar fréttir okkar
     notice: Sjá allar tilkynningar okkar
+    open_call_for_evidence:
     open_consultation: Sjá allar opnar ráðgjafir okkar
     oral_statement: Sjá allar munnlegar yfirlýsingar okkar til Þingsins
     policy: Sjá allar stefnur okkar
@@ -549,15 +566,7 @@ is:
       heading:
       list_link:
     headings:
-      announcements: Okkar tilkynningar
-      documents: Skjöl
-      featured:
-      mission: Okkar takmark
-      news: Fréttir af stöðum í heiminum
-      organisations: Samtök
-      publications: Okkar útgáfur
       search: Leita eftir landi eða landsvæði
-      statistics: Okkar tölfræði
     search_description:
       international_delegation:
       world_location:

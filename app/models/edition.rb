@@ -16,8 +16,7 @@ class Edition < ApplicationRecord
   # Adds support for `unpublishing`, change notes and version numbers.
   include Edition::Publishing
 
-  # Sets up papertrail and versioning
-  include Edition::AuditTrail
+  include AuditTrail
 
   include Edition::ActiveEditors
   include Edition::Translatable
@@ -58,7 +57,7 @@ class Edition < ApplicationRecord
 
   UNMODIFIABLE_STATES = %w[scheduled published superseded deleted].freeze
   FROZEN_STATES = %w[superseded deleted].freeze
-  PRE_PUBLICATION_STATES = %w[imported draft submitted rejected scheduled].freeze
+  PRE_PUBLICATION_STATES = %w[draft submitted rejected scheduled].freeze
   POST_PUBLICATION_STATES = %w[published superseded withdrawn].freeze
   PUBLICLY_VISIBLE_STATES = %w[published withdrawn].freeze
 
@@ -82,9 +81,11 @@ class Edition < ApplicationRecord
   scope :in_pre_publication_state,      -> { where(state: Edition::PRE_PUBLICATION_STATES) }
   scope :force_published,               -> { where(state: "published", force_published: true) }
   scope :not_published,                 -> { where(state: %w[draft submitted rejected]) }
+  scope :without_not_published,         -> { where.not(state: %w[draft submitted rejected]) }
 
   scope :announcements,                 -> { where(type: Announcement.concrete_descendants.collect(&:name)) }
   scope :consultations,                 -> { where(type: "Consultation") }
+  scope :call_for_evidence,             -> { where(type: "CallForEvidence") }
   scope :detailed_guides,               -> { where(type: "DetailedGuide") }
   scope :statistical_publications,      -> { where("publication_type_id IN (?)", PublicationType.statistical.map(&:id)) }
   scope :non_statistical_publications,  -> { where("publication_type_id NOT IN (?)", PublicationType.statistical.map(&:id)) }
@@ -236,7 +237,7 @@ EXISTS (
   SELECT 1
   FROM link_checker_api_report_links
   WHERE link_checker_api_report_id = latest_link_checker_api_reports.id
-    AND link_checker_api_report_links.status != 'ok'
+    AND link_checker_api_report_links.status IN ('broken', 'caution')
 )",
     )
   end
@@ -318,7 +319,7 @@ EXISTS (
   end
 
   def search_link
-    Whitehall.url_maker.public_document_path(self)
+    base_path
   end
 
   def search_format_types
@@ -356,6 +357,12 @@ EXISTS (
 
   def publicly_visible?
     PUBLICLY_VISIBLE_STATES.include?(state)
+  end
+
+  def versioning_completed?
+    return true unless change_note_required?
+
+    change_note.present? || minor_change
   end
 
   # @group Overwritable permission methods
@@ -488,7 +495,7 @@ EXISTS (
   end
 
   def rejected_by
-    versions_desc.where(state: "rejected").first.try(:user)
+    author_of_latest_state_change_to("rejected")
   end
 
   def published_by
@@ -500,24 +507,7 @@ EXISTS (
   end
 
   def submitted_by
-    # Find this edition's most recent state change from non-submitted to submitted.
-    # This will tell us when it was most recently submitted, even if there were subsequent
-    # changes from other users while the document remained in a "submitted" state.
-
-    latest_submitted_version = versions_desc.select("created_at, id")
-                                            .where(state: :submitted)
-                                            .limit(1)
-
-    pre_submitted_version = versions_desc.select("created_at, id")
-                                         .where.not(state: "submitted")
-                                         .where("(created_at, id) < (:submitted_version)", submitted_version: latest_submitted_version)
-                                         .limit(1)
-
-    first_submitted_version = versions_asc.where(state: "submitted")
-                                          .where("(created_at, id) > (:pre_submitted_version)", pre_submitted_version:)
-                                          .first
-
-    first_submitted_version.try(:user)
+    author_of_latest_state_change_to("submitted")
   end
 
   def title_with_state
@@ -589,36 +579,15 @@ EXISTS (
     nil
   end
 
-  def valid_as_draft?
-    errors_as_draft.empty?
-  end
-
   def editable?
-    imported? || draft? || submitted? || rejected?
+    draft? || submitted? || rejected?
   end
 
   def can_have_some_invalid_data?
-    imported? || deleted? || superseded?
+    deleted? || superseded?
   end
 
-  attr_accessor :trying_to_convert_to_draft, :has_previously_published_error
-
-  def errors_as_draft
-    if imported?
-      original_errors = errors.dup
-      begin
-        self.trying_to_convert_to_draft = true
-        try_draft
-        valid? ? [] : errors.dup
-      ensure
-        back_to_imported
-        self.trying_to_convert_to_draft = false
-        errors.initialize_dup(original_errors)
-      end
-    else
-      valid? ? [] : errors
-    end
-  end
+  attr_accessor :has_previously_published_error
 
   def set_public_timestamp
     self.public_timestamp = if first_published_version?
@@ -651,7 +620,6 @@ EXISTS (
 
   def previously_published
     return first_published_at.present? unless new_record?
-    return true if imported?
 
     @previously_published
   end
@@ -709,6 +677,29 @@ EXISTS (
     @attributes.keys
   end
 
+  def base_path
+    url_slug = slug || id.to_param
+    "/government/generic-editions/#{url_slug}"
+  end
+
+  def public_path(options = {})
+    return if base_path.nil?
+
+    append_url_options(base_path, options)
+  end
+
+  def public_url(options = {})
+    return if base_path.nil?
+
+    website_root = if options[:draft]
+                     Plek.external_url_for("draft-origin")
+                   else
+                     Plek.website_root
+                   end
+
+    website_root + public_path(options)
+  end
+
 private
 
   def date_for_government
@@ -733,5 +724,31 @@ private
 
   def update_document_edition_references
     document.update_edition_references
+  end
+
+  def author_of_latest_state_change_to(state)
+    # Find this edition's most recent state change to the state passed in.
+    # This will tell us when it was most recent transition to this state,
+    # even if there were subsequent changes from other users while the
+    # document remained in a the same state. Then return it's user.
+
+    latest_version_with_state = versions_desc.select("created_at, id")
+                                            .where(state:)
+                                            .limit(1)
+
+    previous_version_with_different_state = versions_desc.select("created_at, id")
+                                         .where.not(state:)
+                                         .where("(created_at, id) < (:latest_version_with_state)", latest_version_with_state:)
+                                         .limit(1)
+
+    if latest_version_with_state.present? && previous_version_with_different_state.blank?
+      return versions_asc.where(state:).limit(1).first.try(:user)
+    end
+
+    first_version_with_state = versions_asc.where(state:)
+                                          .where("(created_at, id) > (:previous_version_with_different_state)", previous_version_with_different_state:)
+                                          .first
+
+    first_version_with_state.try(:user)
   end
 end

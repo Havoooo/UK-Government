@@ -20,6 +20,7 @@ class TopicalEvent < ApplicationRecord
   has_many :editions, through: :topical_event_memberships
   has_many :announcements, through: :topical_event_memberships
   has_many :consultations, through: :topical_event_memberships
+  has_many :calls_for_evidence, through: :topical_event_memberships
   has_many :detailed_guides, through: :topical_event_memberships
   has_many :news_articles, through: :topical_event_memberships
   has_many :publications, through: :topical_event_memberships
@@ -79,6 +80,7 @@ class TopicalEvent < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { case_sensitive: false } # rubocop:disable Rails/UniqueValidationWithoutIndex
   validates :description, presence: true
+  validates :summary, presence: true
   validate :start_and_end_dates
   validates :start_date, presence: true, if: ->(topical_event) { topical_event.end_date }
 
@@ -88,6 +90,7 @@ class TopicalEvent < ApplicationRecord
   accepts_nested_attributes_for :social_media_accounts, allow_destroy: true
 
   mount_uploader :logo, ImageUploader, mount_on: :carrierwave_image
+  validates_with ImageValidator, method: :logo, mime_types: { "image/jpeg" => /(\.jpeg|\.jpg)$/, "image/png" => /\.png$/ }, if: :logo_changed?
 
   extend FriendlyId
   friendly_id
@@ -100,10 +103,6 @@ class TopicalEvent < ApplicationRecord
     else
       false
     end
-  end
-
-  def base_path
-    Whitehall.url_maker.topical_event_path(slug)
   end
 
   def search_link
@@ -187,6 +186,34 @@ class TopicalEvent < ApplicationRecord
 
   def to_s
     name
+  end
+
+  def base_path
+    "/government/topical-events/#{slug}"
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options)
+  end
+
+  def public_url(options = {})
+    Plek.website_root + public_path(options)
+  end
+
+  def featurable_offsite_links
+    offsite_links.reject do |link|
+      topical_event_featurings.detect do |featuring|
+        featuring.offsite_link == link
+      end
+    end
+  end
+
+  def featurable_editions(editions)
+    editions.reject do |edition|
+      topical_event_featurings.detect do |featuring|
+        featuring.edition == edition
+      end
+    end
   end
 
 private

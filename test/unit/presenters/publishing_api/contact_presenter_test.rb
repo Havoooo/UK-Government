@@ -42,7 +42,7 @@ class PublishingApi::ContactPresenterTest < ActiveSupport::TestCase
       locale: "en",
       phase: "live",
       public_updated_at: @updated_at,
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       update_type: "major",
       details: {
         description: "Quiet at weekends",
@@ -79,6 +79,7 @@ class PublishingApi::ContactPresenterTest < ActiveSupport::TestCase
 
     assert_equal expected_content, @presented.content
     assert_valid_against_publisher_schema(@presented.content, "contact")
+    assert_valid_against_links_schema({ links: @presented.links }, "contact")
   end
 
   test "links hash includes organisations" do

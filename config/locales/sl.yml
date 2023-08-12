@@ -21,6 +21,15 @@ sl:
         nation_inapplicabilities: Izvzete države
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Pripeta datoteka
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Številka dokumenta, predstavljenega parlamentu v prilogi
         hoc_paper_number: Številka dokumenta britanskega parlamenta
@@ -39,8 +48,22 @@ sl:
       title: Naslov priloge
       unique_reference: Edinstvena referenca priloge
       unnumbered_hoc_paper: Neoštevilčen dokument britanskega parlamenta
-  announcements:
-    heading: Razglasi
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ sl:
     caution:
       subheading: Našli smo nekaj težav s povezavami, ki lahko kažejo na težave. Pri povezovanju z njimi bodite previdni
     title: Prekinjene povezave
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Zaprto
     closing_today: Zapira se danes
@@ -166,6 +194,16 @@ sl:
         one: Prispevek na blogu
         other: Prispevki na blogu
         two:
+      call_for_evidence:
+        few:
+        one:
+        other:
+        two:
+      call_for_evidence_outcome:
+        few:
+        one:
+        other:
+        two:
       campaign:
         few:
         one: Kampanja
@@ -180,6 +218,11 @@ sl:
         few:
         one: Študija primera
         other: Študije primera
+        two:
+      closed_call_for_evidence:
+        few:
+        one:
+        other:
         two:
       closed_consultation:
         few:
@@ -351,6 +394,11 @@ sl:
         one: Uradna statistika
         other: Uradna statistika
         two:
+      open_call_for_evidence:
+        few:
+        one:
+        other:
+        two:
       open_consultation:
         few:
         one: Odprto posvetovanje
@@ -508,12 +556,6 @@ sl:
         two:
     updated: posodobljeno
   document_filters:
-    description: S filtri lahko prikažete samo rezultate, ki ustrezajo vašim interesom
-    no_results:
-      description: Poskusite razširiti iskanje in poskusite znova.
-      title: Ni ustreznih dokumentov.
-      tna_heading: Starejša vsebina
-      tna_link_html: Vse publikacije ministrstev pred majem 2010 niso bile premeščene na GOV.UK. Če želite poiskati publikacije pred majem 2010, poskusite iskati ​po <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Nacionalnih arhivih</a>.
     world_locations:
       all: Vse lokacije
       label: Lokacije po svetu
@@ -595,20 +637,6 @@ sl:
   latest_feed:
     no_updates: Posodobitve še niso na voljo.
     title: Najnovejše
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Dostopajte do naših informacij
@@ -617,8 +645,7 @@ sl:
       organisation_chart: Naša organizacijska shema
       transparency: Podatki o preglednosti
     embassies:
-      find_an_embassy_lowercase: Poiščite britansko veleposlaništvo, visoki komisariat ali konzulat
-      find_an_embassy_uppercase: Poiščite britansko veleposlaništvo, visoki komisariat ali konzulat
+      find_an_embassy_title:
     headings:
       corporate_information: Informacije o podjetju
       corporate_reports: Poročila podjetja
@@ -630,18 +657,15 @@ sl:
       works_with: Sodeluje z
     type:
       courts_and_tribunals: Sodišča
-  publications:
-    heading: Publikacije
-    recent: Najnovejše publikacije
-    statistics:
-      link_to_published_statistics: Seznam objavljenih in prihajajočih vladnih statistik najdete na povezavi %{link} v razdelku statistika.
-      moved_notice: Statistične objave so bile premaknjene.
   roles:
     unassigned: Ta vloga ni dodeljena nikomur
   see_all:
     announcement: Oglejte si vse naše razglase
     authored_article: Oglejte si vse naše avtorske članke
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Oglejte si naše študije primerov
+    closed_call_for_evidence:
     closed_consultation: Oglejte si vsa naša tesna posvetovanja
     consultation: Oglejte si vsa naša posvetovanja
     consultation_outcome: Oglejte si vse rezultate naših posvetovanj
@@ -664,6 +688,7 @@ sl:
     news_article: Oglejte si vse naše časopisne članke
     news_story: Oglejte si vse naše časopisne zgodbe
     notice: Oglejte si vsa naša obvestila
+    open_call_for_evidence:
     open_consultation: Oglejte si vsa naša odprta posvetovanja
     oral_statement: Oglejte si vse naše ustne izjave za parlament
     policy: Oglejte si vsa naša politike
@@ -702,15 +727,7 @@ sl:
       heading:
       list_link:
     headings:
-      announcements: Naši razglasi
-      documents: Dokumenti
-      featured:
-      mission: Naša misija
-      news: Novice z lokacij po svetu
-      organisations: Organizacije
-      publications: Naše publikacije
       search: Išči po državah ali ozemljih
-      statistics: Naša statistika
     search_description:
       international_delegation:
       world_location:

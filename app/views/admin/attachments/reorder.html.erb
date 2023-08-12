@@ -1,4 +1,4 @@
-<% content_for :context, attachable.title %>
+<% content_for :context, attachable.try(:title) %>
 <% content_for :page_title, "Reorder attachments" %>
 <% content_for :title, "Reorder attachments" %>
 <% content_for :title_margin_bottom, 6 %>
@@ -6,6 +6,11 @@
 <div class="govuk-grid-row">
   <section class="govuk-grid-column-two-thirds">
     <%= form_tag [:order, :admin, typecast_for_attachable_routing(attachable), Attachment], method: :put do %>
+      <%= render "govuk_publishing_components/components/hint", {
+        text: "Use the up and down buttons to reorder attachments, or select and hold on an attachment to reorder using drag and drop.",
+        margin_bottom: 4,
+      } %>
+
       <%= render "govuk_publishing_components/components/reorderable_list", {
         items: attachable.attachments.includes(:attachment_data).map do |attachment|
           {
@@ -21,7 +26,7 @@
           text: "Update order",
         } %>
 
-        <%= link_to("Cancel", attachable_attachments_path(attachable), class: "govuk-link") %>
+        <%= link_to("Cancel", attachable_attachments_path(attachable), class: "govuk-link govuk-link--no-visited-state") %>
       </div>
     <% end %>
   </section>

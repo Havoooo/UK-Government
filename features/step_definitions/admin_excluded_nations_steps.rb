@@ -1,8 +1,8 @@
 When(/^I draft a new publication "([^"]*)" that does not apply to the nations:$/) do |title, nations|
   begin_drafting_publication(title, all_nation_applicability: false)
   nations.raw.flatten.each do |nation_name|
-    within record_css_selector(Nation.find_by_name!(nation_name)) do
-      check nation_name
+    check nation_name
+    within_conditional_reveal nation_name do
       fill_in "URL of corresponding content", with: "http://www.#{nation_name}.com/"
     end
   end

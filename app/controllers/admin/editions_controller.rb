@@ -5,7 +5,7 @@ class Admin::EditionsController < Admin::BaseController
   before_action :remove_blank_parameters
   before_action :clean_edition_parameters, only: %i[create update]
   before_action :clear_scheduled_publication_if_not_activated, only: %i[create update]
-  before_action :find_edition, only: %i[show edit update revise diff confirm_destroy destroy update_bypass_id history]
+  before_action :find_edition, only: %i[show edit update revise diff confirm_destroy destroy update_bypass_id update_image_display_option]
   before_action :prevent_modification_of_unmodifiable_edition, only: %i[edit update]
   before_action :delete_absent_edition_organisations, only: %i[create update]
   before_action :build_national_exclusion_params, only: %i[create update]
@@ -19,11 +19,11 @@ class Admin::EditionsController < Admin::BaseController
   before_action :redirect_to_controller_for_type, only: [:show]
   before_action :deduplicate_specialist_sectors, only: %i[create update]
   before_action :construct_similar_slug_warning_error, only: %i[edit]
-  layout :get_layout
+  layout "design_system"
 
   def enforce_permissions!
     case action_name
-    when "index", "topics", "history"
+    when "index", "topics"
       enforce_permission!(:see, edition_class || Edition)
     when "show"
       enforce_permission!(:see, @edition)
@@ -31,7 +31,7 @@ class Admin::EditionsController < Admin::BaseController
       enforce_permission!(:create, edition_class || Edition)
     when "create"
       enforce_permission!(:create, @edition)
-    when "edit", "update", "revise", "diff", "update_bypass_id"
+    when "edit", "update", "revise", "diff", "update_bypass_id", "update_image_display_option"
       enforce_permission!(:update, @edition)
     when "destroy", "confirm_destroy"
       enforce_permission!(:delete, @edition)
@@ -45,11 +45,7 @@ class Admin::EditionsController < Admin::BaseController
   def index
     if filter && filter.valid?
       session[:document_filters] = params_filters
-      if request.xhr?
-        render partial: "search_results"
-      else
-        render :index
-      end
+      render :index
     elsif session_filters.any?
       redirect_to session_filters
     else
@@ -81,26 +77,21 @@ class Admin::EditionsController < Admin::BaseController
     end
   end
 
-  def new
-    render_design_system(:new, :new_legacy, next_release: false)
-  end
+  def new; end
 
   def create
     if updater.can_perform? && @edition.save
       updater.perform!
       redirect_to show_or_edit_path, saved_confirmation_notice
     else
-      flash.now[:alert] = "There are some problems with the document" unless preview_design_system?(next_release: false)
-      @information = updater.failure_reason unless preview_design_system?(next_release: false)
       build_edition_dependencies
-      render_design_system(:new, :new_legacy, next_release: false)
+      render :new
     end
   end
 
   def edit
     @edition.open_for_editing_as(current_user)
     fetch_version_and_remark_trails
-    render_design_system(:edit, :edit_legacy, next_release: false)
   end
 
   def update
@@ -113,26 +104,20 @@ class Admin::EditionsController < Admin::BaseController
         LinkCheckerApiService.check_links(@edition, admin_link_checker_api_callback_url)
       end
 
-      @edition.convert_to_draft! if params[:speed_save_convert]
       redirect_to show_or_edit_path, saved_confirmation_notice
     else
-      flash.now[:alert] = "There are some problems with the document" unless preview_design_system?(next_release: false)
-      if speed_tagging?
-        render :show
-      else
-        @information = updater.failure_reason unless preview_design_system?(next_release: false)
-        build_edition_dependencies
-        fetch_version_and_remark_trails
-        construct_similar_slug_warning_error
-        render_design_system(:edit, :edit_legacy, next_release: false)
-      end
+      flash.now[:alert] = "There are some problems with the document"
+      build_edition_dependencies
+      fetch_version_and_remark_trails
+      construct_similar_slug_warning_error
+      render :edit
     end
   rescue ActiveRecord::StaleObjectError
     flash.now[:alert] = "This document has been saved since you opened it"
     @conflicting_edition = Edition.find(params[:id])
     @edition.lock_version = @conflicting_edition.lock_version
     build_edition_dependencies
-    render_design_system(:edit, :edit_legacy, next_release: false)
+    render :edit
   end
 
   def revise
@@ -174,16 +159,25 @@ class Admin::EditionsController < Admin::BaseController
     @audit_trail_entry = LocalisedModel.new(audit_trail_entry, audit_trail_entry.primary_locale)
   end
 
-  def confirm_destroy
-    render_design_system(:confirm_destroy, :confirm_destroy_legacy, next_release: false)
-  end
+  def confirm_destroy; end
 
   def destroy
     edition_deleter = Whitehall.edition_services.deleter(@edition)
     if edition_deleter.perform!
-      redirect_to admin_editions_path, notice: "The document '#{@edition.title}' has been deleted"
+      redirect_to admin_editions_path, notice: "The draft of '#{@edition.title}' has been deleted"
     else
       redirect_to admin_edition_path(@edition), alert: edition_deleter.failure_reason
+    end
+  end
+
+  def update_image_display_option
+    @edition.assign_attributes(params.require(:edition).permit(:image_display_option))
+
+    if updater.can_perform? && @edition.save_as(current_user)
+      updater.perform!
+      redirect_to admin_edition_images_path(@edition), notice: "The lead image has been updated"
+    else
+      redirect_to admin_edition_images_path(@edition), alert: updater.failure_reason
     end
   end
 
@@ -193,28 +187,10 @@ class Admin::EditionsController < Admin::BaseController
     redirect_to admin_edition_path(@edition), notice: "New document preview link generated"
   end
 
-  def history
-    @document_history = Document::PaginatedHistory.new(@edition.document, params[:page])
-  end
-
 private
 
-  def get_layout
-    design_system_actions = %w[edit update new create confirm_destroy]
-    if preview_design_system?(next_release: false) && design_system_actions.include?(action_name)
-      "design_system"
-    else
-      "admin"
-    end
-  end
-
-  def speed_tagging?
-    params[:speed_save_convert] || params[:speed_save]
-  end
-
   def fetch_version_and_remark_trails
-    @document_remarks = Document::PaginatedRemarks.new(@edition.document, params[:remarks_page])
-    @document_history = Document::PaginatedHistory.new(@edition.document, params[:page])
+    @document_history = Document::PaginatedTimeline.new(document: @edition.document, page: params[:page] || 1, only: params[:only])
   end
 
   def edition_class
@@ -261,7 +237,7 @@ private
       :political,
       :read_consultation_principles,
       :all_nation_applicability,
-      :image_display_option,
+      :speaker_radios,
       {
         all_nation_applicability: [],
         secondary_specialist_sector_tags: [],
@@ -278,13 +254,6 @@ private
         statistical_data_set_document_ids: [],
         policy_group_ids: [],
         document_collection_group_ids: [],
-        images_attributes: [
-          :id,
-          :alt_text,
-          :caption,
-          :_destroy,
-          { image_data_attributes: %i[file file_cache] },
-        ],
         consultation_participation_attributes: [
           :id,
           :link_url,
@@ -297,6 +266,21 @@ private
               :_destroy,
               :attachment_action,
               { consultation_response_form_data_attributes: %i[id file file_cache] },
+            ],
+          },
+        ],
+        call_for_evidence_participation_attributes: [
+          :id,
+          :link_url,
+          :email,
+          :postal_address,
+          {
+            call_for_evidence_response_form_attributes: [
+              :id,
+              :title,
+              :_destroy,
+              :attachment_action,
+              { call_for_evidence_response_form_data_attributes: %i[id file file_cache] },
             ],
           },
         ],
@@ -341,11 +325,10 @@ private
 
   def build_national_exclusion_params
     design_system_controllers = %w[consultations detailed_guides publications]
-    return unless design_system_controllers.include?(controller_name) && preview_design_system?(next_release: false)
+    return unless design_system_controllers.include?(controller_name)
+    return if edition_params["nation_inapplicabilities_attributes"].blank?
 
-    exclusion_params = edition_params["all_nation_applicability"]
-    return if exclusion_params.blank? || edition_params["nation_inapplicabilities_attributes"].blank?
-
+    exclusion_params = edition_params["all_nation_applicability"] || []
     edition_params["all_nation_applicability"] = exclusion_params.include?("all_nations") ? "1" : "0"
 
     build_nation_params(nation_id: 1, checked: exclusion_params.include?("england"))
@@ -428,6 +411,7 @@ private
         include_link_check_reports: true,
         include_last_author: true,
       )
+      .merge(per_page: Admin::EditionFilter::GOVUK_DESIGN_SYSTEM_PER_PAGE)
   end
 
   def detect_other_active_editors
@@ -443,10 +427,18 @@ private
     return if edition_params.empty?
 
     edition_params[:title].strip! if edition_params[:title]
-    edition_params.delete(:primary_locale) if edition_params[:primary_locale].blank? || (preview_design_system?(next_release: false) && edition_params[:create_foreign_language_only].blank?)
+    edition_params.delete(:primary_locale) if edition_params[:primary_locale].blank? || edition_params[:create_foreign_language_only].blank?
     edition_params.delete(:create_foreign_language_only)
     edition_params[:external_url] = nil if edition_params[:external] == "0"
     edition_params[:change_note] = nil if edition_params[:minor_change] == "true"
+
+    if edition_params[:previously_published] == "false"
+      edition_params["first_published_at(1i)"] = ""
+      edition_params["first_published_at(2i)"] = ""
+      edition_params["first_published_at(3i)"] = ""
+      edition_params["first_published_at(4i)"] = ""
+      edition_params["first_published_at(5i)"] = ""
+    end
   end
 
   def clear_scheduled_publication_if_not_activated

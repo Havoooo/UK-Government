@@ -32,11 +32,11 @@ module ApplicationHelper
     # rubocop:enable Rails/HelperInstanceVariable
   end
 
-  def format_in_paragraphs(string)
+  def format_in_paragraphs(string, options = {})
     safe_join(
       String(string)
         .split(/(?:\r?\n){2}/)
-        .map { |paragraph| tag.p(paragraph) },
+        .map { |paragraph| tag.p(paragraph, class: options[:class]) },
     )
   end
 
@@ -48,8 +48,7 @@ module ApplicationHelper
     return unless attachment
 
     name = attachment.name_for_link
-    name = truncate(name) if options[:truncate]
-    html_class = options[:class]
+    html_class = options.delete(:class)
     link_to name, attachment.url(options), class: html_class
   end
 
@@ -110,23 +109,6 @@ module ApplicationHelper
 
   def role_type_options
     RoleTypePresenter.options
-  end
-
-  def render_list_of_roles(roles, class_name = "ministerial_roles")
-    raise ArgumentError, "please supply the content of the list item" unless block_given?
-
-    tag.ul(class: class_name) do
-      roles.each do |role|
-        li = content_tag_for(:li, role) {
-          yield(RolePresenter.new(role, self)).html_safe
-        }.html_safe
-        concat li
-      end
-    end
-  end
-
-  def render_list_of_ministerial_roles(ministerial_roles, &block)
-    render_list_of_roles(ministerial_roles, &block)
   end
 
   def render_datetime_microformat(object, method, &block)
@@ -198,5 +180,9 @@ module ApplicationHelper
     render "govuk_publishing_components/components/govspeak" do
       raw(Govspeak::Document.new(content, sanitize: true).to_html)
     end
+  end
+
+  def diff_html(version1, version2)
+    Diffy::Diff.new(version1, version2, allow_empty_diff: false).to_s(:html).html_safe
   end
 end

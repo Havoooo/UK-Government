@@ -2,10 +2,12 @@ class Admin::EditionWorldTagsController < Admin::BaseController
   before_action :find_edition
   before_action :enforce_permissions!
   before_action :limit_edition_access!
+  layout "design_system"
 
   def edit
     @world_taxonomy = Taxonomy::WorldTaxonomy.new
     @tag_form = WorldTaxonomyTagForm.load(@edition.content_id)
+    @edition_taxons = EditionTaxonsFetcher.new(@edition.content_id).fetch
   end
 
   def update

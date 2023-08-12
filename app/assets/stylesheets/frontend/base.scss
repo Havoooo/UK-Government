@@ -72,11 +72,9 @@ $govuk-include-default-font-face: false;
 
 #wrapper {
   @import "helpers/activity-nav";
-  @import "helpers/announcements";
   @import "helpers/withdrawal-notice";
   @import "helpers/attachment";
   @import "helpers/available-languages";
-  @import "helpers/browse";
   @import "helpers/collection-list";
   @import "helpers/contextual-info";
   @import "helpers/corporate-information";
@@ -85,7 +83,6 @@ $govuk-include-default-font-face: false;
   @import "helpers/document-list";
   @import "helpers/headings";
   @import "helpers/featured-links";
-  @import "helpers/featured-news";
   @import "helpers/govspeak";
   @import "helpers/heading-block";
   @import "helpers/historic-people-list";
@@ -96,7 +93,6 @@ $govuk-include-default-font-face: false;
   @import "helpers/organisations";
   @import "helpers/organisation-news";
   @import "helpers/page-header";
-  @import "helpers/pagination";
   @import "helpers/person";
   @import "helpers/simple-alphabetical-list";
   @import "helpers/social-media-accounts";
@@ -112,21 +108,12 @@ $govuk-include-default-font-face: false;
 
 #wrapper {
   @import "views/corporate-information-pages-worldwide-organisation";
-  @import "views/email-signup";
-  @import "views/embassies";
   @import "views/groups";
-  @import "views/history-people";
-  @import "views/how-gov-works";
   @import "views/layouts";
-  @import "views/ministerial-roles";
   @import "views/new-document-page";
-  @import "views/operational-field";
-  @import "views/search";
   @import "views/site-index";
-  @import "views/topic";
   @import "views/world-locations";
   @import "views/worldwide-organisations";
-  @import "views/publications/index";
   @import "views/statistics/index";
   @import "views/statistics-announcements/index";
 }

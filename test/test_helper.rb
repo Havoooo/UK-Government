@@ -1,10 +1,12 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 ENV["RAILS_ENV"] = "test"
 
-require "simplecov"
-SimpleCov.start "rails"
-SimpleCov.command_name "Unit Tests"
-SimpleCov.merge_timeout 3600
+if ENV["COVERAGE"]
+  require "simplecov"
+  SimpleCov.start "rails"
+  SimpleCov.command_name "Unit Tests"
+  SimpleCov.merge_timeout 3600
+end
 
 require File.expand_path("../config/environment", __dir__)
 
@@ -14,7 +16,6 @@ require "mocha/minitest"
 require "slimmer/test"
 require "factories"
 require "webmock/minitest"
-require "whitehall/not_quite_as_fake_search"
 require "whitehall/search_index"
 require "sidekiq/testing"
 require "govuk_schemas/assert_matchers"
@@ -63,40 +64,24 @@ class ActiveSupport::TestCase
 
   setup do
     Timecop.freeze(2011, 11, 11, 11, 11, 11)
-    Whitehall.search_backend = Whitehall::DocumentFilter::FakeSearch
     Sidekiq::Worker.clear_all
     fake_whodunnit = FactoryBot.build(:user)
     fake_whodunnit.stubs(:id).returns(1000)
     fake_whodunnit.stubs(:persisted?).returns(true)
-    Edition::AuditTrail.whodunnit = fake_whodunnit
+    AuditTrail.whodunnit = fake_whodunnit
     stub_any_publishing_api_call
     stub_publishing_api_publish_intent
     Services.stubs(:asset_manager).returns(stub_everything("asset-manager"))
   end
 
   teardown do
-    Edition::AuditTrail.whodunnit = nil
+    AuditTrail.whodunnit = nil
     Timecop.return
     Sidekiq::Worker.clear_all
   end
 
-  def with_stubbed_rummager(stubbed_object)
-    previous_client = Whitehall.search_client
-    previous_government_search_client = Whitehall.government_search_client
-    previous_backend = Whitehall.search_backend
-
-    Whitehall.search_client = stubbed_object
-    Whitehall.government_search_client = stubbed_object
-    Whitehall.search_backend = Whitehall::DocumentFilter::SearchRummager
-    yield
-
-    Whitehall.search_client = previous_client
-    Whitehall.government_search_client = previous_government_search_client
-    Whitehall.search_backend = previous_backend
-  end
-
   def acting_as(actor, &block)
-    Edition::AuditTrail.acting_as(actor, &block)
+    AuditTrail.acting_as(actor, &block)
   end
 
   def assert_same_elements(array1, array2)
@@ -158,16 +143,6 @@ class ActiveSupport::TestCase
     name.sub(/Test$/, "").underscore.to_sym
   end
 
-  def self.with_not_quite_as_fake_search
-    setup do
-      Whitehall::NotQuiteAsFakeSearch.stop_faking_it_quite_so_much!
-    end
-
-    teardown do
-      Whitehall::NotQuiteAsFakeSearch.start_faking_it_again!
-    end
-  end
-
   def class_from_test_name
     self.class.class_from_test_name
   end
@@ -227,11 +202,8 @@ end
 class ActionController::TestCase
   include HtmlAssertions
   include AdminControllerTestHelpers
-  include AdminEditionControllerLegacyTestHelpers
   include AdminEditionControllerTestHelpers
-  include AdminEditionControllerLegacyScheduledPublishingTestHelpers
   include AdminEditionControllerScheduledPublishingTestHelpers
-  include AdminEditionLegacyWorldLocationsBehaviour
   include AdminEditionWorldLocationsBehaviour
   include DocumentControllerTestHelpers
   include ControllerTestHelpers
@@ -240,9 +212,7 @@ class ActionController::TestCase
   include CacheControlTestHelpers
   include ViewRendering
 
-  include PublicDocumentRoutesHelper
   include Admin::EditionRoutesHelper
-  include LocalisedUrlPathHelper
 
   attr_reader :current_user
 
@@ -259,16 +229,19 @@ class ActionController::TestCase
     stub_request(:get, %r{\A#{Plek.find('publishing-api')}/v2/links/}).to_return(body: { links: {} }.to_json)
   end
 
-  def login_as(role_or_user)
-    @current_user = role_or_user.is_a?(Symbol) ? create(role_or_user) : role_or_user # rubocop:disable Rails/SaveBang
+  def login_as(role_or_user, organisation = nil)
+    @current_user = role_or_user.is_a?(Symbol) ? create(role_or_user, organisation:) : role_or_user
     request.env["warden"] = stub(authenticate!: true, authenticated?: true, user: @current_user)
-    @previous_papertrail_whodunnit ||= Edition::AuditTrail.whodunnit
-    Edition::AuditTrail.whodunnit = @current_user
+    AuditTrail.whodunnit = @current_user
     @current_user
   end
 
   def login_as_admin
     login_as(create(:user, name: "user-name", email: "user@example.com"))
+  end
+
+  def login_as_preview_design_system_user(role, organisation = nil)
+    login_as(create(role, :with_preview_design_system, name: "user-name", email: "user@example.com", organisation:))
   end
 
   def assert_login_required
@@ -281,7 +254,6 @@ class ActionController::TestCase
 end
 
 class ActionDispatch::IntegrationTest
-  include LocalisedUrlPathHelper
   include Warden::Test::Helpers
 
   def login_as(user)
@@ -311,10 +283,6 @@ class ActionView::TestCase
   def setup_view_context
     @view_context = @controller.view_context
   end
-end
-
-class LocalisedUrlTestCase < ActionView::TestCase
-  include LocalisedUrlPathHelper
 end
 
 class PresenterTestCase < ActionView::TestCase

@@ -1,6 +1,7 @@
 class Admin::HistoricalAccountsController < Admin::BaseController
   before_action :load_person
-  before_action :load_historical_account, only: %i[edit update destroy]
+  before_action :load_historical_account, only: %i[edit update confirm_destroy destroy]
+  layout "design_system"
 
   def index
     @historical_accounts = @person.historical_accounts.includes(roles: :translations)
@@ -27,6 +28,10 @@ class Admin::HistoricalAccountsController < Admin::BaseController
     else
       render :edit
     end
+  end
+
+  def confirm_destroy
+    @roles = @historical_account.roles.collect(&:name).to_sentence
   end
 
   def destroy

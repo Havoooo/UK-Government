@@ -19,10 +19,10 @@ module PublishingApi
       edition = feature.document.live_edition
       {
         title: edition.title,
-        href: Whitehall.url_maker.public_document_path(edition),
+        href: edition.public_path(locale: feature.feature_list.locale),
         image: {
           url: feature.image.url,
-          alt_text: feature.alt_text,
+          alt_text: feature.alt_text.presence || "",
         },
         summary: Whitehall::GovspeakRenderer.new.govspeak_to_html(edition.summary),
         public_updated_at: edition.public_timestamp,
@@ -35,12 +35,12 @@ module PublishingApi
       topical_event = feature.topical_event
       {
         title: topical_event.name,
-        href: Whitehall.url_maker.polymorphic_path(topical_event),
+        href: topical_event.public_path(locale: feature.feature_list.locale),
         image: {
           url: feature.image.url,
           alt_text: feature.alt_text,
         },
-        summary: Whitehall::GovspeakRenderer.new.govspeak_to_html(topical_event.description),
+        summary: Whitehall::GovspeakRenderer.new.govspeak_to_html(topical_event.summary),
         public_updated_at: topical_event.start_date,
         document_type: nil, # We don't want a type for topical events
       }

@@ -25,8 +25,10 @@ Feature: Administering worldwide organisation
     Then I should see the worldwide organisation information on the public website
     And the "Department of Beards in France" logo should show correctly with the HMG crest
     And I should see that it is part of the "Department of Beards"
+    Then I should see a create record in the audit trail for the worldwide organisation
     When I update the worldwide organisation to set the name to "Department of Beards and Moustaches in France"
     Then I should see the updated worldwide organisation information on the public website
+    Then I should see an update record in the audit trail for the worldwide organisation
     When I delete the worldwide organisation
     Then the worldwide organisation should not be visible from the public website
 
@@ -65,8 +67,10 @@ Feature: Administering worldwide organisation
   Scenario: Adding default access information to a worldwide organisation
     Given a worldwide organisation "Department of Beards in France" with offices "Head office" and "Branch office"
     When I add default access information to the worldwide organisation
-    Then I should see the default access information on the public "Head office" office page
-    And I should see the default access information on the public "Branch office" office page
+    Then I should see the default access information on the edit "Head office" office page
+    And I should see the default access information on the edit "Branch office" office page
+    And I should see a link on the worldwide organisation page to the access details of the "Head office" office
+    And I should see a link on the worldwide organisation page to the access details of the "Branch office" office
 
   Scenario: Editing the default access information for a worldwide organisation
     Given a worldwide organisation "Department of Beards in France" with default access information
@@ -77,8 +81,10 @@ Feature: Administering worldwide organisation
     Given a worldwide organisation "Department of Bananas" with default access information
     And the offices "Head office" and "Branch office"
     When I give "Head office" custom access information
-    Then I should see the custom access information on the public "Head office" office page
-    And I should see the default access information on the public "Branch office" office page
+    Then I should see custom access information on the edit "Head office" office page
+    And I should see the default access information on the edit "Branch office" office page
+    And I should see a link on the worldwide organisation page to the access details of the "Head office" office
+    And I should see a link on the worldwide organisation page to the access details of the "Branch office" office
 
   Scenario: Adding a corporate information page to a worldwide organisation
     Given a worldwide organisation "Department of Beards in France"

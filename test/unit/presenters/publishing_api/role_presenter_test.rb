@@ -20,7 +20,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
       schema_name: "role",
       document_type: "ministerial_role",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: role.updated_at,
       routes: [
@@ -47,7 +47,6 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     }
     expected_links = {
       ordered_parent_organisations: [organisation.content_id],
-      ministerial: %w[324e4708-2285-40a0-b3aa-cb13af14ec5f],
     }
 
     presented_item = present(role)
@@ -58,6 +57,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     assert_equal role.content_id, presented_item.content_id
 
     assert_valid_against_publisher_schema(presented_item.content, "role")
+    assert_valid_against_links_schema({ links: presented_item.links }, "role")
   end
 
   test "presents a Ministerial Whip Role ready for adding to the Publishing API" do
@@ -76,7 +76,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
       schema_name: "role",
       document_type: "ministerial_role",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: role.updated_at,
       routes: [
@@ -106,7 +106,6 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     }
     expected_links = {
       ordered_parent_organisations: [organisation.content_id],
-      ministerial: %w[324e4708-2285-40a0-b3aa-cb13af14ec5f],
     }
 
     presented_item = present(role)
@@ -117,6 +116,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     assert_equal role.content_id, presented_item.content_id
 
     assert_valid_against_publisher_schema(presented_item.content, "role")
+    assert_valid_against_links_schema({ links: presented_item.links }, "role")
   end
 
   test "presents a Board Member Role ready for adding to the Publishing API" do
@@ -129,7 +129,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
       schema_name: "role",
       document_type: "board_member_role",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: role.updated_at,
       routes: [],
@@ -152,5 +152,34 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     presented_item = present(role)
 
     assert_equal expected_hash, presented_item.content
+  end
+
+  test "presents the correct routes for a role with a translation" do
+    role = create(
+      :role,
+      translated_into: [:cy],
+    )
+
+    expected_base_path = role.public_path
+
+    I18n.with_locale(:en) do
+      presented_item = PublishingApi::RolePresenter.new(role)
+
+      assert_equal expected_base_path, presented_item.content[:base_path]
+
+      assert_equal [
+        { path: expected_base_path, type: "exact" },
+      ], presented_item.content[:routes]
+    end
+
+    I18n.with_locale(:cy) do
+      presented_item = PublishingApi::RolePresenter.new(role)
+
+      assert_equal "#{expected_base_path}.cy", presented_item.content[:base_path]
+
+      assert_equal [
+        { path: "#{expected_base_path}.cy", type: "exact" },
+      ], presented_item.content[:routes]
+    end
   end
 end

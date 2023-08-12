@@ -21,7 +21,7 @@ module NavigationHelpers
 
   def visit_organisation(name)
     organisation = Organisation.find_by!(name:)
-    visit organisation_path(organisation)
+    visit organisation.public_path
   end
 
   def visit_organisation_about_page(name)
@@ -31,26 +31,7 @@ module NavigationHelpers
 
   def visit_worldwide_organisation_page(name)
     worldwide_organisation = WorldwideOrganisation.find_by!(name:)
-    visit worldwide_organisation_path(worldwide_organisation)
-  end
-
-  def public_path_for(edition)
-    case edition
-    when Publication
-      publications_path
-    when Speech
-      announcements_path
-    when Consultation
-      consultations_path
-    when DetailedGuide
-      detailed_guide_path(edition.document)
-    else
-      raise "Don't know where to go for #{edition.class.name}s"
-    end
-  end
-
-  def visit_public_index_for(edition)
-    visit public_path_for(edition)
+    visit worldwide_organisation.public_path
   end
 end
 

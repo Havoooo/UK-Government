@@ -1,5 +1,6 @@
 class Admin::SitewideSettingsController < Admin::BaseController
   before_action :enforce_permissions!
+  layout "design_system"
 
   def enforce_permissions!
     enforce_permission!(:administer, :sitewide_settings_section)
@@ -18,7 +19,7 @@ class Admin::SitewideSettingsController < Admin::BaseController
     if @sitewide_setting.update(sitewide_settings_params)
       redirect_to admin_sitewide_settings_path, notice: %("#{@sitewide_setting.name}" updated.)
     else
-      render action: "edit"
+      render :edit
     end
   end
 

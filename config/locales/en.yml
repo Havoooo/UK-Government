@@ -21,6 +21,15 @@ en:
         nation_inapplicabilities: Excluded nations
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: The attached file
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number: Attachment command paper number
+        hoc_paper_number: House of Commons paper number
+        isbn: Attachment ISBN
+        title: Attachment title
+        unique_reference: Attachment unique reference
+        unnumbered_hoc_paper: Unnumbered House of Commons paper
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file: The attached file
       response/consultation_response_attachments/attachment:
         command_paper_number: Attachment command paper number
         hoc_paper_number: House of Commons paper number
@@ -39,8 +48,6 @@ en:
       title: Attachment title
       unique_reference: Attachment unique reference
       unnumbered_hoc_paper: Unnumbered House of Commons paper
-  announcements:
-    heading: Announcements
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +78,11 @@ en:
     caution:
       subheading: We’ve found some issues with links that may indicate problems, you should apply caution in linking to them
     title: Broken links
+  call_for_evidence:
+    closed: Closed
+    closing_today: Closing today
+    closing_tomorrow: Closes tomorrow
+    days_left: "%{days_left} days left"
   consultation:
     closed: Closed
     closing_today: Closing today
@@ -150,6 +162,12 @@ en:
       blog_post:
         one: Blog post
         other: Blog posts
+      call_for_evidence:
+        one: Call for evidence
+        other: Calls for evidence
+      call_for_evidence_outcome:
+        one: Call for evidence outcome
+        other: Call for evidence outcomes
       campaign:
         one: Campaign
         other: Campaigns
@@ -159,6 +177,9 @@ en:
       case_study:
         one: Case study
         other: Case studies
+      closed_call_for_evidence:
+        one: Closed call for evidence
+        other: Closed calls for evidence
       closed_consultation:
         one: Closed consultation
         other: Closed consultations
@@ -261,6 +282,9 @@ en:
       official_statistics:
         one: Official Statistics
         other: Official Statistics
+      open_call_for_evidence:
+        one: Open call for evidence
+        other: Open calls for evidence
       open_consultation:
         one: Open consultation
         other: Open consultations
@@ -356,12 +380,6 @@ en:
         other: Written statements to Parliament
     updated: updated
   document_filters:
-    description: You can use the filters to show only results that match your interests
-    no_results:
-      description: Try making your search broader and try again.
-      title: There are no matching documents.
-      tna_heading: Older content
-      tna_link_html: Not all department publications from before May 2010 were migrated to GOV.UK. To find publications from before May 2010 try searching <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">The National Archives</a>.
     world_locations:
       all: All locations
       label: World locations
@@ -443,20 +461,6 @@ en:
   latest_feed:
     no_updates: There are no updates yet.
     title: Latest
-  mhra_email_signup:
-    context: Email alert subscription
-    pages:
-      drug_alerts:
-        description_html: Subscribe to <a href='/drug-device-alerts/email-signup'>MHRA's alerts and recalls for drugs and medical devices</a>.
-        title: Drug alerts and medical device alerts
-      drug_safety:
-        description_html: Subscribe to the <a href='https://public.govdelivery.com/accounts/UKMHRA/subscriber/new?topic_id=UKMHRA_0044'>Drug Safety Update</a>, the monthly newsletter for healthcare professionals, with clinical advice on the safe use of medicines.
-        title: Drug Safety Update
-      news_and_publications:
-        description_html: Subscribe to <a href='/government/email-signup/new?email_signup%5Bfeed%5D=https%3A%2F%2Fwww.gov.uk%2Fgovernment%2Forganisations%2Fmedicines-and-healthcare-products-regulatory-agency.atom'>MHRA's new publications, statistics, consultations and announcements</a>.
-        title: News and publications from the MHRA
-    summary: Email alerts from the %{acronym} (%{name}).
-    title: "%{acronym} email alerts"
   organisation:
     corporate_information:
       access_our_info: Access our information
@@ -465,8 +469,7 @@ en:
       organisation_chart: Our organisation chart
       transparency: Transparency data
     embassies:
-      find_an_embassy_lowercase: Find a British embassy, high commission or consulate
-      find_an_embassy_uppercase: Find a British embassy, High Commission or Consulate
+      find_an_embassy_title: Find a British embassy, high commission or consulate
     headings:
       corporate_information: Corporate information
       corporate_reports: Corporate reports
@@ -478,18 +481,15 @@ en:
       works_with: Works with
     type:
       courts_and_tribunals: Courts and Tribunals
-  publications:
-    heading: Publications
-    recent: Recent publications
-    statistics:
-      link_to_published_statistics: Find a list of published and upcoming government statistics in the %{link} statistics section.
-      moved_notice: Statistics publications have moved.
   roles:
     unassigned: No one is assigned to this role
   see_all:
     announcement: See all our announcements
     authored_article: See all our authored articles
+    call_for_evidence: See all our calls for evidence
+    call_for_evidence_outcome: See all our calls for evidence outcomes
     case_study: See all our case studies
+    closed_call_for_evidence: See all our closed calls for evidence
     closed_consultation: See all our closed consultations
     consultation: See all our consultations
     consultation_outcome: See all our consultation outcomes
@@ -512,6 +512,7 @@ en:
     news_article: See all our news articles
     news_story: See all our news stories
     notice: See all our notices
+    open_call_for_evidence: See all our open calls for evidence
     open_consultation: See all our open consultations
     oral_statement: See all our oral statements to Parliament
     policy: See all our policies
@@ -546,19 +547,11 @@ en:
   world_location:
     content:
       complete_list: See the complete %{href}. This includes all embassies, high commissions and consulates.
-      find_out: Find out what is help is available from the UK government if you're abroad.
+      find_out: Find out what help is available from the UK government if you're abroad.
       heading: Help and services around the&nbsp;world
       list_link: list of overseas Foreign, Commonwealth & Development Office posts
     headings:
-      announcements: Our announcements
-      documents: Documents
-      featured: Featured
-      mission: Our mission
-      news: World location news
-      organisations: Organisations
-      publications: Our publications
       search: Search by country or territory
-      statistics: Our statistics
     search_description:
       international_delegation: Updates, news and events from the UK government in %{name}.
       world_location: Services if you're visiting, studying, working or living in %{name}. Includes information about trading with and doing business in the UK and %{name}.

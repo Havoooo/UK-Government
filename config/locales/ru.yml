@@ -21,6 +21,15 @@ ru:
         nation_inapplicabilities: Исключенные страны
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Прикрепленный файл
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Номер прикрепляемого командного документа
         hoc_paper_number: Номер документа Палаты общин
@@ -39,8 +48,22 @@ ru:
       title: Название приложения
       unique_reference: Уникальная ссылка приложения
       unnumbered_hoc_paper: Документ Палаты общин без номера
-  announcements:
-    heading: Объявления
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: "Если вы используете вспомогательные технологии (например, программу чтения с экрана), \nи вам нужна версия этого документа в более доступном формате, отправьте \nписьмо по адресу электронной почты %{email}.\nВ нем укажите, какой формат вам нужен. Хорошо было бы, если бы вы также указали, какие вспомогательные технологии вы используете.\n"
@@ -68,6 +91,11 @@ ru:
     caution:
       subheading: Мы обнаружили неполадки, связанные со ссылками, которые могут указывать на наличие проблем. Будьте осторожны при подключении к ним
     title: Недействительные ссылки
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Закрыто
     closing_today: День закрытия
@@ -163,6 +191,16 @@ ru:
         many:
         one: Запись в блоге
         other: Записи в блоге
+      call_for_evidence:
+        few:
+        many:
+        one:
+        other:
+      call_for_evidence_outcome:
+        few:
+        many:
+        one:
+        other:
       campaign:
         few:
         many:
@@ -178,6 +216,11 @@ ru:
         many:
         one: Ситуационное исследование
         other: Ситуационные исследования
+      closed_call_for_evidence:
+        few:
+        many:
+        one:
+        other:
       closed_consultation:
         few:
         many:
@@ -348,6 +391,11 @@ ru:
         many:
         one: Официальная статистика
         other: Официальная статистика
+      open_call_for_evidence:
+        few:
+        many:
+        one:
+        other:
       open_consultation:
         few:
         many:
@@ -505,12 +553,6 @@ ru:
         other: Письменные заявления Парламенту
     updated: обновлено
   document_filters:
-    description: Чтобы увидеть результаты, соответствующие Вашим требованиям, используйте фильтры
-    no_results:
-      description: Расширьте параметры поиска и попробуйте еще раз.
-      title: Соответствующих документов не найдено.
-      tna_heading: Старое содержимое
-      tna_link_html: Не все публикации отдела, выпущенные до мая 2010 г., были перенесены на GOV.UK. Чтобы найти публикации, выпущенные до мая 2010 г., попробуйте выполнить поиск в <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Национальном архиве</a>.
     world_locations:
       all: Все места нахождения
       label: Место нахождения в мире
@@ -592,20 +634,6 @@ ru:
   latest_feed:
     no_updates: Обновлений нет.
     title: Последние новости
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Доступ к нашей информации
@@ -614,8 +642,7 @@ ru:
       organisation_chart: Хартия нашей организации
       transparency: Данные о прозрачности
     embassies:
-      find_an_embassy_lowercase: Найти британское посольство, представительство высокого комиссара или консульство
-      find_an_embassy_uppercase: Найти британское посольство, Представительство высокого комиссара или Консульство
+      find_an_embassy_title:
     headings:
       corporate_information: Корпоративная информация
       corporate_reports: Корпоративные отчеты
@@ -627,18 +654,15 @@ ru:
       works_with: Работает с
     type:
       courts_and_tribunals: Судами и Трибуналами
-  publications:
-    heading: Публикации
-    recent: Недавние публикации
-    statistics:
-      link_to_published_statistics: Ознакомтесь со списком опубликованной и планируемой к публикации государственной статистики в %{link} разделе статистики.
-      moved_notice: Статистические публикации были перемещены.
   roles:
     unassigned: Никто не назначен на эту роль
   see_all:
     announcement: Посмотреть все наши объявления
     authored_article: Посмотреть все наши авторские статьи
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Посмотреть все наши ситуационные исследования
+    closed_call_for_evidence:
     closed_consultation: Посмотреть все наши закрытые консультации
     consultation: Посмотреть все наши консультации
     consultation_outcome: Посмотреть все наши результаты консультаций
@@ -661,6 +685,7 @@ ru:
     news_article: Посмотреть все наши новостные статьи
     news_story: Посмотреть все наши новостные сюжеты
     notice: Посмотреть все наши уведомления
+    open_call_for_evidence:
     open_consultation: Посмотреть все наши открытые консультации
     oral_statement: Посмотреть все наши устные заявления Парламенту
     policy: Посмотреть все наши политики
@@ -699,15 +724,7 @@ ru:
       heading:
       list_link:
     headings:
-      announcements: Наши объявления
-      documents: Документы
-      featured:
-      mission: Наша цель
-      news: Новости из мест нахождения в мире
-      organisations: Организации
-      publications: Наши публикации
       search: Поиск по стране или территории
-      statistics: Наша статистика
     search_description:
       international_delegation:
       world_location:

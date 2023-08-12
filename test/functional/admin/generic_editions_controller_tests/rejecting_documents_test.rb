@@ -28,12 +28,11 @@ class Admin::GenericEditionsController::RejectingDocumentsTest < ActionControlle
   end
 
   view_test "should show who rejected the edition" do
-    edition = create(:rejected_edition)
-    edition.editorial_remarks.create!(body: "editorial-remark-body", author: current_user)
+    edition = create(:rejected_edition, edition_authors: [create(:edition_author, user: current_user)])
     stub_publishing_api_expanded_links_with_taxons(edition.content_id, [])
 
     get :show, params: { id: edition }
-    assert_select ".rejected_by", text: current_user.name
+    assert_select ".app-c-inset-prompt__body a", text: current_user.name
   end
 
   view_test "should not show the editorial remarks section" do
@@ -50,10 +49,10 @@ class Admin::GenericEditionsController::RejectingDocumentsTest < ActionControlle
     stub_publishing_api_expanded_links_with_taxons(edition.content_id, [])
 
     get :show, params: { id: edition }
-    assert_select ".editorial_remark" do
-      assert_select ".body", text: /editorial-remark-body/
-      assert_select ".actor", text: current_user.name
-      assert_select "time.created_at[datetime='#{remark.created_at.iso8601}']"
+    assert_select "#history_tab" do
+      assert_select ".app-view-editions-editorial-remark__list-item", text: /editorial-remark-body/
+      assert_select ".app-view-editions-editorial-remark__list-item a", text: current_user.name
+      assert_select "time.datetime[datetime='#{remark.created_at.iso8601}']"
     end
   end
 end

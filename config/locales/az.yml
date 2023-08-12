@@ -21,6 +21,15 @@ az:
         nation_inapplicabilities: Çıxarılmış millətlər
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Əlavə edilmiş fayl
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Əlavənin sənəd nömrəsi
         hoc_paper_number: İcmalar palatasının sənəd nömrəsi
@@ -39,8 +48,22 @@ az:
       title: Əlavənin başlığı
       unique_reference: Əlavə üçün unikal istinad
       unnumbered_hoc_paper: İcmalar palatasının nömrələnməmiş sənədi
-  announcements:
-    heading: Elanlar
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ az:
     caution:
       subheading: Biz problemləri göstərə biləcək keçidlərdə bəzi məsələlər tapmışıq, onlara qoşulan zaman ehtiyatlı olmalısınız
     title: Pozulmuş keçidlər
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Bağlıdır
     closing_today: Bu gün bağlanır
@@ -150,6 +178,12 @@ az:
       blog_post:
         one: Bloq-post
         other: Bloq-postlar
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Kampaniya
         other: Kampaniyalar
@@ -159,6 +193,9 @@ az:
       case_study:
         one: Nümunə üzrə araşdırma
         other: Nümunə üzrə araşdırmalar
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Qapalı məsləhətləşmə
         other: Qapalı məsləhətləşmələr
@@ -261,6 +298,9 @@ az:
       official_statistics:
         one: Rəsmi statistika
         other: Rəsmi statistika
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Açıq məsləhətləşmə
         other: Açıq məsləhətləşmələr
@@ -356,12 +396,6 @@ az:
         other: Parlamentə yazılı müraciətlər
     updated: yenilənib
   document_filters:
-    description: Yalnız maraqlarınıza uyğun gələn nəticələrin göstərilməsi üçün süzgəclərdən istifadə edə bilərsiniz
-    no_results:
-      description: Axtarış sahənizi genişləndirməyə çalışın və yenidən cəhd edin.
-      title: Uyğun gələn sənədlər yoxdur.
-      tna_heading: Daha köhnə məzmun
-      tna_link_html: '2010-cu ilin may ayından əvvəlki departament nəşrlərinin hamısı GOV.UK-a köçürülməyib. 2010-cu ilin may ayından əvvəlki nəşrləri tapmaq üçün aşağıdakı ünvanda axtarış etməyə çalışın: <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Milli arxivlər</a>.'
     world_locations:
       all: Bütün yerlər
       label: Dünya üzrə yerləri
@@ -443,20 +477,6 @@ az:
   latest_feed:
     no_updates: Hələ yenilənmələr yoxdur.
     title: Ən son
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Məlumatlarımıza daxil olun
@@ -465,8 +485,7 @@ az:
       organisation_chart: Təşkilat sxemimiz
       transparency: Məlumatla bağlı şəffaflıq
     embassies:
-      find_an_embassy_lowercase: Britaniya səfirliyi, diplomatik nümayəndəliyi və ya konsulluğu tapın
-      find_an_embassy_uppercase: Britaniya səfirliyi, Diplomatik nümayəndəliyi və ya Konsulluğu tapın
+      find_an_embassy_title:
     headings:
       corporate_information: Korporativ məlumat
       corporate_reports: Şirkətin fəaliyyəti üzrə hesabatlar
@@ -478,18 +497,15 @@ az:
       works_with: Məhkəmə və məhkəmə kollegiyaları
     type:
       courts_and_tribunals: ilə işlər
-  publications:
-    heading: Nəşrlər
-    recent: Sonuncu nəşrlər
-    statistics:
-      link_to_published_statistics: "%{link} statistika bölməsində dərc edilmiş və gözlənilən dövlət statistikasını tapın."
-      moved_notice: Statistika üzrə nəşrlər köçürülüb.
   roles:
     unassigned: Bu vəzifəyə heç kim təyin edilməyib
   see_all:
     announcement: Bütün elanlarımıza baxın
     authored_article: Müəlliflik edilmiş bütün məqalələrimizə baxın
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Nümunə üzrə bütün araşdırmalarımıza baxın
+    closed_call_for_evidence:
     closed_consultation: Bütün qapalı məsləhətləşmələrimizə baxın
     consultation: Bütün məsləhətləşmələrimizə baxın
     consultation_outcome: Bütün məsləhətləşmə nəticələrimizə baxın
@@ -512,6 +528,7 @@ az:
     news_article: Xəbərləri əks etdirən bütün məqalələrimizə baxın
     news_story: Xəbərləri əks etdirən bütün materiallarımıza baxın
     notice: Bütün bildirişlərimizə baxın
+    open_call_for_evidence:
     open_consultation: Bütün açıq məsləhətləşmələrimizə baxın
     oral_statement: Parlamentə edilmiş bütün şifahi müraciətlərimizə baxın
     policy: Bütün siyasətlərimizə baxın
@@ -550,15 +567,7 @@ az:
       heading:
       list_link:
     headings:
-      announcements: Elanlarımız
-      documents: Sənədlər
-      featured:
-      mission: Missiyamız
-      news: Dünya üzrə xəbərlər
-      organisations: Təşkilatlar
-      publications: Nəşrlərimiz
       search: Ölkəyə və ya əraziyə əsasən axtarın
-      statistics: Statistikamız
     search_description:
       international_delegation:
       world_location:

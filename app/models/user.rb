@@ -20,13 +20,13 @@ class User < ApplicationRecord
     GDS_EDITOR = "GDS Editor".freeze
     VIP_EDITOR = "VIP Editor".freeze
     PUBLISH_SCHEDULED_EDITIONS = "Publish scheduled editions".freeze
-    IMPORT = "Import CSVs".freeze
     WORLD_WRITER = "World Writer".freeze
     WORLD_EDITOR = "World Editor".freeze
     FORCE_PUBLISH_ANYTHING = "Force publish anything".freeze
     GDS_ADMIN = "GDS Admin".freeze
     PREVIEW_DESIGN_SYSTEM = "Preview design system".freeze
     PREVIEW_NEXT_RELEASE = "Preview next release".freeze
+    PREVIEW_CALL_FOR_EVIDENCE = "Preview call for evidence".freeze
   end
 
   def role
@@ -80,10 +80,6 @@ class User < ApplicationRecord
     has_permission?(Permissions::PUBLISH_SCHEDULED_EDITIONS)
   end
 
-  def can_import?
-    has_permission?(Permissions::IMPORT)
-  end
-
   def can_force_publish_anything?
     has_permission?(Permissions::FORCE_PUBLISH_ANYTHING)
   end
@@ -94,6 +90,10 @@ class User < ApplicationRecord
 
   def can_preview_next_release?
     has_permission?(Permissions::PREVIEW_NEXT_RELEASE)
+  end
+
+  def can_preview_call_for_evidence?
+    has_permission?(Permissions::PREVIEW_CALL_FOR_EVIDENCE)
   end
 
   def organisation_name

@@ -11,17 +11,17 @@ class PublishingApi::TakePartPresenterTest < ActiveSupport::TestCase
     image_url = take_part_page.image_url(:s300)
 
     expected_hash = {
-      base_path: take_part_page.search_link,
+      base_path: "/government/get-involved/take-part/#{take_part_page.slug}",
       title: "A take part page title",
       description: "Summary text",
       schema_name: "take_part",
       document_type: "take_part",
       locale: "en",
       public_updated_at: take_part_page.updated_at,
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "government-frontend",
       routes: [
-        { path: take_part_page.search_link, type: "exact" },
+        { path: "/government/get-involved/take-part/#{take_part_page.slug}", type: "exact" },
       ],
       redirects: [],
       details: {

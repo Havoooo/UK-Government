@@ -1,0 +1,38 @@
+<%= render "govuk_publishing_components/components/heading", {
+  text: "Upload an image",
+  font_size: "l",
+} %>
+
+<%= form_tag(
+  admin_edition_images_path(@edition),
+  multipart: true,
+) do %>
+  <%= render "govuk_publishing_components/components/file_upload", {
+    name: "image[image_data][file]",
+    id: "edition_images_image_data_file",
+    hint: raw('Images can be JPEG, PNG, SVG or GIF files. If you are uploading more than one image, <a class="govuk-link" href="https://www.gov.uk/guidance/how-to-publish-on-gov-uk/images-and-videos">read the image guidance</a> on using unique file names.'),
+    error_items: @new_image.present? ? errors_for(@new_image.errors, :"image_data.file") : nil,
+    accept: "image/png, image/jpeg, image/gif, image/svg+xml"
+  } %>
+
+   <%= render "govuk_publishing_components/components/details", {
+      title: "You must use an SVG for charts and diagrams",
+    } do %>
+      SVGs allow users to magnify images without losing quality.
+      Find out <%= link_to "how to create an SVG file (opens in new tab)",
+      "https://www.gov.uk/guidance/how-to-publish-on-gov-uk/images-and-videos#creating-an-svg-file",
+      class: "govuk-link",
+      target: "_blank" %>.
+    <% end %>
+
+  <%= render "govuk_publishing_components/components/button", {
+    text: "Upload",
+    margin_bottom: 10,
+    data_attributes: {
+      module: "gem-track-click",
+      "track-category": "form-button",
+      "track-action": "#{@edition.class.name.demodulize.underscore.dasherize}-button",
+      "track-label": "Upload"
+    }
+  } %>
+<% end %>

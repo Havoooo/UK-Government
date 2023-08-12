@@ -28,7 +28,7 @@
 <% end %>
 
 <% if link_check_report.present? %>
-  <%= render 'admin/link_check_reports/link_check_report', report: link_check_report %>
+  <%= render 'admin/link_check_reports/link_check_report_legacy', report: link_check_report %>
 <% end %>
 
 <div data-module="gem-track-click" data-track-category="formatting-help" data-track-action="formatting-help-link" data-track-selector="a[data-toggle]">
@@ -108,9 +108,9 @@
   <h3><a data-toggle="collapse" href="#govspeak-images" aria-expanded="false">Images</a></h3>
   <div class="collapse" id="govspeak-images">
     <p>First upload your image(s), then:</p>
-    <pre>!!<em>n</em></pre>
+    <pre>[Image:&nbsp;filename]</pre>
     <p>eg for the first image:</p>
-    <pre>!!1</pre>
+    <pre>[Image:&nbsp;example.jpg]</pre>
   </div>
 
   <h3><a data-toggle="collapse" href="#govspeak-video-links" aria-expanded="false">Video links</a></h3>

@@ -5,7 +5,6 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
 
   setup do
     login_as create(:writer, organisation: create(:organisation))
-    @current_user.permissions << "Preview design system"
     create(:government)
     stub_request(
       :get,
@@ -20,13 +19,13 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
   should_allow_editing_of :detailed_guide
 
   should_allow_organisations_for :detailed_guide
-  should_allow_attached_images_for :detailed_guide
   should_prevent_modification_of_unmodifiable :detailed_guide
   should_allow_association_with_related_mainstream_content :detailed_guide
   should_allow_alternative_format_provider_for :detailed_guide
   should_allow_scheduled_publication_of :detailed_guide
   should_allow_overriding_of_first_published_at_for :detailed_guide
   should_allow_access_limiting_of :detailed_guide
+  should_render_govspeak_history_and_fact_checking_tabs_for :detailed_guide
 
   view_test "user needs associated with a detailed guide" do
     content_id_a = SecureRandom.uuid
@@ -71,15 +70,15 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
 
     get :show, params: { id: detailed_guide.id }
 
-    assert_select "#user-needs-section" do |_section|
-      assert_select "#user-need-id-#{content_id_a}" do
-        assert_select ".description", text: "As a x,\n    I need to y,\n    So that z"
-        assert_select ".maslow-url[href*='#{content_id_a}']"
+    assert_select ".app-view-summary__section-user-needs" do |_section|
+      assert_select ".govuk-table__row" do
+        assert_select ".govuk-table__cell", text: "As a x,\n I need to y,\n So that z"
+        assert_select ".govuk-link[href*='#{content_id_a}']"
       end
 
-      assert_select "#user-need-id-#{content_id_b}" do
-        assert_select ".description", text: "As a c,\n    I need to d,\n    So that e"
-        assert_select ".maslow-url[href*='#{content_id_b}']"
+      assert_select ".govuk-table__row" do
+        assert_select ".govuk-table__cell", text: "As a c,\n I need to d,\n So that e"
+        assert_select ".govuk-link[href*='#{content_id_b}']"
       end
     end
   end

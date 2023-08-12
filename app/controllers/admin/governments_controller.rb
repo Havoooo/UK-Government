@@ -1,5 +1,6 @@
 class Admin::GovernmentsController < Admin::BaseController
   before_action :enforce_permissions!, except: :index
+  layout "design_system"
 
   def index
     @governments = Government.order(start_date: :desc)
@@ -21,7 +22,7 @@ class Admin::GovernmentsController < Admin::BaseController
     if @government.save
       redirect_to admin_governments_path, notice: "Created government information"
     else
-      render action: "new"
+      render :new
     end
   end
 
@@ -31,7 +32,7 @@ class Admin::GovernmentsController < Admin::BaseController
     if @government.update(government_params)
       redirect_to admin_governments_path, notice: "Updated government information"
     else
-      render action: "edit"
+      render :edit
     end
   end
 

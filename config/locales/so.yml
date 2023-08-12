@@ -21,6 +21,15 @@ so:
         nation_inapplicabilities: Aanay ku jirin qaramadu
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Faylka lifaaqa
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Lifaaqa lambarka warqada amarka
         hoc_paper_number: lambarka warqada guriga Commons
@@ -39,8 +48,22 @@ so:
       title: Cinwaanka lifaaqa
       unique_reference: Tixraaca gaarka ah ee lifaaqa
       unnumbered_hoc_paper: Warqada aan lambarka lahayn ee guriga Commons
-  announcements:
-    heading: Ogeysiisyo
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ so:
     caution:
       subheading: Waxaan helnay arimaha qaar linkiyadooda kaasoo dhib muujinaya, waa inaad ka taxadartaa marka aad ka codsanayso linki iyaga
     title: Linkiyada la jabsaday
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Xidhan
     closing_today: Xidhan maanta
@@ -149,6 +177,12 @@ so:
       blog_post:
         one: Qoraalka boga
         other: Qoraalada boga
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Xayaysiiska
         other: Xayaysiisyada
@@ -158,6 +192,9 @@ so:
       case_study:
         one: Daraasad
         other: Daraasado
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Latalin Xidhan
         other: Latalino xidhan
@@ -260,6 +297,9 @@ so:
       official_statistics:
         one: Tirokoobka rasmiga ah
         other: Tirokoobka rasmiga ah
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Latalin furan
         other: Latalino furan
@@ -355,12 +395,6 @@ so:
         other: Bayaanada qoran ee loogu talogalay Baarlamaanka
     updated: la cusboonaysiiyay
   document_filters:
-    description: Waxaad isticmaali kartaa kala saarayaasha si aad u muujiso kaliya maxsuulka waafaqay danahaaga
-    no_results:
-      description: Isku day inaad baadhistaada balaadhiso oo isku day markale.
-      title: Ma jiraan dhokumantiyo is waafaqsan.
-      tna_heading: Qaybtii hore
-      tna_link_html: Maaha dhamaan qaybta daabacaadaha laga bilaabo kahor bisha May 2010 waxa loo wareejiyay GOV.UK. Si aad u raadiso daabacaadaha laga bilaabo bisha May 2010 isku day baadhista <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Kaydka Qaranka</a>.
     world_locations:
       all: Dhamaan goobaha
       label: Goobaha Dunida
@@ -442,20 +476,6 @@ so:
   latest_feed:
     no_updates: Wali wax cusub ma jiraan.
     title: Ugu dambeeyay
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Helitaankayaga macluumaadka
@@ -464,8 +484,7 @@ so:
       organisation_chart: Jaantuska ururkayaga
       transparency: Xog daah furan
     embassies:
-      find_an_embassy_lowercase: Raadi safaarada Ingiriiska, komishanka sare ama qunsulka
-      find_an_embassy_uppercase: Raadi safaarada Ingiriiska, komishanka sare ama qunsulka
+      find_an_embassy_title:
     headings:
       corporate_information: Macluumaadka shirkada
       corporate_reports: Warbixinaha shirkada
@@ -477,18 +496,15 @@ so:
       works_with: Ee la shaqaysa
     type:
       courts_and_tribunals: Maxkamadaha iyo Xukunada
-  publications:
-    heading: Daabacaado
-    recent: Daabacadihii dhawaa
-    statistics:
-      link_to_published_statistics: Baadh liiska cusboonaysiinta iyo xog ururinta soo socota ee dawlada %{link} qaybta xog ururinta.
-      moved_notice: Daabacaadaha xog ururinaha waa laga saaray.
   roles:
     unassigned: Qofna looma qoondayn doorkan
   see_all:
     announcement: Eeg dhamaan ku dhawaaqisahayaga
     authored_article: Eeg dhamaan qoraalaada la ogalyahay
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Eeg dhamaan cilmi baadhisahayaga
+    closed_call_for_evidence:
     closed_consultation: Eeg dhamaan latilinahayaga dhaw
     consultation: Eeg dhamaan la talinahayaga oo dhan
     consultation_outcome: Eeg dhamaan maxsuulada la talinahayaga oo dhan
@@ -511,6 +527,7 @@ so:
     news_article: Eeg dhamaan qoraalaada wararka
     news_story: Eeg dhamaan sheekoyinkayaga wararka
     notice: Eeg dhamaan ogaysiisyadaya
+    open_call_for_evidence:
     open_consultation: Eeg dhamaan latilinahayaga furan
     oral_statement: Eeg dhammaan hadalada aan afka u sheegnay ee Baarlamaanka
     policy: Eeg dhamaan siyaasadahayaga
@@ -549,15 +566,7 @@ so:
       heading:
       list_link:
     headings:
-      announcements: Ku dhawaaqisahayaga
-      documents: Dukumentiyada
-      featured:
-      mission: Hadafkayaga
-      news: Wararka Goobta Dunida
-      organisations: Ururada
-      publications: Daabacadahayaga
       search: Ku raadi dalka ama dhulka
-      statistics: Xog ururinahayaga
     search_description:
       international_delegation:
       world_location:

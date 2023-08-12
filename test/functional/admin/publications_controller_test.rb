@@ -6,7 +6,6 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     @organisation = create(:organisation)
     @user = create(:writer, organisation: @organisation)
     login_as @user
-    @user.permissions << "Preview design system"
 
     stub_taxonomy_with_world_taxons
   end
@@ -16,15 +15,14 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
   should_allow_creating_of :publication
   should_allow_editing_of :publication
 
-  should_allow_speed_tagging_of :publication
   should_allow_organisations_for :publication
   should_allow_references_to_statistical_data_sets_for :publication
-  should_allow_attached_images_for :publication
   should_allow_association_between_world_locations_and :publication
   should_prevent_modification_of_unmodifiable :publication
   should_allow_alternative_format_provider_for :publication
   should_allow_scheduled_publication_of :publication
   should_allow_access_limiting_of :publication
+  should_render_govspeak_history_and_fact_checking_tabs_for :publication
 
   view_test "new displays publication fields" do
     get :new
@@ -72,6 +70,7 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
            edition: controller_attributes_for(
              :publication,
              first_published_at: Time.zone.parse("2001-10-21 00:00:00"),
+             previously_published: "true",
              publication_type_id: PublicationType::ResearchAndAnalysis.id,
            ),
          }
@@ -91,7 +90,7 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     assert_equal "First published at can't be blank", assigns(:edition).errors.full_messages.last
   end
 
-  view_test "edit displays publication fields" do
+  view_test "edit displays publication fields and guidance" do
     publication = create(:publication)
 
     get :edit, params: { id: publication }
@@ -99,6 +98,7 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     assert_select "form#edit_edition" do
       assert_select "select[name='edition[publication_type_id]']"
       assert_select "select[name*='edition[first_published_at']", count: 5
+      assert_select ".js-app-view-edition-form__subtype-format-advice", text: "Use this subformat for… A policy paper explains the government's position on something. It doesn’t include instructions on how to carry out a task, only the policy itself and how it’ll be implemented.Read the policy papers guidance in full."
     end
   end
 
@@ -119,7 +119,6 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     # This applies to all editions but can't be tested in the editions controller test due to redirects.
     # After conversation with DH I picked publications arbitrarily.
     @user = login_as(create(:departmental_editor))
-    @user.permissions << "Preview design system"
     publication = create(:draft_publication)
     stub_publishing_api_expanded_links_with_taxons(publication.content_id, [])
 
@@ -138,7 +137,6 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     my_organisation = create(:organisation)
     other_organisation = create(:organisation)
     @user = login_as(create(:user, organisation: my_organisation))
-    @user.permissions << "Preview design system"
     inaccessible = create(:draft_publication, publication_type: PublicationType::NationalStatistics, access_limited: true, organisations: [other_organisation])
 
     get :show, params: { id: inaccessible }
@@ -160,7 +158,7 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     publication_has_no_expanded_links(publication.content_id)
     get :show, params: { id: publication }
 
-    assert_select ".taxonomy-topics .btn", "Add tag"
+    assert_select ".app-view-summary__taxonomy-topics .govuk-link", "Add tags"
   end
 
   view_test "when edition is tagged to the new taxonomy" do
@@ -173,16 +171,15 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     )
 
     @user = login_as(create(:user, organisation: world_tagging_organisation))
-    @user.permissions << "Preview design system"
 
     publication_has_expanded_links(publication.content_id)
 
     get :show, params: { id: publication }
 
-    refute_select ".taxonomy-topics#topic-new-taxonomy .no-content"
-    assert_select ".taxonomy-topics .content li", "Education, Training and Skills"
-    assert_select ".taxonomy-topics .content li", "Primary Education"
-    assert_select ".taxonomy-topics#world-taxonomy .no-content"
+    assert_select ".app-view-summary__taxonomy-topics .govuk-link", "Change tags"
+    assert_select ".app-view-summary__taxonomy-topics .app-view-summary__topic-tag-list-item", "Education, Training and Skills"
+    assert_select ".app-view-summary__taxonomy-topics .app-view-summary__topic-tag-list-item", "Primary Education"
+    assert_select ".app-view-summary__world-taxonomy .govuk-link", "Add tags"
   end
 
   view_test "when edition is tagged to the world taxonomy" do
@@ -195,16 +192,15 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     )
 
     @user = login_as(create(:user, organisation: world_tagging_organisation))
-    @user.permissions << "Preview design system"
 
     publication_has_world_expanded_links(publication.content_id)
 
     get :show, params: { id: publication }
 
-    refute_select ".taxonomy-topics#world-taxonomy .no-content"
-    assert_select ".taxonomy-topics .content li", "World Child Taxon"
-    assert_select ".taxonomy-topics .content li", "World Grandchild Taxon"
-    assert_select ".taxonomy-topics#topic-new-taxonomy .no-content"
+    assert_select ".app-view-summary__world-taxonomy .govuk-link", "Change tags"
+    assert_select ".app-view-summary__world-taxonomy .app-view-summary__topic-tag-list-item", "World Child Taxon"
+    assert_select ".app-view-summary__world-taxonomy .app-view-summary__topic-tag-list-item", "World Grandchild Taxon"
+    assert_select ".app-view-summary__taxonomy-topics .govuk-link", "Add tags"
   end
 
   view_test "shows summary when edition is tagged to all legacy associations" do
@@ -220,13 +216,11 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     stub_publishing_api_expanded_links_with_taxons(publication.content_id, [])
 
     @user = login_as(create(:user, organisation:))
-    @user.permissions << "Preview design system"
 
     get :show, params: { id: publication }
 
     assert_selected_specialist_sectors_are_displayed
     assert_select "a[href='#{edit_admin_edition_legacy_associations_path(publication)}']", /Change specialist topic tags/
-    assert_select "a[href='#{edit_admin_edition_legacy_associations_path(publication)}'] .glyphicon-edit"
   end
 
   view_test "shows message when edition is not tagged to any legacy associations" do
@@ -240,16 +234,12 @@ class Admin::PublicationsControllerTest < ActionController::TestCase
     stub_publishing_api_expanded_links_with_taxons(publication.content_id, [])
 
     @user = login_as(create(:user, organisation:))
-    @user.permissions << "Preview design system"
     get :show, params: { id: publication }
 
-    refute_select ".policies"
-    refute_select ".policy-areas"
-    refute_select ".primary-specialist-sector"
-    refute_select ".secondary-specialist-sectors"
-    assert_select ".no-content.no-content-bordered", "No specialist topic tags"
+    refute_select ".app-view-summary__primary-specialist-sector"
+    refute_select ".app-view-summary__secondary-specialist-sectors"
+    assert_select ".govuk-body", "No specialist topic tags for this document"
     assert_select "a[href='#{edit_admin_edition_legacy_associations_path(publication)}']", /Add specialist topic tags/
-    assert_select "a[href='#{edit_admin_edition_legacy_associations_path(publication)}'] .glyphicon-plus-sign"
   end
 
 private
@@ -283,9 +273,9 @@ private
   end
 
   def assert_selected_specialist_sectors_are_displayed
-    assert_select ".primary-specialist-sector li", "Oil and Gas: Wells"
-    assert_select ".secondary-specialist-sectors li", "Oil and Gas: Fields"
-    assert_select ".secondary-specialist-sectors li", "Oil and Gas: Offshore"
+    assert_select ".app-view-summary__primary-specialist-sector li", "Oil and Gas: Wells"
+    assert_select ".app-view-summary__secondary-specialist-sectors li", "Oil and Gas: Fields"
+    assert_select ".app-view-summary__secondary-specialist-sectors li", "Oil and Gas: Offshore"
   end
 
   def publication_has_no_expanded_links(content_id)

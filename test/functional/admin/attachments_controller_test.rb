@@ -34,8 +34,8 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
   def self.supported_attachable_types
     {
       edition: :edition_id,
-      consultation_outcome: :response_id,
-      consultation_public_feedback: :response_id,
+      consultation_outcome: :consultation_response_id,
+      consultation_public_feedback: :consultation_response_id,
       policy_group: :policy_group_id,
     }
   end
@@ -43,12 +43,12 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
   supported_attachable_types.each do |type, param_name|
     view_test "GET :index handles #{type} as attachable" do
       attachable = create(type) # rubocop:disable Rails/SaveBang
-      create(:file_attachment, isbn: "817525766-0", attachable:)
+      create(:file_attachment, attachable:, title: "Lorem Ipsum")
 
       get :index, params: { param_name => attachable.id }
 
       assert_response :success
-      assert_select "p", text: /ISBN: 817525766-0/
+      assert_select "table td", "Lorem Ipsum"
     end
 
     view_test "GET :new handles #{type} as attachable" do
@@ -97,7 +97,23 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
     get :index, params: { edition_id: @edition }
 
     assert_response :success
-    assert_select ".existing-attachments li strong", text: "An HTML attachment"
+    assert_select "table td", text: "An HTML attachment"
+  end
+
+  view_test "GET :index renders the uploading banner when an attachment hasn't been uploaded to asset manager" do
+    create(:html_attachment, title: "An HTML attachment", attachable: @edition)
+    create(:file_attachment, title: "An uploaded file attachment", attachable: @edition)
+    attachment_data = create(:attachment_data, uploaded_to_asset_manager_at: nil)
+    create(:file_attachment, title: "An uploading file attachment", attachable: @edition, attachment_data:)
+    create(:external_attachment, title: "An external attachment", attachable: @edition)
+
+    get :index, params: { edition_id: @edition }
+
+    assert_response :success
+    assert_select ".govuk-table__cell", text: "An HTML attachment"
+    assert_select ".govuk-table__cell", text: "An uploaded file attachment"
+    assert_select ".govuk-table__cell", text: "An uploading file attachment Uploading"
+    assert_select ".govuk-table__cell", text: "An external attachment"
   end
 
   test "POST :create handles html attachments when attachable allows them" do
@@ -106,7 +122,7 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
     assert_response :redirect
     assert_equal 1, @edition.reload.attachments.size
     assert_equal "Attachment title", @edition.attachments.first.title
-    assert_equal "Some **govspeak** body", @edition.attachments.first.govspeak_content_body
+    assert_equal "Some **govspeak** body", @edition.attachments.first.body
   end
 
   test "POST :create saves an attachment on the draft edition" do
@@ -176,7 +192,7 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
     get :index, params: { edition_id: @edition }
 
     assert_response :success
-    assert_select ".existing-attachments li strong", text: "An external attachment"
+    assert_select "table td", text: "An external attachment"
   end
 
   test "POST :create handles external attachments when attachable allows them" do
@@ -257,13 +273,6 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
 
   test "POST :create with bad data does not save the attachment and re-renders the new template" do
     post :create, params: { edition_id: @edition, attachment: { attachment_data_attributes: {} } }
-    assert_template :new_legacy
-    assert_equal 0, @edition.reload.attachments.size
-  end
-
-  test "POST :create with bad data does not save the attachment and re-renders the new template when the user has the 'Preview design system' permission" do
-    @current_user.permissions << "Preview design system"
-    post :create, params: { edition_id: @edition, attachment: { attachment_data_attributes: {} } }
     assert_template :new
     assert_equal 0, @edition.reload.attachments.size
   end
@@ -293,7 +302,7 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
           },
         }
     assert_equal "New title", attachment.reload.title
-    assert_equal "New body", attachment.reload.govspeak_content_body
+    assert_equal "New body", attachment.reload.body
   end
 
   test "PUT :update for HTML attachment updates the publishing api" do
@@ -402,32 +411,6 @@ class Admin::AttachmentsControllerTest < ActionController::TestCase
     assert_not_equal old_data, attachment.attachment_data
     assert_equal attachment.attachment_data, old_data.replaced_by
     assert_equal "whitepaper.pdf", attachment.filename
-  end
-
-  test "PUT :update_many changes attributes of multiple attachments" do
-    files = Dir.glob(Rails.root.join("test/fixtures/*.csv")).take(4)
-    files.each_with_index do |f, i|
-      create(:file_attachment, title: "attachment_#{i}", attachable: @edition, file: File.open(f))
-    end
-    attachments = @edition.reload.attachments
-
-    # append '_' to every attachment title in the collection
-    new_data = attachments.map { |a| [a.id.to_s, { title: "#{a.title}_" }] }
-    put :update_many, params: { edition_id: @edition, attachments: Hash[new_data] }
-
-    @edition.reload.attachments.each do |attachment|
-      assert_match(/.+_$/, attachment.title)
-    end
-  end
-
-  test "update_many returns validation errors in JSON" do
-    attachment = create(:file_attachment, attachable: @edition)
-
-    new_data = { attachment.id.to_s => { title: "" } }
-    put :update_many, params: { edition_id: @edition, attachments: new_data }
-
-    response_json = JSON.parse(@response.body)
-    assert_equal ["Title can't be blank"], response_json["errors"][attachment.id.to_s]
   end
 
   test "attachment access is forbidden for users without access to the edition" do

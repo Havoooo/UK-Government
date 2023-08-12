@@ -13,8 +13,14 @@ class OperationalField < ApplicationRecord
   extend FriendlyId
   friendly_id
 
+  after_commit :republish_operational_fields_index_page_to_publishing_api
+
+  def republish_operational_fields_index_page_to_publishing_api
+    PresentPageToPublishingApi.new.publish(PublishingApi::OperationalFieldsIndexPresenter)
+  end
+
   def search_link
-    Whitehall.url_maker.operational_field_path(slug)
+    public_path
   end
 
   def description_without_markup
@@ -23,5 +29,17 @@ class OperationalField < ApplicationRecord
 
   def published_fatality_notices
     fatality_notices.published
+  end
+
+  def base_path
+    "/government/fields-of-operation/#{slug}"
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options)
+  end
+
+  def public_url(options = {})
+    Plek.website_root + public_path(options)
   end
 end

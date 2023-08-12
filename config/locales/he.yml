@@ -21,6 +21,15 @@ he:
         nation_inapplicabilities: אומות לא נכללות
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: הקובץ המצורף
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: מספר נייר הפקודה המצורפת
         hoc_paper_number: מספר הנייר של בית הנבחרים
@@ -39,8 +48,22 @@ he:
       title: כותרת הקובץ המצורף
       unique_reference: 'התייחסות ייחודית לקובץ המצורף '
       unnumbered_hoc_paper: נייר של בית הנבחרים ללא מספר
-  announcements:
-    heading: הודעות
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ he:
     caution:
       subheading: 'מצאנו כמה בעיות עם קישורים שעשויים להצביע על בעיות, עליך לנקוט משנה זהירות בקישור אליהם '
     title: קישורים מנותקים
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: סגור
     closing_today: נסגר היום
@@ -150,6 +178,12 @@ he:
       blog_post:
         one: רשומת בלוג
         other: רשומות בלוג
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: קמפיין
         other: קמפיינים
@@ -159,6 +193,9 @@ he:
       case_study:
         one: מקרה בוחן
         other: מקרי בוחן
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: דיון סגור
         other: דיונים סגורים
@@ -261,6 +298,9 @@ he:
       official_statistics:
         one: סטטיסטיקה רשמית
         other: סטטיסטיקה רשמית
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: דיון פתוח
         other: דיונים  פתוחים
@@ -356,12 +396,6 @@ he:
         other: הצהרות בכתב לפרלמנט
     updated: מעודכן
   document_filters:
-    description: ניתן לעשות שימוש בפילטרים כדי לראות תוצאות ממוקדות
-    no_results:
-      description: נסי/ה להרחיב את החיפוש וחפש/י שוב.
-      title: אין מסמכים תואמים.
-      tna_heading: תוכן ישן יותר
-      tna_link_html: לא כל פרסומי המחלקה מלפני מאי 2010 הועברו ל- GOV.UK. כדי למצוא פרסומים מלפני מאי 2010 נסה לחפש <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">הארכיון הלאומי</a>.
     world_locations:
       all: כל המיקומים
       label: מיקומים גלובאליים
@@ -443,20 +477,6 @@ he:
   latest_feed:
     no_updates: אין עדכונים נוספים.
     title: אחרון
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: גישה למידע
@@ -465,8 +485,7 @@ he:
       organisation_chart: תרשים הארגון שלנו
       transparency: שקיפות מידע
     embassies:
-      find_an_embassy_lowercase: מצא שגרירות בריטית, נציבות עליונה או קונסוליה
-      find_an_embassy_uppercase: מצא שגרירות בריטית, נציבות עליונה או קונסוליה
+      find_an_embassy_title:
     headings:
       corporate_information: מידע תאגידי
       corporate_reports: דו"חות משותפים
@@ -478,18 +497,15 @@ he:
       works_with: עובד עם
     type:
       courts_and_tribunals: בתי משפט ובתי דין
-  publications:
-    heading: פרסומים
-    recent: פרסומים אחרונים
-    statistics:
-      link_to_published_statistics: מצא רשימה של סטטיסטיקות ממשלתיות שפורסמו ועתידות להתפרסם בקטע %{link} נתונים סטטיסטיים.
-      moved_notice: פרסומי הסטטיסטיקה זזו.
   roles:
     unassigned: לאף אחד אין תפקיד זה
   see_all:
     announcement: ראה כל הודעות
     authored_article: ראה כל מאמרים מאושרים
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: ראה כל מקרי בוחן
+    closed_call_for_evidence:
     closed_consultation: ראה כל דיונים סגורים
     consultation: ראה כל דיונים
     consultation_outcome: ראה כל תוצאות דיונים
@@ -512,6 +528,7 @@ he:
     news_article: ראה כל מאמרי חדשות
     news_story: ראה כל חדשות
     notice: ראה כל הודעות
+    open_call_for_evidence:
     open_consultation: ראה כל דיונים  פתוחים
     oral_statement: ראה כל הצהרות בעל פה לפרלמנט
     policy: ראה כל מדיניות
@@ -550,15 +567,7 @@ he:
       heading:
       list_link:
     headings:
-      announcements: ההודעות שלנו
-      documents: מסמכים
-      featured:
-      mission: החזון שלנו
-      news: חדשות מיקום בעולם
-      organisations: ארגונים
-      publications: הפרסומים שלנו
       search: חפש לפי מדינה או שטח
-      statistics: סטטיסטיקה שלנו
     search_description:
       international_delegation:
       world_location:

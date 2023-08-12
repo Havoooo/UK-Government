@@ -21,6 +21,15 @@ sq:
         nation_inapplicabilities: Shtetet e përjashtuara
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Skedari i bashkangjitur
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Numri i letrës së komandës së bashkëngjitjes
         hoc_paper_number: Numri i letrës së Dhomës së Komuneve
@@ -39,8 +48,22 @@ sq:
       title: Titulli i bashkëngjitjes
       unique_reference: Referenca unike e bashkëngjitjes
       unnumbered_hoc_paper: Letër e panumëruar e Dhomës së Komuneve
-  announcements:
-    heading: Lajmërime
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ sq:
     caution:
       subheading: Ne kemi gjetur disa çështje me lidhjet që mund të tregojnë probleme, duhet të jeni të kujdesshëm në lidhjen me to
     title: Lidhje të prishura
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Mbyllur
     closing_today: Mbyllet sot
@@ -150,6 +178,12 @@ sq:
       blog_post:
         one: Postim blogu
         other: Postime blogu
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Fushatë
         other: Fushata
@@ -159,6 +193,9 @@ sq:
       case_study:
         one: Rast studimi
         other: Raste studimesh
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Konsultim i mbyllur
         other: Konsultime të mbyllura
@@ -261,6 +298,9 @@ sq:
       official_statistics:
         one: Statistikat Zyrtare
         other: Statistikat Zyrtare
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Konsultim i hapur
         other: Konsultime të hapura
@@ -356,12 +396,6 @@ sq:
         other: Deklarata me shkrim në Parlament
     updated: përditësuar
   document_filters:
-    description: Ju mund t'i përdorni filtrat për të shfaqur vetëm rezultate që përputhen me interesat tuaja
-    no_results:
-      description: Provoni ta bëni kërkimin tuaj më të gjerë dhe provoni përsëri.
-      title: Nuk ka dokumente që përputhen.
-      tna_heading: Përmbajtje më e vjetër
-      tna_link_html: Jo të gjitha publikimet e departamenteve para majit 2010 u migruan në GOV.UK. Për të gjetur botime para majit 2010 provoni të kërkoni <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Arkivat Kombëtare</a>.
     world_locations:
       all: Të gjitha vendndodhjet
       label: Vendndodhjet globale
@@ -443,20 +477,6 @@ sq:
   latest_feed:
     no_updates: Ende nuk ka përditësime.
     title: Më të fundit
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Qasuni në informacionin tonë
@@ -465,8 +485,7 @@ sq:
       organisation_chart: Tabela e organizimit tonë
       transparency: Të dhënat e transparencës
     embassies:
-      find_an_embassy_lowercase: Gjeni një ambasadë britanike, komision të lartë ose konsullatë
-      find_an_embassy_uppercase: Gjeni një ambasadë britanike, Komision të Lartë ose Konsullatë
+      find_an_embassy_title:
     headings:
       corporate_information: Informacioni i korporatës
       corporate_reports: Raportet e korporatës
@@ -478,18 +497,15 @@ sq:
       works_with: Punon me
     type:
       courts_and_tribunals: Gjykatat dhe Tribunalet
-  publications:
-    heading: Publikime
-    recent: Publikimet e fundit
-    statistics:
-      link_to_published_statistics: Gjeni një listë të statistikave të publikuara dhe të ardhshme të qeverisë në seksionin e statistikave %{link}.
-      moved_notice: Publikimet e statistikave kanë lëvizur.
   roles:
     unassigned: Askush nuk është caktuar për këtë rol
   see_all:
     announcement: Shihni të gjitha njoftimet tona
     authored_article: Shihni të gjithë artikujt tanë të shkruar
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Shihni të gjitha studimet tona të rasteve
+    closed_call_for_evidence:
     closed_consultation: Shihni të gjitha konsultimet tona të mbyllura
     consultation: Shihni të gjitha konsultimet tona
     consultation_outcome: Shihni të gjitha rezultatet e konsultimit tonë
@@ -512,6 +528,7 @@ sq:
     news_article: Shihni të gjitha artikujt tanë të lajmeve
     news_story: Shihni të gjitha ngjarjet
     notice: Shihni të gjitha njoftimet tona
+    open_call_for_evidence:
     open_consultation: Shihni të gjitha konsultimet tona të hapura
     oral_statement: Shihni të gjitha deklaratat tona verbale në Parlament
     policy: Shihni të gjitha politikat tona
@@ -550,15 +567,7 @@ sq:
       heading:
       list_link:
     headings:
-      announcements: Njoftimet tona
-      documents: Dokumentet
-      featured:
-      mission: Misioni ynë
-      news: Lajmet për vendndodhjen botërore
-      organisations: Organizatat
-      publications: Publikimet tona
       search: Kërkoni sipas vendit ose territorit
-      statistics: Statistikat tona
     search_description:
       international_delegation:
       world_location:

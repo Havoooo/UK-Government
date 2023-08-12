@@ -15,7 +15,7 @@ class ImageValidator < ActiveModel::Validator
   def validate(record)
     return if file_for(record).blank?
     return unless File.exist?(file_for(record).path)
-    return if file_for(record).file.content_type.match?(/svg/)
+    return if file_for(record).file.content_type.match?(/svg/) && file_for(record).model.class != TopicalEvent
 
     begin
       image = MiniMagick::Image.open file_for(record).path
@@ -39,9 +39,20 @@ private
   def validate_size(record, image)
     return unless @size
 
-    unless image[:width] == @size[0] && image[:height] == @size[1]
-      record.errors.add(@method, "must be #{@size[0]}px wide and #{@size[1]}px tall, but is #{image[:width]}px wide and #{image[:height]}px tall")
-    end
+    actual_width = image[:width]
+    actual_height = image[:height]
+    target_width = @size[0]
+    target_height = @size[1]
+
+    too_small = actual_width < target_width || actual_height < target_height
+    too_large = actual_width > target_width || actual_height > target_height
+
+    return unless too_small || too_large
+
+    error_type = too_small ? :too_small : :too_large
+    problem = too_small ? "too small" : "too large"
+    message = "is #{problem}. Select an image that is #{target_width} pixels wide and #{target_height} pixels tall"
+    record.errors.add(@method, error_type, message:)
   end
 
   def file_for(record)

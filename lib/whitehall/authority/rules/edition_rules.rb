@@ -13,6 +13,7 @@ module Whitehall::Authority::Rules
         make_fact_check
         mark_political
         modify
+        perform_administrative_tasks
         publish
         reject
         review_editorial_remark
@@ -34,6 +35,9 @@ module Whitehall::Authority::Rules
     def can?(action)
       return false unless valid_action?(action)
 
+      # TODO: Remove temporary feature flag Permissions::PREVIEW_CALL_FOR_EVIDENCE when Call for evidence is released
+      return false if is_call_for_evidence? && !actor.can_preview_call_for_evidence?
+
       if subject.is_a?(Class)
         can_with_a_class?(action)
       else
@@ -46,6 +50,11 @@ module Whitehall::Authority::Rules
     end
 
   private
+
+    # TODO: Remove temporary feature flag Permissions::PREVIEW_CALL_FOR_EVIDENCE when Call for evidence is released
+    def is_call_for_evidence?
+      subject == CallForEvidence || subject.instance_of?(CallForEvidence)
+    end
 
     def can_with_an_instance?(action)
       if actor.can_force_publish_anything? && action == :force_publish
@@ -78,7 +87,12 @@ module Whitehall::Authority::Rules
     end
 
     def gds_admin_can?(action)
-      gds_editor_can?(action)
+      case action
+      when :perform_administrative_tasks
+        true
+      else
+        gds_editor_can?(action)
+      end
     end
 
     def gds_editor_can?(action)
@@ -89,6 +103,8 @@ module Whitehall::Authority::Rules
         can_publish?
       when :force_publish
         can_force_publish?
+      when :perform_administrative_tasks
+        false
       when :unpublish
         false
       else
@@ -161,7 +177,7 @@ module Whitehall::Authority::Rules
         can_publish?
       when :force_publish
         can_force_publish?
-      when :unpublish, :mark_political
+      when :unpublish, :mark_political, :perform_administrative_tasks
         false
       else
         true
@@ -183,7 +199,7 @@ module Whitehall::Authority::Rules
 
     def departmental_writer_can?(action)
       case action
-      when :approve, :publish, :unpublish, :force_publish, :reject, :mark_political
+      when :approve, :publish, :unpublish, :force_publish, :reject, :mark_political, :perform_administrative_tasks
         false
       else
         true

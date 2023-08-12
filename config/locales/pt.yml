@@ -21,6 +21,15 @@ pt:
         nation_inapplicabilities: Nações excluídas
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: O ficheiro anexo
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Número de papel de comando do anexo
         hoc_paper_number: Número de papel da Câmara dos Comuns
@@ -39,8 +48,22 @@ pt:
       title: Título do anexo
       unique_reference: Referência única do anexo
       unnumbered_hoc_paper: Papel não numerado da Câmara dos Comuns
-  announcements:
-    heading: Anúncios
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ pt:
     caution:
       subheading: Encontrámos alguns problemas com links que podem indicar dificuldades – deve ter cautela ao estabelecer ligações com elas
     title: Links desfeitos
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Fechado
     closing_today: Encerra hoje
@@ -150,6 +178,12 @@ pt:
       blog_post:
         one: Publicação no blogue
         other: Publicações no blogue
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Campanha
         other: Campanhas
@@ -159,6 +193,9 @@ pt:
       case_study:
         one: Estudo de caso
         other: Estudos de caso
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Consulta encerrada
         other: Consultas encerradas
@@ -261,6 +298,9 @@ pt:
       official_statistics:
         one: Estatísticas Oficiais
         other: Estatísticas Oficiais
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Consulta aberta
         other: Consultas abertas
@@ -356,12 +396,6 @@ pt:
         other: Declarações escritas ao Parlamento
     updated: atualizado em
   document_filters:
-    description: Pode utilizar os filtros para mostrar apenas resultados que correspondam aos seus interesses
-    no_results:
-      description: Faça para tornar a sua pesquisa mais ampla e tente novamente.
-      title: Não existem documentos correspondentes.
-      tna_heading: Conteúdo mais antigo
-      tna_link_html: Nem todas as publicações do departamento anteriores a maio de 2010 migraram para GOV.UK. Para encontrar publicações anteriores a maio de 2010, tente pesquisar <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Os Arquivos Nacionais</a>.
     world_locations:
       all: Todos os locais
       label: Locais mundiais
@@ -443,20 +477,6 @@ pt:
   latest_feed:
     no_updates: Ainda não há atualizações.
     title: Mais recentes
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Aceda à nossa informação
@@ -465,8 +485,7 @@ pt:
       organisation_chart: O nosso organigrama
       transparency: Dados de transparência
     embassies:
-      find_an_embassy_lowercase: Encontre uma embaixada, alto comissariado ou consulado britânico
-      find_an_embassy_uppercase: Encontre uma embaixada, Alto Comissariado ou Consulado britânico
+      find_an_embassy_title:
     headings:
       corporate_information: Informações da empresa
       corporate_reports: Relatórios empresariais
@@ -478,18 +497,15 @@ pt:
       works_with: Trabalha com
     type:
       courts_and_tribunals: Tribunais
-  publications:
-    heading: Publicações
-    recent: Publicações recentes
-    statistics:
-      link_to_published_statistics: Encontre uma lista de estatísticas governamentais publicadas e futuras na secção de estatísticas %{link}.
-      moved_notice: As publicações de estatísticas mudaram de sítio.
   roles:
     unassigned: Ninguém está atribuído a esta função
   see_all:
     announcement: Ver todos os nossos anúncios
     authored_article: Ver todos os nossos artigos de autor
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Ver todos os nossos estudos de caso
+    closed_call_for_evidence:
     closed_consultation: Ver todas as nossas consultas encerradas
     consultation: Ver todas as nossas consultas
     consultation_outcome: Ver todos os resultados da nossa consulta
@@ -512,6 +528,7 @@ pt:
     news_article: Ver todos os nossos artigos noticiosos
     news_story: Ver todas as nossas reportagens
     notice: Ver todos os nossos avisos
+    open_call_for_evidence:
     open_consultation: Ver todas as nossas consultas abertas
     oral_statement: Ver todas as nossas declarações orais ao Parlamento
     policy: Ver todas as nossas políticas
@@ -550,15 +567,7 @@ pt:
       heading:
       list_link:
     headings:
-      announcements: Os nossos anúncios
-      documents: Documentos
-      featured:
-      mission: A nossa missão
-      news: Notícias de localização mundial
-      organisations: Organizações
-      publications: As nossas publicações
       search: Pesquisa por país ou território
-      statistics: As nossas estatísticas
     search_description:
       international_delegation:
       world_location:
@@ -583,6 +592,6 @@ pt:
       contact_us: Contacte-nos
       corporate_information: Informações da empresa
       follow_us: Siga-nos
-      our_people: A nosso povo
+      our_people: As nossas pessoas
     location: Local
     part_of: Parte de

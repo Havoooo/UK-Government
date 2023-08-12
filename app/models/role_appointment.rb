@@ -54,7 +54,7 @@ class RoleAppointment < ApplicationRecord
   end
 
   validates :role_id, :person_id, :started_at, presence: true
-  validates_with Validator
+  validates_with Validator, if: -> { started_at.present? }
 
   scope :for_role, ->(role) { where(role_id: role.id) }
   scope :for_person, ->(person) { where(person_id: person.id) }
@@ -63,17 +63,30 @@ class RoleAppointment < ApplicationRecord
   scope :for_ministerial_roles, -> { includes(role: :organisations).merge(Role.ministerial).references(:roles) }
   scope :alphabetical_by_person, -> { includes(:person).order("people.surname", "people.forename") }
   scope :ascending_start_date, -> { order("started_at DESC") }
+  scope :historic, -> { where.not(CURRENT_CONDITION) }
 
+  after_create :set_order
   after_create :make_other_current_appointments_non_current
   before_destroy :prevent_destruction_unless_destroyable
 
-  after_save :republish_organisation_to_publishing_api
-  after_destroy :republish_organisation_to_publishing_api
+  after_save :republish_organisation_to_publishing_api, :republish_prime_ministers_index_page_to_publishing_api, :republish_ministerial_pages_to_publishing_api
+  after_destroy :republish_organisation_to_publishing_api, :republish_prime_ministers_index_page_to_publishing_api
 
   def republish_organisation_to_publishing_api
     organisations.each do |organisation|
       Whitehall::PublishingApi.republish_async(organisation)
     end
+  end
+
+  def republish_ministerial_pages_to_publishing_api
+    if ministerial?
+      PresentPageToPublishingApi.new.publish(PublishingApi::HowGovernmentWorksPresenter)
+      PresentPageToPublishingApi.new.publish(PublishingApi::MinistersIndexPresenter)
+    end
+  end
+
+  def republish_prime_ministers_index_page_to_publishing_api
+    PresentPageToPublishingApi.new.publish(PublishingApi::HistoricalAccountsIndexPresenter) unless current? || role.slug != "prime-minister" || has_historical_account?
   end
 
   def self.between(start_time, end_time)
@@ -160,6 +173,10 @@ private
       oa.ended_at = started_at
       oa.save!
     end
+  end
+
+  def set_order
+    update_column(:order, person.role_appointments.count)
   end
 
   def prevent_destruction_unless_destroyable

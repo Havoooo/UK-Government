@@ -2,7 +2,6 @@ module PublishingApi
   class OrganisationPresenter
     include Rails.application.routes.url_helpers
     include ApplicationHelper
-    include FilterRoutesHelper
     # This is so we can get the extra text for the summary field
     include OrganisationHelper
     # This is a hack to get the OrganisationHelper to work in this context
@@ -33,7 +32,7 @@ module PublishingApi
         schema_name:,
       )
       content.merge!(
-        PayloadBuilder::PolymorphicPath.for(item, additional_routes:),
+        PayloadBuilder::PolymorphicPath.for(item, prefix: use_prefix_route?, additional_routes:),
       )
       content.merge!(PayloadBuilder::AnalyticsIdentifier.for(item))
     end
@@ -61,6 +60,10 @@ module PublishingApi
 
     def schema_name
       "organisation"
+    end
+
+    def use_prefix_route?
+      !court_or_tribunal?
     end
 
     def additional_routes
@@ -172,7 +175,7 @@ module PublishingApi
         if about_page.present?
           cips << {
             title: I18n.t("corporate_information_page.type.title.about"),
-            href: Whitehall.url_maker.public_document_path(about_page),
+            href: about_page.public_path,
           }
         end
       end
@@ -187,14 +190,14 @@ module PublishingApi
       item.corporate_information_pages.published.by_menu_heading(:our_information).each do |cip|
         cips << {
           title: cip.title,
-          href: Whitehall.url_maker.public_document_path(cip),
+          href: cip.public_path,
         }
       end
 
       item.corporate_information_pages.published.by_menu_heading(:jobs_and_contracts).each do |cip|
         cips << {
           title: cip.title,
-          href: Whitehall.url_maker.public_document_path(cip),
+          href: cip.public_path,
         }
       end
 
@@ -260,7 +263,7 @@ module PublishingApi
       page.extend(UseSlugAsParam)
       link_to(
         t_corporate_information_page_type_link_text(page),
-        Whitehall.url_maker.public_document_path(page),
+        page.public_path,
         class: "govuk-link brand__color",
       )
     end
@@ -281,25 +284,46 @@ module PublishingApi
         {
           title: promotional_feature.title,
           items: promotional_feature.items.map do |promotional_feature_item|
-            {
-              title: promotional_feature_item.title,
-              href: promotional_feature_item.title_url,
-              summary: promotional_feature_item.summary,
-              image: {
-                url: promotional_feature_item.image_url,
-                alt_text: promotional_feature_item.image_alt_text,
-              },
-              double_width: promotional_feature_item.double_width,
-              links: promotional_feature_item.links.map do |link|
-                {
-                  title: link.text,
-                  href: link.url,
-                }
-              end,
-            }
+            if promotional_feature_item.youtube_video_id.present?
+              promotional_feature_item_youtube_hash(promotional_feature_item)
+            else
+              promotional_feature_item_image_hash(promotional_feature_item)
+            end
           end,
         }
       end
+    end
+
+    def promotional_feature_item_youtube_hash(promotional_feature_item)
+      promotional_feature_item_hash_common(promotional_feature_item).merge({
+        youtube_video: {
+          id: promotional_feature_item.youtube_video_id,
+          alt_text: promotional_feature_item.youtube_video_alt_text,
+        },
+      })
+    end
+
+    def promotional_feature_item_image_hash(promotional_feature_item)
+      promotional_feature_item_hash_common(promotional_feature_item).merge({
+        image: {
+          url: promotional_feature_item.image_url,
+          alt_text: promotional_feature_item.image_alt_text,
+        },
+      })
+    end
+
+    def promotional_feature_item_hash_common(promotional_feature_item)
+      {
+        title: promotional_feature_item.title,
+        href: promotional_feature_item.title_url,
+        summary: promotional_feature_item.summary,
+        links: promotional_feature_item.links.map do |link|
+          {
+            title: link.text,
+            href: link.url,
+          }
+        end,
+      }.compact
     end
 
     def people_content_ids(role:)

@@ -6,72 +6,9 @@ Given(/^the organisation "([^"]*)" exists$/) do |name|
   create_org_and_stub_content_store(:ministerial_department, name:)
 end
 
-Given(/^the organisation "(.*?)" exists with a featured article$/) do |name|
-  org = create_org_and_stub_content_store(:ministerial_department, name:)
-  create(:feature_list, featurable: org, features: [create(:feature, document: create(:published_news_article).document)])
-end
-
-Given(/^the organisation "(.*?)" exists with featured services and guidance$/) do |name|
-  org = create(:organisation, name:, homepage_type: "service")
-  create(:featured_link, linkable: org)
-end
-
-Given(/^the organisation "(.*?)" exists with no featured services and guidance$/) do |name|
-  create(:organisation, name:)
-end
-
-Given(/^the executive office "([^"]*)" exists$/) do |name|
-  create(:executive_office, name:)
-end
-
 Given(/^two organisations "([^"]*)" and "([^"]*)" exist$/) do |first_organisation, second_organisation|
   create(:organisation, name: first_organisation)
   create(:organisation, name: second_organisation)
-end
-
-Given(/^the "([^"]*)" organisation is associated with several ministers and civil servants$/) do |organisation_name|
-  organisation = Organisation.find_by(name: organisation_name) || create_org_and_stub_content_store(:ministerial_department, name: organisation_name)
-  3.times do |x|
-    person = create(:person)
-    ministerial_role = create(:ministerial_role, cabinet_member: (x == 1))
-    organisation.ministerial_roles << ministerial_role
-    create(:role_appointment, role: ministerial_role, person:)
-  end
-  3.times do |x|
-    person = create(:person)
-    role = create(:board_member_role, permanent_secretary: (x == 1))
-    organisation.roles << role
-    create(:role_appointment, role:, person:)
-  end
-end
-
-Given(/^the "([^"]*)" organisation is associated with traffic commissioners$/) do |organisation_name|
-  organisation = Organisation.find_by(name: organisation_name) || create_org_and_stub_content_store(:ministerial_department, name: organisation_name)
-  traffic_commissioner_role = create(:traffic_commissioner_role, name: "traffic-commissioner-role", organisations: [organisation])
-  create(:role_appointment, role: traffic_commissioner_role)
-end
-
-Given(/^the "([^"]*)" organisation is associated with scientific advisors$/) do |organisation_name|
-  organisation = Organisation.find_by(name: organisation_name) || create_org_and_stub_content_store(:ministerial_department, name: organisation_name)
-  chief_scientific_advisor_role = create(:chief_scientific_advisor_role, name: "csi-role", organisations: [organisation])
-  create(:role_appointment, role: chief_scientific_advisor_role)
-end
-
-Given(/^the "([^"]*)" organisation is associated with chief professional officers$/) do |organisation_name|
-  organisation = Organisation.find_by(name: organisation_name) || create_org_and_stub_content_store(:ministerial_department, name: organisation_name)
-  chief_professional_officer_role = create(:chief_professional_officer_role, name: "cmo-role", organisations: [organisation])
-  create(:role_appointment, role: chief_professional_officer_role)
-end
-
-Given(/^a submitted corporate publication "([^"]*)" about the "([^"]*)"$/) do |publication_title, organisation_name|
-  organisation = Organisation.find_by(name: organisation_name)
-  create(:submitted_corporate_publication, title: publication_title, organisations: [organisation])
-end
-
-Given(/^the organisation "([^"]*)" is associated with consultations "([^"]*)" and "([^"]*)"$/) do |name, consultation1, consultation2|
-  organisation = create_org_and_stub_content_store(:organisation, name:)
-  create(:published_consultation, title: consultation1, organisations: [organisation])
-  create(:published_consultation, title: consultation2, organisations: [organisation])
 end
 
 Given(/^a published publication "([^"]*)" with a PDF attachment and alternative format provider "([^"]*)"$/) do |title, organisation_name|
@@ -86,11 +23,6 @@ Given(/^I set the alternative format contact email of "([^"]*)" to "([^"]*)"$/) 
   visit edit_admin_organisation_path(organisation)
   fill_in "organisation_alternative_format_contact_email", with: email
   click_button "Save"
-end
-
-Given(/^I have an offsite link "(.*?)" for the organisation "(.*?)"$/) do |title, organisation_name|
-  organisation = Organisation.find_by(name: organisation_name)
-  @offsite_link = create :offsite_link, title:, parent: organisation
 end
 
 When(/^I add a new organisation called "([^"]*)"$/) do |organisation_name|
@@ -118,7 +50,7 @@ When(/^I add a translation for an organisation called "([^"]*)"$/) do |organisat
   click_link "Translations"
 
   select "Cymraeg (Welsh)", from: "Locale"
-  click_button "Create translation"
+  click_button using_design_system? ? "Create new translation" : "Create translation"
 
   fill_in "Name", with: "Organisation Name in another language"
   fill_in "Acronym", with: "ABC"
@@ -136,8 +68,14 @@ end
 
 Then(/^I should be able to see "([^"]*)" in the list of organisations$/) do |organisation_name|
   organisation = Organisation.find_by!(name: organisation_name)
-  within record_css_selector(organisation) do
-    expect(page).to have_content(organisation_name)
+  if using_design_system?
+    within ".govuk-table" do
+      expect(page).to have_content(organisation_name)
+    end
+  else
+    within record_css_selector(organisation) do
+      expect(page).to have_content(organisation_name)
+    end
   end
 end
 
@@ -148,72 +86,26 @@ Then(/^I should be able to see the translation for "([^"]*)" in the list of tran
   expect(page).to have_content("Cymraeg")
 end
 
-When(/^I feature the news article "([^"]*)" for "([^"]*)"$/) do |news_article_title, organisation_name|
-  step %(I feature the news article "#{news_article_title}" for "#{organisation_name}" with image "minister-of-funk.960x640.jpg")
-end
-
-When(/^I feature the news article "([^"]*)" for "([^"]*)" with image "([^"]*)"$/) do |news_article_title, organisation_name, image_filename|
-  organisation = Organisation.find_by!(name: organisation_name)
-  visit admin_organisation_path(organisation)
-  click_link "Features"
-  locale = Locale.find_by_language_name("English")
-  news_article = LocalisedModel.new(NewsArticle, locale.code).find_by(title: news_article_title)
-  fill_in "title", with: news_article_title.split.first
-  within record_css_selector(news_article) do
-    click_link "Feature"
-  end
-  attach_file "Select a 960px wide and 640px tall image to be shown when featuring", Rails.root.join("test/fixtures/#{image_filename}")
-  fill_in :feature_alt_text, with: "An accessible description of the image"
-  click_button "Save"
-end
-
-When(/^I stop featuring the news article "([^"]*)" for "([^"]*)"$/) do |news_article_title, organisation_name|
-  organisation = Organisation.find_by!(name: organisation_name)
-  visit features_admin_organisation_path(organisation)
-  locale = Locale.find_by_language_name("English")
-  news_article = LocalisedModel.new(NewsArticle, locale.code).find_by(title: news_article_title)
-  within record_css_selector(news_article) do
-    click_on "Unfeature"
-  end
-end
-
-When(/^I order the featured items in the "([^"]*)" organisation as:$/) do |name, table|
-  organisation = Organisation.find_by!(name:)
-  visit features_admin_organisation_path(organisation)
-  order_features_from(table)
-end
-
 When(/^I add the offsite link "(.*?)" of type "(.*?)" to the organisation "(.*?)"$/) do |title, type, organisation_name|
   organisation = Organisation.find_by!(name: organisation_name)
   visit features_admin_organisation_path(organisation)
-  click_link "Create a non-GOV.UK government link"
-  fill_in :offsite_link_title, with: title
-  select type, from: "offsite_link_link_type"
-  fill_in :offsite_link_summary, with: "summary"
-  fill_in :offsite_link_url, with: "http://gov.uk"
-  click_button "Save"
-end
 
-When(/^I feature the offsite link "(.*?)" for organisation "(.*?)" with image "(.*?)"$/) do |offsite_link_title, organisation_name, image_filename|
-  organisation = Organisation.find_by!(name: organisation_name)
-  visit admin_organisation_path(organisation)
-  click_link "Features"
-  offsite_link = OffsiteLink.find_by(title: offsite_link_title)
-  within record_css_selector(offsite_link) do
-    click_link "Feature"
-  end
-  attach_file "Select a 960px wide and 640px tall image to be shown when featuring", Rails.root.join("test/fixtures/#{image_filename}")
-  fill_in :feature_alt_text, with: "An accessible description of the image"
-  click_button "Save"
-end
+  if using_design_system?
+    click_link "Create new link"
 
-When(/^I stop featuring the offsite link "([^"]*)" for "([^"]*)"$/) do |offsite_link_name, organisation_name|
-  organisation = Organisation.find_by!(name: organisation_name)
-  visit features_admin_organisation_path(organisation)
-  offsite_link = OffsiteLink.find_by(title: offsite_link_name)
-  within record_css_selector(offsite_link) do
-    click_on "Unfeature"
+    fill_in "Title (required)", with: title
+    select type, from: "offsite_link_link_type"
+    fill_in "Summary (required)", with: "Summary"
+    fill_in "URL (required)", with: "https://www.gov.uk/jobsearch"
+  else
+    click_link "Create a non-GOV.UK government link"
+    fill_in :offsite_link_title, with: title
+    select type, from: "offsite_link_link_type"
+    fill_in :offsite_link_summary, with: "summary"
+    fill_in :offsite_link_url, with: "http://gov.uk"
   end
+
+  click_button "Save"
 end
 
 When(/^I delete the organisation "([^"]*)"$/) do |name|
@@ -227,11 +119,17 @@ Then(/^there should not be an organisation called "([^"]*)"$/) do |name|
 end
 
 Then(/^I should see the edit offsite link "(.*?)" on the "(.*?)" organisation page$/) do |title, organisation_name|
-  organisation = Organisation.find_by!(name: organisation_name)
-  offsite_link = OffsiteLink.find_by!(title:)
-  visit admin_organisation_path(organisation)
-  click_link "Features"
-  expect(page).to have_link(title, href: edit_admin_organisation_offsite_link_path(organisation.slug, offsite_link.id))
+  if using_design_system?
+    within "#non_govuk_government_links_tab" do
+      expect(find("table td:first").text).to eq title
+    end
+  else
+    organisation = Organisation.find_by!(name: organisation_name)
+    offsite_link = OffsiteLink.find_by!(title:)
+    visit admin_organisation_path(organisation)
+    click_link "Features"
+    expect(page).to have_link(title, href: edit_admin_organisation_offsite_link_path(organisation.slug, offsite_link.id))
+  end
 end
 
 def navigate_to_organisation(page_name)
@@ -274,7 +172,13 @@ end
 When(/^I add a new contact "([^"]*)" with address "([^"]*)"$/) do |contact_description, address|
   click_link "Contacts"
   click_link "Add"
-  fill_in_contact_details(title: contact_description, street_address: address)
+
+  if using_design_system?
+    fill_in_contact_details(title: contact_description, street_address: address)
+  else
+    legacy_fill_in_contact_details(title: contact_description, street_address: address)
+  end
+
   click_button "Save"
 end
 
@@ -358,34 +262,9 @@ Then(/^I can see that the organisation "(.*?)" has been superseded with the orga
   organisation = Organisation.find_by!(name: org_name)
   visit admin_organisation_path(organisation)
 
-  expect(page).to have_xpath("//th[.='Superseded by']/following-sibling::td[.='#{superseding_org_name}']")
-end
-
-Given(/^a closed organisation with documents which has been superseded by another$/) do
-  @superseding_organisation  = create(:organisation)
-  @organisation              = create_org_and_stub_content_store(:organisation, govuk_status: "closed", govuk_closed_status: "replaced", superseding_organisations: [@superseding_organisation])
-  @organisation_speech       = create(:published_speech, organisations: [@organisation])
-  @organisation_consultation = create(:published_consultation, organisations: [@organisation])
-  @organisation_publication  = create(:published_publication, organisations: [@organisation])
-  @organisation_statistics   = create(:published_statistics, organisations: [@organisation])
-end
-
-When(/^I view the organisation$/) do
-  visit organisation_path(@organisation)
-end
-
-Then(/^I can see that the organisation is closed$/) do
-  expect(page).to have_content("#{@organisation.name} has closed")
-end
-
-Then(/^I can see that the organisation is closed and has been superseded by the other$/) do
-  expect(page).to have_content("#{@organisation.name} was replaced by")
-  expect(page).to have_content(@superseding_organisation.name)
-end
-
-Then(/^I can see the documents associated with that organisation$/) do
-  expect(page).to have_content(@organisation_speech.title)
-  expect(page).to have_content(@organisation_consultation.title)
-  expect(page).to have_content(@organisation_publication.title)
-  expect(page).to have_content(@organisation_statistics.title)
+  if using_design_system?
+    expect(page).to have_xpath("//dt[.='Superseded by']/following-sibling::dd[.='#{superseding_org_name}']")
+  else
+    expect(page).to have_xpath("//th[.='Superseded by']/following-sibling::td[.='#{superseding_org_name}']")
+  end
 end

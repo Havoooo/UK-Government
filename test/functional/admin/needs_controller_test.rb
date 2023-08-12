@@ -7,7 +7,6 @@ class Admin::NeedsControllerTest < ActionController::TestCase
   def setup
     login_as :user
     @document = create(:edition, :with_document).document
-    @url_maker = Whitehall::UrlMaker.new(host: Plek.find("whitehall"))
 
     @need1 = {
       "content_id" => SecureRandom.uuid,
@@ -55,7 +54,7 @@ class Admin::NeedsControllerTest < ActionController::TestCase
 
     assert_select "form[action='#{admin_update_needs_path(content_id: document.content_id)}']"
     assert_select "select#need_ids" do
-      assert_select "option", count: 2
+      assert_select "option:not([value=''])", count: 2
     end
   end
 end

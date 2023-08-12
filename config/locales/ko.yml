@@ -21,6 +21,15 @@ ko:
         nation_inapplicabilities: 제외 국가
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: 첨부 파일
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: 첨부 명령 문서 번호
         hoc_paper_number: 하원 문서 번호
@@ -39,8 +48,22 @@ ko:
       title: 첨부 제목
       unique_reference: 첨부 고유 참조
       unnumbered_hoc_paper: 번호를 매기지 않은 하원 문서
-  announcements:
-    heading: 공지사항
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ ko:
     caution:
       subheading: 링크에서 문제를 나타낼 수 있는 몇 가지 문제가 발견되었으므로, 링크할 때 주의해야 합니다
     title: 손상된 링크
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: 종결됨
     closing_today: 오늘 종결됨
@@ -141,12 +169,18 @@ ko:
         other: 저작물
       blog_post:
         other: 블로그 포스트
+      call_for_evidence:
+        other:
+      call_for_evidence_outcome:
+        other:
       campaign:
         other: 캠페인
       careers:
         other: 커리어
       case_study:
         other: 사례 연구
+      closed_call_for_evidence:
+        other:
       closed_consultation:
         other: 종결된 상담
       complaints_procedure:
@@ -215,6 +249,8 @@ ko:
         other: 공지
       official_statistics:
         other: 공식 통계
+      open_call_for_evidence:
+        other:
       open_consultation:
         other: 공개 상담
       oral_statement:
@@ -279,12 +315,6 @@ ko:
         other: 국회로 서면 성명
     updated: 업데이트
   document_filters:
-    description: 원하시는 내용으로 써치를 제한하는 필터를 사용하실 수 있습니다
-    no_results:
-      description: 다시 써치해주시기 바랍니다.
-      title: 매치되는 문서가 없습니다.
-      tna_heading: 기존 컨텐츠
-      tna_link_html: 2010년 5월 이전의 모든 부서 발행물이 GOV.UK로 마이그레이션되지는 않습니다. 2010년 5월 이전에 발행물을 찾으려면 <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">The National Archives</a>를 찾아 보십시오.
     world_locations:
       all: 모든 로케이션
       label: 월드 로케이션
@@ -366,20 +396,6 @@ ko:
   latest_feed:
     no_updates: 관련 내용이 아직 없습니다.
     title: 최신
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: 정보 접근
@@ -388,8 +404,7 @@ ko:
       organisation_chart: 조직 차트
       transparency: 투명성 데이터
     embassies:
-      find_an_embassy_lowercase: 영국 대사관, 고등판무관 또는 영사관 찾기
-      find_an_embassy_uppercase: 영국 대사관, 고등판무관 또는 영사관 찾기
+      find_an_embassy_title:
     headings:
       corporate_information: 기업 정보
       corporate_reports: 기업 보고서
@@ -401,18 +416,15 @@ ko:
       works_with: 협업 대상
     type:
       courts_and_tribunals: 상위 법원 및 법원
-  publications:
-    heading: 출판물
-    recent: 최근 출판물
-    statistics:
-      link_to_published_statistics: "%{link} 통계 섹션에서 발행되거나 다가올 정부 통계의 목록을 찾아 보십시오."
-      moved_notice: 통계 출판물이 이동되었습니다.
   roles:
     unassigned: 이 역할에 아무도 할당되지 않았습니다
   see_all:
     announcement: 공지 모두 둘러보기
     authored_article: 기사 모두 둘러보기
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: 케이스 스터디 모두 둘러보기
+    closed_call_for_evidence:
     closed_consultation: 비공개 협의 모두 둘러보기
     consultation: 협의 모두 둘러보기
     consultation_outcome: 협의 결과 모두 둘러보기
@@ -435,6 +447,7 @@ ko:
     news_article: 뉴스 모두 둘러보기
     news_story: 뉴스 스토리 모두 둘러보기
     notice: 공지 모두 둘러보기
+    open_call_for_evidence:
     open_consultation: 오픈 컨설테이션 모두 둘러보기
     oral_statement: 의회로 구두 성명 모두 둘러보기
     policy: 정책 논문 모두 둘러보기
@@ -473,15 +486,7 @@ ko:
       heading:
       list_link:
     headings:
-      announcements: 공지사항
-      documents: 자료
-      featured:
-      mission: 대사관 안내
-      news: 월드 로케이션 뉴스
-      organisations: 조직 안내
-      publications: 출판물
       search: 국가 또는 영토로 검색하기
-      statistics: 통계
     search_description:
       international_delegation:
       world_location:

@@ -8,8 +8,6 @@ class CaseStudy < Edition
   include Edition::WorldLocations
   include Edition::WorldwideOrganisations
 
-  validates :first_published_at, presence: true, if: ->(e) { e.trying_to_convert_to_draft == true }
-
   def rendering_app
     Whitehall::RenderingApp::GOVERNMENT_FRONTEND
   end
@@ -24,5 +22,9 @@ class CaseStudy < Edition
 
   def translatable?
     !non_english_edition?
+  end
+
+  def base_path
+    "/government/case-studies/#{slug}"
   end
 end

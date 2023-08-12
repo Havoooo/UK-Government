@@ -21,6 +21,15 @@ uk:
         nation_inapplicabilities: Виключені нації
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Доданий файл
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Номер додатку директивного документу
         hoc_paper_number: Номер документу Палати громад
@@ -39,8 +48,22 @@ uk:
       title: Назва додатку
       unique_reference: Унікальний номер додатку
       unnumbered_hoc_paper: Документ Палати громад без номеру
-  announcements:
-    heading: Оголошення
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ uk:
     caution:
       subheading: Ми виявили деякі розбіжності посилань, які можуть вказувати на проблеми, тому слід бути обережними, посилаючись на них
     title: Порушені посилання
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Закрито
     closing_today: Закривається сьогодні
@@ -165,6 +193,16 @@ uk:
         many:
         one: Допис у блозі
         other: Дописи в блозі
+      call_for_evidence:
+        few:
+        many:
+        one:
+        other:
+      call_for_evidence_outcome:
+        few:
+        many:
+        one:
+        other:
       campaign:
         few:
         many:
@@ -180,6 +218,11 @@ uk:
         many:
         one: Аналіз ситуації
         other: Аналізи ситуації
+      closed_call_for_evidence:
+        few:
+        many:
+        one:
+        other:
       closed_consultation:
         few:
         many:
@@ -350,6 +393,11 @@ uk:
         many:
         one: Офіційна статистика
         other: Офіційна статистика
+      open_call_for_evidence:
+        few:
+        many:
+        one:
+        other:
       open_consultation:
         few:
         many:
@@ -507,12 +555,6 @@ uk:
         other: Письмові заяви до Парламенту
     updated: оновлено
   document_filters:
-    description: Ви можете використовувати фільтри, щоб показувати лише результати, які відповідають вашим інтересам
-    no_results:
-      description: Спробуйте розширити пошук та повторіть спробу.
-      title: Немає відповідних документів.
-      tna_heading: Попередній вміст
-      tna_link_html: Не всі публікації відділу до травня 2010 р. були перенесені на GOV.UK. Щоб знайти публікації до травня 2010 року, спробуйте здійснити пошук у <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Національному архіві</a>.
     world_locations:
       all: Усі локації
       label: Світові локації
@@ -594,20 +636,6 @@ uk:
   latest_feed:
     no_updates: Оновлення поки немає.
     title: Останні
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Отримайте доступ до нашої інформації
@@ -616,8 +644,7 @@ uk:
       organisation_chart: Структурна схема нашої організації
       transparency: Дані прозорості
     embassies:
-      find_an_embassy_lowercase: Знайдіть посольство Великої Британії, представництво високого комісара або консульство
-      find_an_embassy_uppercase: Знайдіть посольство Великої Британії, Представництво високого комісара або Консульство
+      find_an_embassy_title:
     headings:
       corporate_information: Корпоративна інформація
       corporate_reports: Звіти про діяльність корпорації
@@ -629,18 +656,15 @@ uk:
       works_with: Працює з
     type:
       courts_and_tribunals: Суди та арбітражні суди
-  publications:
-    heading: Публікації
-    recent: Недавні публікації
-    statistics:
-      link_to_published_statistics: Знайдіть список опублікованої та майбутньої урядової статистики у розділі статистики %{link}.
-      moved_notice: Статистичні публікації перенесені.
   roles:
     unassigned: На цю посаду ніхто не призначений
   see_all:
     announcement: Перегляньте всі наші оголошення
     authored_article: Перегляньте всі наші авторські статті
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Перегляньте всі наші аналізи ситуацій
+    closed_call_for_evidence:
     closed_consultation: Перегляньте всі наші закриті консультації
     consultation: Перегляньте всі наші консультації
     consultation_outcome: Перегляньте всі результати наших консультацій
@@ -663,6 +687,7 @@ uk:
     news_article: Перегляньте всі наші авторські статті
     news_story: Перегляньте всі наші сюжети новин
     notice: Перегляньте всі наші повідомлення
+    open_call_for_evidence:
     open_consultation: Перегляньте всі наші відкриті консультації
     oral_statement: Перегляньте всі наші усні заяви до парламенту
     policy: Перегляньте всі наші політики
@@ -701,15 +726,7 @@ uk:
       heading:
       list_link:
     headings:
-      announcements: Наші оголошення
-      documents: Документи
-      featured:
-      mission: Наша місія
-      news: Новини світових локацій
-      organisations: Організації
-      publications: Наші публікації
       search: Пошук за країною чи територією
-      statistics: Наша статистика
     search_description:
       international_delegation:
       world_location:

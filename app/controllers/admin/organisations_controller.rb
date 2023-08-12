@@ -1,10 +1,12 @@
 class Admin::OrganisationsController < Admin::BaseController
   before_action :load_organisation, except: %i[index new create]
   before_action :enforce_permissions!, only: %i[new create edit update]
+  layout :get_layout
 
   def index
     @organisations = Organisation.alphabetical
     @user_organisation = current_user.organisation
+    render_design_system(:index, :legacy_index)
   end
 
   def new
@@ -22,7 +24,9 @@ class Admin::OrganisationsController < Admin::BaseController
     end
   end
 
-  def show; end
+  def show
+    render_design_system(:show, :legacy_show)
+  end
 
   def people
     @ministerial_organisation_roles = @organisation.organisation_roles.joins(:role)
@@ -41,22 +45,27 @@ class Admin::OrganisationsController < Admin::BaseController
 
   def features
     @feature_list = @organisation.load_or_create_feature_list(params[:locale])
+    @locale = Locale.new(params[:locale] || :en)
 
     filtering_organisation = params[:organisation] || @organisation.id
 
     filter_params = params.slice(:page, :type, :author, :title)
                           .permit!
                           .to_h
-                          .merge(state: "published", organisation: filtering_organisation)
+                          .merge(
+                            state: "published",
+                            organisation: filtering_organisation,
+                            per_page: preview_design_system?(next_release: false) ? Admin::EditionFilter::GOVUK_DESIGN_SYSTEM_PER_PAGE : nil,
+                          )
 
     @filter = Admin::EditionFilter.new(Edition, current_user, filter_params)
     @featurable_topical_events = TopicalEvent.active
     @featurable_offsite_links = @organisation.offsite_links
 
     if request.xhr?
-      render partial: "admin/feature_lists/search_results", locals: { feature_list: @feature_list }
+      render partial: "admin/feature_lists/legacy_search_results", locals: { feature_list: @feature_list }
     else
-      render :features
+      render_design_system(:features, :legacy_features)
     end
   end
 
@@ -81,6 +90,17 @@ class Admin::OrganisationsController < Admin::BaseController
   end
 
 private
+
+  def get_layout
+    design_system_actions = []
+    design_system_actions += %w[index show features] if preview_design_system?(next_release: false)
+
+    if design_system_actions.include?(action_name)
+      "design_system"
+    else
+      "admin"
+    end
+  end
 
   def enforce_permissions!
     case action_name

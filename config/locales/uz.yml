@@ -21,6 +21,15 @@ uz:
         nation_inapplicabilities: Мустасно миллатлар
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Илова қилинган файл
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Илова қилинган буйруқнинг рақами
         hoc_paper_number: Жамоат Палатасининг ҳужжат рақами
@@ -39,8 +48,22 @@ uz:
       title: Илованинг сарлавҳаси
       unique_reference: Илованинг махсус ҳаволаси
       unnumbered_hoc_paper: Жамоат Палатасининг рақамсиз ҳужжати
-  announcements:
-    heading: Эълонлар
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ uz:
     caution:
       subheading: Биз томондан бузилишга кўрсатиши мумкин бўлган ҳаволаларга тааллуқли маълум муаммолар аниқланди. Сизга улар орқали ўтишда эҳтиёткорликка риоя қилиш лозим бўлади
     title: шикастланган ҳаволалар
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Ёпиқ
     closing_today: Бугун ёпилади
@@ -149,6 +177,12 @@ uz:
       blog_post:
         one: Блог хабари
         other: Блог хабарлари
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Кампания
         other: Кампаниялар
@@ -158,6 +192,9 @@ uz:
       case_study:
         one: Ҳолатлар таҳлили
         other: Ҳолатларнинг таҳлиллари
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Ёпиқ маслаҳат
         other: Ёпиқ маслаҳатлар
@@ -260,6 +297,9 @@ uz:
       official_statistics:
         one: Расмий статистик маълумотлар
         other: Расмий статистик маълумотлар
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Очиқ маслаҳат
         other: Очиқ маслаҳатлар
@@ -355,12 +395,6 @@ uz:
         other: Парламентга ёзма баёнотлар
     updated: янгиланди
   document_filters:
-    description: Сизни қизиқтирган натижаларни кўриш учун фильтрларни қўлланг
-    no_results:
-      description: Қидирувни кенгайтиринг ва яна бир бора уриниб кўринг.
-      title: Мос ҳужжатлар мавжуд эмас.
-      tna_heading: Олдинги мундарижа
-      tna_link_html: 2010 й. май ойигача барча нашрлар GOV.Ukга олиб ўтилмаган. 2010 й. май ойигача чиққан нашрларни топиш учун, <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Национальный архив</a>да излашни бажаришга уриниб кўринг.
     world_locations:
       all: Барча жойлашиш жойлари
       label: Дунёдаги жойлашиш жойлари
@@ -442,20 +476,6 @@ uz:
   latest_feed:
     no_updates: Янгиланишлар мавжуд эмас.
     title: Энг сўнгги
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Биз ҳақимизда маълумотга эга бўлинг
@@ -464,8 +484,7 @@ uz:
       organisation_chart: Ташкилий тузилмани бизнинг схемамиз
       transparency: Очиқликка оид маълумотлар
     embassies:
-      find_an_embassy_lowercase: Британия элчихонасини, олий комиссияни ёки консулликни топиш
-      find_an_embassy_uppercase: Британия элчихонасини, Олий комиссияни ёки Консулликни топиш
+      find_an_embassy_title:
     headings:
       corporate_information: Корпоратив маълумот
       corporate_reports: Корпорация фаолияти тўғрисида ҳисоботлар
@@ -477,18 +496,15 @@ uz:
       works_with: билан ишлар
     type:
       courts_and_tribunals: Судлар ва трибуналлар
-  publications:
-    heading: Нашрлар
-    recent: Яқиндаги нашрлар
-    statistics:
-      link_to_published_statistics: "%{link} статистика бўлимида нашр қилинган ва кутилаётган давлат статистика маълумотлари рўйхатини топиш."
-      moved_notice: Статистика маълумотлари бўйича нашрлар бошқа жойга кўчирилган.
   roles:
     unassigned: Ушбу рольга ҳеч бир шахс тайинланмаган
   see_all:
     announcement: Бизнинг барча эълонларимизни кўринг
     authored_article: Бизнинг барча муаллифлик мақолаларимизни кўринг
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Бизнинг барча ҳолатни ўрганилишларимизни кўринг
+    closed_call_for_evidence:
     closed_consultation: Бизнинг барча ёпиқ маслаҳатларимизни кўринг
     consultation: Бизнинг барча маслаҳатларимизни кўринг
     consultation_outcome: Бизнинг барча маслаҳатларимиз натижаларини кўринг
@@ -511,6 +527,7 @@ uz:
     news_article: Бизнинг барча янги мақолаларимизни кўринг
     news_story: Бизнинг барча янгиликларимизни кўринг
     notice: Бизнинг барча хабарномаларимизни кўринг
+    open_call_for_evidence:
     open_consultation: Бизнинг барча очиқ маслаҳатларимизни кўринг
     oral_statement: Бизнинг барча парламентга оғзаки баёнотларимизни кўринг
     policy: Бизнинг барча дастурларимизни кўринг
@@ -549,15 +566,7 @@ uz:
       heading:
       list_link:
     headings:
-      announcements: Бизнинг эълонлар
-      documents: Ҳужжатлар
-      featured:
-      mission: Бизнинг вазифалар
-      news: Жаҳон янгиликлари
-      organisations: Ташкилотлар
-      publications: Бизнинг нашрлар
       search: Мамлакат ёки минтақа бўйича излаш
-      statistics: Бизнинг статистика
     search_description:
       international_delegation:
       world_location:

@@ -12,47 +12,10 @@ namespace :publishing_api do
       publisher.publish(
         {
           format: "special_route",
-          publishing_app: "whitehall",
+          publishing_app: Whitehall::PublishingApp::WHITEHALL,
           rendering_app: Whitehall::RenderingApp::WHITEHALL_FRONTEND,
           update_type: "major",
           type: "prefix",
-          public_updated_at: Time.zone.now.iso8601,
-        }.merge(route),
-      )
-    end
-  end
-
-  desc "Publish past holders of some of the Great Offices of State"
-  task publish_past_post_holders: :environment do
-    publisher = GdsApi::PublishingApi::SpecialRoutePublisher.new(
-      logger: Logger.new($stdout),
-      publishing_api: Services.publishing_api,
-    )
-
-    [
-      {
-        base_path: "/government/history/past-chancellors",
-        content_id: "ac47f738-b6c3-4369-8d22-ce143c947442",
-        title: "Past Chancellors of the Exchequer",
-      },
-      {
-        base_path: "/government/history/past-prime-ministers",
-        content_id: "a258e45a-acbe-4d70-ad2c-a2a20761536a",
-        title: "Past Prime Ministers",
-      },
-      {
-        base_path: "/government/history/past-foreign-secretaries",
-        content_id: "e46b25e9-d47f-4b93-8466-682b73627db3",
-        title: "Past Foreign Secretaries",
-      },
-    ].each do |route|
-      publisher.publish(
-        {
-          format: "special_route",
-          publishing_app: "whitehall",
-          rendering_app: Whitehall::RenderingApp::WHITEHALL_FRONTEND,
-          update_type: "major",
-          type: "exact",
           public_updated_at: Time.zone.now.iso8601,
         }.merge(route),
       )
@@ -76,7 +39,7 @@ namespace :publishing_api do
             destination: route[:destination],
           },
         ],
-        publishing_app: "whitehall",
+        publishing_app: Whitehall::PublishingApp::WHITEHALL,
         public_updated_at: Time.zone.now.iso8601,
         update_type: "major",
       )
@@ -104,6 +67,31 @@ namespace :publishing_api do
     task :document_by_slug, [:slug] => :environment do |_, args|
       document = Document.find_by!(slug: args[:slug])
       PublishingApiDocumentRepublishingWorker.new.perform(document.id)
+    end
+
+    desc "Republish the past prime ministers index page to Publishing API"
+    task republish_past_prime_ministers_index: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::HistoricalAccountsIndexPresenter)
+    end
+
+    desc "Republish the how government works page to Publishing API"
+    task republish_how_government_works: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::HowGovernmentWorksPresenter)
+    end
+
+    desc "Republish the fields of operation index page to Publishing API"
+    task republish_operational_fields_index: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::OperationalFieldsIndexPresenter)
+    end
+
+    desc "Republish the ministers index page to Publishing API"
+    task republish_ministers_index: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::MinistersIndexPresenter)
+    end
+
+    desc "Republish the embassies index page to Publishing API"
+    task republish_embassies_index: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::EmbassiesIndexPresenter)
     end
   end
 
@@ -264,6 +252,16 @@ namespace :publishing_api do
         end
       end
       puts "Finished enqueueing items for Publishing API"
+    end
+
+    desc "Republish all published Worldwide CorporateInformationPages"
+    task worldwide_corporate_information_pages: :environment do
+      worldwide_corporate_information_pages = CorporateInformationPage.joins(:worldwide_organisation).where(state: "published")
+      puts "Enqueueing #{worldwide_corporate_information_pages.count} Worldwide CorporateInformationPages"
+      worldwide_corporate_information_pages.each do |corporate_information_page|
+        PublishingApiDocumentRepublishingWorker.perform_async_in_queue("bulk_republishing", corporate_information_page.document_id, true)
+      end
+      puts "Finished enqueueing Worldwide CorporateInformationPages for Publishing API"
     end
 
     desc "Republish all documents of a given organisation"

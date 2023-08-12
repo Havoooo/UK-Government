@@ -21,6 +21,15 @@ hy:
         nation_inapplicabilities: Բացառված ազգությունները
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Կցված ֆայլը
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Կցված պաշտոնական փաստաթղթի համարը
         hoc_paper_number: Համայնքների պալատի փաստաթղթի համարը
@@ -39,8 +48,22 @@ hy:
       title: Կցորդի անվանումը
       unique_reference: Կցորդի հատուկ հղումը
       unnumbered_hoc_paper: Համայնքների պալատի չհամարակալված փաստաթուղթ
-  announcements:
-    heading: Հայտարարություններ
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ hy:
     caution:
       subheading: Մենք նկատել ենք խնդրահարույց հղումների հետ կապված որոշ խնդիրներ․ դուք պետք է զգույշ լինեք դրանց կցելու ժամանակ
     title: Չգործող հղումներ
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Ավարտվել է
     closing_today: Այսօր ավարտվում է
@@ -150,6 +178,12 @@ hy:
       blog_post:
         one: Բլոգի գրառում
         other: Բլոգի գրառումներ
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Արշավ
         other: Արշավներ
@@ -159,6 +193,9 @@ hy:
       case_study:
         one: Մասնավոր դեպքի ուսումնասիրություն
         other: Մասնավոր դեպքի ուսումնասիրություններ
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Փակ խորհրդակցություն
         other: Փակ խորհրդակցություններ
@@ -261,6 +298,9 @@ hy:
       official_statistics:
         one: Պաշտոնական վիճակագրություն
         other: Պաշտոնական վիճակագրություն
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Բաց խորհրդակցություն
         other: Բաց խորհրդակցություններ
@@ -356,12 +396,6 @@ hy:
         other: Խորհրդարանին ուղղված գրավոր հայտարարություններ
     updated: Թարմացված
   document_filters:
-    description: Դուք կարող եք օգտագործել ֆիլտրեր` միայն ձեր հետաքրքրություններին համապատասխանող արդյունքները տեսնելու համար
-    no_results:
-      description: 'Փորձեք ձեր որոնումն ավելի ընդլայնել և կրկին փորձեք:'
-      title: 'Համապատասխանող փաստաթղթեր չեն գտնվել:'
-      tna_heading: Ավելի հին բովանդակություն
-      tna_link_html: 'Մինչև 2010թ․ մայիս ամսվա ոչ բոլոր գերատեսչությունների հրապարակումներն են տեղափոխվել GOV.UK կայք: Մինչև 2010թ․ մայիս ամսվա հրապարակումները գտնելու համար փորձեք որոնել այս հղումով՝ <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">The National Archives</a>'
     world_locations:
       all: Բոլոր վայրերը
       label: Գտնվելու վայրերը
@@ -443,20 +477,6 @@ hy:
   latest_feed:
     no_updates: 'Դեռևս թարմացումներ չկան:'
     title: Թարմացումներ
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Հասանելիություն մեր տվյալներին
@@ -465,8 +485,7 @@ hy:
       organisation_chart: Մեր կազմակերպության կառուցվածքը
       transparency: Թափանցիկության տվյալներ
     embassies:
-      find_an_embassy_lowercase: Գտնել Բրիտանիայի դեսպանատուն կամ հյուպատոսություն
-      find_an_embassy_uppercase: Գտնել Բրիտանիայի Դեսպանատուն կամ Հյուպատոսություն
+      find_an_embassy_title:
     headings:
       corporate_information: Կորպորատիվ տեղեկություն
       corporate_reports: Կորպորատիվ զեկույցներ
@@ -478,18 +497,15 @@ hy:
       works_with: Համագործակցում է
     type:
       courts_and_tribunals: Դատարաններ և Տրիբունալներ
-  publications:
-    heading: Հրապարակումներ
-    recent: Վերջին հրապարակումները
-    statistics:
-      link_to_published_statistics: 'Գտնել հրապարակված և կառավարական առաջիկա ​​վիճակագրության ցանկը %{link} վիճակագրություն բաժնում:'
-      moved_notice: 'Վիճակագրության հրապարակումները տեղափոխվել են:'
   roles:
     unassigned: Այս պաշտոնին նշանակված մարդ չկա
   see_all:
     announcement: Դիտել մեր բոլոր հայտարարությունները
     authored_article: Դիտել մեր բոլոր հեղինակային հոդվածները
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Դիտել մեր բոլոր դեպքերի ուսումնասիրությունները
+    closed_call_for_evidence:
     closed_consultation: Դիտել մեր բոլոր փակ խորհրդակցությունները
     consultation: Դիտել մեր բոլոր խորհրդակցությունները
     consultation_outcome: Դիտել մեր բոլոր խորհրդակցությունների արդյունքները
@@ -512,6 +528,7 @@ hy:
     news_article: Դիտել մեր բոլոր տեղեկատվական հոդվածները
     news_story: Դիտել մեր բոլոր ամսագրային հոդվածները
     notice: Դիտել մեր բոլոր ծանուցումները
+    open_call_for_evidence:
     open_consultation: Դիտել մեր բոլոր բաց խորհրդակցությունները
     oral_statement: Դիտել խորհրդարանին ուղղված մեր բոլոր բանավոր հայտարարությունները
     policy: Դիտել մեր բոլոր քաղաքականությունները
@@ -550,15 +567,7 @@ hy:
       heading:
       list_link:
     headings:
-      announcements: Մեր հայտարարությունները
-      documents: Փաստաթղթեր
-      featured:
-      mission: Մեր առաքելությունը
-      news: Նորություններ աշխարհից
-      organisations: Կազմակերպություններ
-      publications: Մեր հրապարակումները
       search: Որոնել ըստ երկրի կամ տարածաշրջանի
-      statistics: Մեր վիճակագրությունը
     search_description:
       international_delegation:
       world_location:

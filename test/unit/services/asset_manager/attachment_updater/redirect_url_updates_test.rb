@@ -3,13 +3,12 @@ require "test_helper"
 class AssetManager::AttachmentUpdater::RedirectUrlUpdatesTest < ActiveSupport::TestCase
   extend Minitest::Spec::DSL
   include Rails.application.routes.url_helpers
-  include PublicDocumentRoutesHelper
 
   describe AssetManager::AttachmentUpdater::RedirectUrlUpdates do
     let(:updater) { AssetManager::AttachmentUpdater }
     let(:attachment_data) { attachment.attachment_data }
     let(:unpublished_edition) { FactoryBot.create(:unpublished_edition) }
-    let(:redirect_url) { Whitehall.url_maker.public_document_url(unpublished_edition) }
+    let(:redirect_url) { unpublished_edition.public_url }
     let(:unpublished) { true }
     let(:update_worker) { mock("asset-manager-update-asset-worker") }
 

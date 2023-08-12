@@ -12,7 +12,7 @@ When(/^I add a "([^"]*)" corporate information page to the worldwide organisatio
   worldwide_organisation = WorldwideOrganisation.last
   visit admin_worldwide_organisation_path(worldwide_organisation)
   click_link "Corporate information pages"
-  click_link "New corporate information page"
+  click_link using_design_system? ? "Create new corporate information page" : "New corporate information page"
   fill_in "Body", with: "This is a new #{page_type} page"
   select page_type, from: "Type"
   click_button "Save"
@@ -31,7 +31,7 @@ end
 Then(/^I should see the corporate information on the public worldwide organisation page$/) do
   worldwide_organisation = WorldwideOrganisation.last
   info_page = worldwide_organisation.corporate_information_pages.last
-  visit worldwide_organisation_path(worldwide_organisation)
+  visit worldwide_organisation.public_path
   expect(page).to have_content(info_page.title)
   click_link info_page.title
   expect(page).to have_content(info_page.body)
@@ -44,24 +44,16 @@ When(/^I translate the "([^"]*)" corporate information page for the worldwide or
   click_link corp_page
   click_link "Add translation"
 
-  if using_design_system?
-    select "Français", from: "Choose language"
-    click_button "Next"
-    fill_in "Translated summary", with: "Le summary"
-    fill_in "Translated body (required)", with: "Le body"
-  else
-    select "Français", from: "Locale"
-    click_button "Add translation"
-    fill_in "Summary", with: "Le summary"
-    fill_in "Body", with: "Le body"
-  end
-
+  select "Français", from: "Choose language"
+  click_button "Next"
+  fill_in "Translated summary", with: "Le summary"
+  fill_in "Translated body (required)", with: "Le body"
   click_on "Save"
 end
 
 Then(/^I should be able to read the translated "([^"]*)" corporate information page for the worldwide organisation "([^"]*)" on the site$/) do |corp_page, worldwide_org|
   worldwide_organisation = WorldwideOrganisation.find_by(name: worldwide_org)
-  visit worldwide_organisation_path(worldwide_organisation)
+  visit worldwide_organisation.public_path
 
   click_link corp_page
   click_link "Français"

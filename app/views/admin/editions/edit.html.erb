@@ -1,37 +1,69 @@
 <% content_for :page_title, "Edit #{@edition.format_name}"%>
-<% content_for :back_link, (render "govuk_publishing_components/components/back_link", {
-    href: admin_edition_path(@edition)
-  })
-%>
-<% content_for :error_summary, render('shared/error_summary', object: @edition, parent_class: "edition", class_name: @edition.format_name) %>
+<% content_for :title, "Editing #{@edition.format_name}" %>
+<% content_for :context, @edition.title %>
+<% content_for :error_summary, render(Admin::ErrorSummaryComponent.new(object: @edition, parent_class: "edition")) %>
 <% content_for :banner, render("recent_openings", edition: @edition, recent_openings: @recent_openings) %>
+<%= render "admin/tracking/subtype_tracking", document_type: @edition.type, document: @edition %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <%= render "govuk_publishing_components/components/title", {
-      context: @edition.title,
-      title: "Editing #{@edition.format_name}"
+<% if @conflicting_edition %>
+  <div class="govuk-grid-row">
+    <%= render "govuk_publishing_components/components/error_alert", {
+      message: "This document has been updated by another user since you started editing it.",
+      description: "Please review conflicts between the two versions and incorporate any changes before pressing save again."
     } %>
 
-    <% if @conflicting_edition %>
-      <%= render "govuk_publishing_components/components/error_alert", {
-        message: "This document has been updated by another user since you started editing it.",
-        description: "Please review conflicts between the two versions and incorporate any changes before pressing save again."
-      } %>
-
+    <div class="govuk-grid-column-one-half">
       <h2 class="govuk-heading-l">Your version</h2>
       <%= render "form", edition: @edition %>
+    </div>
 
+    <div class="govuk-grid-column-one-half conflict">
       <h2 class="govuk-heading-l">Current saved version</h2>
-      <%= render "legacy_conflict", edition: @conflicting_edition %>
-    <% else %>
-      <div class="row">
-        <div class="col-md-8">
-          <section>
-            <%= render "form", edition: @edition %>
-          </section>
-        </div>
-      </div>
-    <% end %>
+      <%= render "conflict", edition: @conflicting_edition %>
+    </div>
   </div>
-</div>
+<% else %>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <%= render "components/secondary_navigation", {
+        aria_label: "Document navigation tabs",
+        items: secondary_navigation_tabs_items(@edition, request.path)
+      } %>
+
+      <%= render "form", edition: @edition %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%= render "govuk_publishing_components/components/tabs", {
+       tabs: [
+         {
+           id: "govspeak_tab",
+           label: "Help",
+           content: simple_formatting_sidebar(
+             hide_inline_attachments_help: !@edition.allows_inline_attachments?,
+             show_attachments_tab_help: true,
+             link_check_report: LinkCheckerApiService.has_links?(@edition, convert_admin_links: false) ? @edition.link_check_reports.last : nil,
+           )
+         },
+         {
+           id: "history_tab",
+           label: "History",
+           content: tag.div(
+             render(Admin::Editions::DocumentHistoryTabComponent.new(
+               edition: @edition,
+               document_history: @document_history,
+               editing: true,
+             )),
+             data: { module: "document-history-paginator" },
+           ),
+         },
+         *([{
+           id: "fact_checking_tab",
+           label: "Fact checking",
+           content: render(Admin::Editions::FactCheckingTabComponent.new(edition: @edition))
+         }] if @edition.can_be_fact_checked?)
+       ]
+      } %>
+    </div>
+  </div>
+<% end %>

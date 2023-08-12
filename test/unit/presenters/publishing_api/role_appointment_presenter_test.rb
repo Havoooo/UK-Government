@@ -10,6 +10,7 @@ class PublishingApi::RoleAppointmentPresenterTest < ActionView::TestCase
 
     presented_item = present(role_appointment)
     assert_valid_against_publisher_schema(presented_item.content, "role_appointment")
+    assert_valid_against_links_schema({ links: presented_item.links }, "role_appointment")
   end
 
   test "presents a role appointment ready for adding to the Publishing API" do
@@ -26,13 +27,13 @@ class PublishingApi::RoleAppointmentPresenterTest < ActionView::TestCase
       schema_name: "role_appointment",
       document_type: "role_appointment",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       public_updated_at: role.updated_at,
       update_type: "major",
       details: {
         started_on: "2011-11-10T11:11:11+00:00",
         current: true,
-        person_appointment_order: role_appointment.id,
+        person_appointment_order: role_appointment.order,
       },
     }
     expected_links = {

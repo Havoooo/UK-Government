@@ -1,6 +1,7 @@
 class Admin::StatisticsAnnouncementTagsController < Admin::BaseController
   before_action :find_statistics_announcement
   before_action :enforce_permissions!
+  layout "design_system"
 
   def edit
     @topic_taxonomy = Taxonomy::TopicTaxonomy.new

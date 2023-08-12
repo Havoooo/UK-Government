@@ -10,16 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
-  create_table "access_and_opening_times", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
-    t.text "body"
-    t.string "accessible_type"
-    t.integer "accessible_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.index ["accessible_id", "accessible_type"], name: "accessible_index"
-  end
-
+ActiveRecord::Schema[7.0].define(version: 2023_06_21_120551) do
   create_table "attachment_data", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "carrierwave_file"
     t.string "content_type"
@@ -39,7 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["attachment_id"], name: "index_attachment_sources_on_attachment_id"
   end
 
-  create_table "attachments", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "attachments", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.string "title"
@@ -68,6 +59,42 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["ordering"], name: "index_attachments_on_ordering"
   end
 
+  create_table "call_for_evidence_participations", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+    t.integer "edition_id"
+    t.string "link_url"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.string "email"
+    t.integer "call_for_evidence_response_form_id"
+    t.text "postal_address"
+    t.index ["call_for_evidence_response_form_id"], name: "index_cons_participations_on_cons_response_form_id"
+    t.index ["edition_id"], name: "index_call_for_evidence_participations_on_edition_id"
+  end
+
+  create_table "call_for_evidence_response_form_data", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+    t.string "carrierwave_file"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+  end
+
+  create_table "call_for_evidence_response_forms", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.integer "call_for_evidence_response_form_data_id"
+  end
+
+  create_table "call_for_evidence_responses", charset: "utf8mb3", force: :cascade do |t|
+    t.integer "edition_id"
+    t.text "summary"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.date "published_on"
+    t.string "type"
+    t.index ["edition_id", "type"], name: "index_call_for_evidence_responses_on_edition_id_and_type"
+    t.index ["edition_id"], name: "index_call_for_evidence_responses_on_edition_id"
+  end
+
   create_table "consultation_participations", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "edition_id"
     t.string "link_url"
@@ -93,7 +120,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.integer "consultation_response_form_data_id"
   end
 
-  create_table "contact_number_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "consultation_responses", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+    t.integer "edition_id"
+    t.text "summary"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.date "published_on"
+    t.string "type"
+    t.index ["edition_id", "type"], name: "index_consultation_responses_on_edition_id_and_type"
+    t.index ["edition_id"], name: "index_consultation_responses_on_edition_id"
+  end
+
+  create_table "contact_number_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "contact_number_id"
     t.string "locale"
     t.datetime "created_at", precision: nil, null: false
@@ -104,7 +142,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["locale"], name: "index_contact_number_translations_on_locale"
   end
 
-  create_table "contact_numbers", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "contact_numbers", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "contact_id"
     t.string "label"
     t.string "number"
@@ -113,7 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["contact_id"], name: "index_contact_numbers_on_contact_id"
   end
 
-  create_table "contact_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "contact_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "contact_id"
     t.string "locale"
     t.datetime "created_at", precision: nil, null: false
@@ -130,7 +168,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["locale"], name: "index_contact_translations_on_locale"
   end
 
-  create_table "contacts", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "contacts", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.decimal "latitude", precision: 15, scale: 10
     t.decimal "longitude", precision: 15, scale: 10
     t.integer "contactable_id"
@@ -148,13 +186,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["version"], name: "index_data_migration_records_on_version", unique: true
   end
 
-  create_table "default_news_organisation_image_data", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "default_news_organisation_image_data", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "carrierwave_image"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "document_collection_group_memberships", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "document_collection_group_memberships", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "document_id"
     t.integer "document_collection_group_id"
     t.integer "ordering"
@@ -166,7 +204,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["non_whitehall_link_id"], name: "index_document_collection_non_whitehall_link"
   end
 
-  create_table "document_collection_groups", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "document_collection_groups", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "document_collection_id"
     t.string "heading"
     t.text "body"
@@ -185,17 +223,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "document_sources", id: :integer, charset: "utf8mb3", force: :cascade do |t|
-    t.integer "document_id"
-    t.string "url", null: false
-    t.integer "import_id"
-    t.integer "row_number"
-    t.string "locale", default: "en"
-    t.index ["document_id"], name: "index_document_sources_on_document_id"
-    t.index ["url"], name: "index_document_sources_on_url", unique: true
-  end
-
-  create_table "documents", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "documents", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.string "slug"
@@ -225,7 +253,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["dependable_id", "dependable_type", "edition_id"], name: "index_edition_dependencies_on_dependable_and_edition", unique: true
   end
 
-  create_table "edition_organisations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "edition_organisations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id"
     t.integer "organisation_id"
     t.datetime "created_at", precision: nil
@@ -245,7 +273,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["policy_content_id"], name: "index_edition_policies_on_policy_content_id"
   end
 
-  create_table "edition_relations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "edition_relations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id", null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -268,7 +296,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["edition_id"], name: "index_edition_statistical_data_sets_on_edition_id"
   end
 
-  create_table "edition_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "edition_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id"
     t.string "locale"
     t.string "title"
@@ -280,7 +308,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["locale"], name: "index_edition_translations_on_locale"
   end
 
-  create_table "edition_world_locations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "edition_world_locations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id"
     t.integer "world_location_id"
     t.datetime "created_at", precision: nil
@@ -290,7 +318,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["world_location_id"], name: "index_edition_world_locations_on_world_location_id"
   end
 
-  create_table "edition_worldwide_organisations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "edition_worldwide_organisations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id"
     t.integer "worldwide_organisation_id"
     t.datetime "created_at", precision: nil
@@ -299,7 +327,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["worldwide_organisation_id"], name: "index_edition_worldwide_orgs_on_worldwide_organisation_id"
   end
 
-  create_table "editions", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "editions", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "lock_version", default: 0
@@ -345,6 +373,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.boolean "all_nation_applicability", default: true
     t.string "image_display_option"
     t.string "auth_bypass_id", null: false
+    t.string "mapped_specialist_topic_content_id"
     t.index ["alternative_format_provider_id"], name: "index_editions_on_alternative_format_provider_id"
     t.index ["closing_at"], name: "index_editions_on_closing_at"
     t.index ["document_id"], name: "index_editions_on_document_id"
@@ -361,7 +390,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["type"], name: "index_editions_on_type"
   end
 
-  create_table "editorial_remarks", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "editorial_remarks", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.text "body"
     t.integer "edition_id"
     t.integer "author_id"
@@ -371,7 +400,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["edition_id"], name: "index_editorial_remarks_on_edition_id"
   end
 
-  create_table "fact_check_requests", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "fact_check_requests", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id"
     t.string "key"
     t.datetime "created_at", precision: nil
@@ -390,7 +419,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.text "personal_details"
   end
 
-  create_table "feature_lists", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "feature_lists", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "featurable_id"
     t.string "featurable_type"
     t.string "locale"
@@ -417,7 +446,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "features", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "features", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "document_id"
     t.integer "feature_list_id"
     t.string "carrierwave_image"
@@ -434,7 +463,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["ordering"], name: "index_features_on_ordering"
   end
 
-  create_table "financial_reports", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "financial_reports", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "organisation_id"
     t.bigint "funding"
     t.bigint "spending"
@@ -476,8 +505,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.integer "html_attachment_id"
     t.text "body", size: :medium
     t.boolean "manually_numbered_headings"
-    t.text "computed_body_html", size: :medium
-    t.text "computed_headers_html"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["html_attachment_id"], name: "index_govspeak_contents_on_html_attachment_id"
@@ -503,7 +530,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_groups_on_slug"
   end
 
-  create_table "historical_account_roles", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "historical_account_roles", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "role_id"
     t.integer "historical_account_id"
     t.datetime "created_at", precision: nil
@@ -512,7 +539,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["role_id"], name: "index_historical_account_roles_on_role_id"
   end
 
-  create_table "historical_accounts", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "historical_accounts", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "person_id"
     t.text "summary"
     t.text "body"
@@ -523,10 +550,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.string "political_party_ids"
+    t.string "content_id"
     t.index ["person_id"], name: "index_historical_accounts_on_person_id"
   end
 
-  create_table "home_page_list_items", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "home_page_list_items", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "home_page_list_id", null: false
     t.integer "item_id", null: false
     t.string "item_type", null: false
@@ -538,7 +566,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["item_id", "item_type"], name: "index_home_page_list_items_on_item_id_and_item_type"
   end
 
-  create_table "home_page_lists", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "home_page_lists", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "owner_id", null: false
     t.string "owner_type", null: false
     t.string "name"
@@ -547,13 +575,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["owner_id", "owner_type", "name"], name: "index_home_page_lists_on_owner_id_and_owner_type_and_name", unique: true
   end
 
-  create_table "image_data", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "image_data", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "carrierwave_image"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "images", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "images", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "image_data_id"
     t.integer "edition_id"
     t.string "alt_text"
@@ -591,7 +619,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["link_reportable_type", "link_reportable_id"], name: "index_link_checker_api_reportable"
   end
 
-  create_table "nation_inapplicabilities", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "nation_inapplicabilities", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "nation_id"
     t.integer "edition_id"
     t.datetime "created_at", precision: nil
@@ -623,7 +651,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_operational_fields_on_slug"
   end
 
-  create_table "organisation_roles", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "organisation_roles", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "organisation_id"
     t.integer "role_id"
     t.datetime "created_at", precision: nil
@@ -639,7 +667,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["superseded_organisation_id"], name: "index_organisation_supersedings_on_superseded_organisation_id"
   end
 
-  create_table "organisation_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "organisation_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "organisation_id"
     t.string "locale"
     t.string "name"
@@ -661,7 +689,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["parent_organisation_id"], name: "index_organisational_relationships_on_parent_organisation_id"
   end
 
-  create_table "organisations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "organisations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.string "slug", null: false
@@ -697,7 +725,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_organisations_on_slug", unique: true
   end
 
-  create_table "people", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "people", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "title"
     t.string "forename"
     t.string "surname"
@@ -711,7 +739,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_people_on_slug", unique: true
   end
 
-  create_table "person_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "person_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "person_id"
     t.string "locale"
     t.text "biography"
@@ -732,7 +760,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["policy_group_id"], name: "index_policy_group_dependencies_on_policy_group_id"
   end
 
-  create_table "policy_groups", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "policy_groups", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "email"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -744,20 +772,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_policy_groups_on_slug"
   end
 
-  create_table "promotional_feature_items", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "promotional_feature_items", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "promotional_feature_id"
     t.text "summary"
     t.string "image"
     t.string "image_alt_text"
     t.string "title"
     t.string "title_url"
-    t.boolean "double_width", default: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.string "youtube_video_url"
+    t.string "youtube_video_alt_text"
     t.index ["promotional_feature_id"], name: "index_promotional_feature_items_on_promotional_feature_id"
   end
 
-  create_table "promotional_feature_links", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "promotional_feature_links", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "promotional_feature_item_id"
     t.string "url"
     t.string "text"
@@ -766,15 +795,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["promotional_feature_item_id"], name: "index_promotional_feature_links_on_promotional_feature_item_id"
   end
 
-  create_table "promotional_features", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "promotional_features", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "organisation_id"
     t.string "title"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.integer "ordering"
     t.index ["organisation_id"], name: "index_promotional_features_on_organisation_id"
   end
 
-  create_table "recent_edition_openings", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "recent_edition_openings", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id", null: false
     t.integer "editor_id", null: false
     t.datetime "created_at", precision: nil, null: false
@@ -790,18 +820,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["edition_id"], name: "index_related_mainstreams_on_edition_id"
   end
 
-  create_table "responses", id: :integer, charset: "utf8mb3", force: :cascade do |t|
-    t.integer "edition_id"
-    t.text "summary"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.date "published_on"
-    t.string "type"
-    t.index ["edition_id", "type"], name: "index_responses_on_edition_id_and_type"
-    t.index ["edition_id"], name: "index_responses_on_edition_id"
-  end
-
-  create_table "role_appointments", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "role_appointments", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "role_id"
     t.integer "person_id"
     t.datetime "created_at", precision: nil
@@ -809,12 +828,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "started_at", precision: nil
     t.datetime "ended_at", precision: nil
     t.string "content_id"
+    t.integer "order"
     t.index ["ended_at"], name: "index_role_appointments_on_ended_at"
     t.index ["person_id"], name: "index_role_appointments_on_person_id"
     t.index ["role_id"], name: "index_role_appointments_on_role_id"
   end
 
-  create_table "role_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "role_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "role_id"
     t.string "locale"
     t.string "name"
@@ -826,7 +846,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["role_id"], name: "index_role_translations_on_role_id"
   end
 
-  create_table "roles", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "roles", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.string "type", null: false
@@ -855,7 +875,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "social_media_account_translations", charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "social_media_account_translations", charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.text "url"
     t.text "title"
     t.string "locale", null: false
@@ -866,7 +886,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["social_media_account_id"], name: "index_on_social_media_account"
   end
 
-  create_table "social_media_accounts", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "social_media_accounts", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "socialable_id"
     t.integer "social_media_service_id"
     t.datetime "created_at", precision: nil
@@ -876,13 +896,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["socialable_id"], name: "index_social_media_accounts_on_organisation_id"
   end
 
-  create_table "social_media_services", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "social_media_services", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "specialist_sectors", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "specialist_sectors", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id", null: false
     t.string "tag"
     t.datetime "created_at", precision: nil, null: false
@@ -956,7 +976,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["topic_id"], name: "index_statistics_announcements_on_topic_id"
   end
 
-  create_table "take_part_pages", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "take_part_pages", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "title", null: false
     t.string "slug", null: false
     t.string "summary", null: false
@@ -971,7 +991,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_take_part_pages_on_slug", unique: true
   end
 
-  create_table "topical_event_about_pages", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "topical_event_about_pages", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "topical_event_id"
     t.string "name"
     t.text "summary"
@@ -1003,7 +1023,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["topical_event_id"], name: "index_topical_event_feat_on_topical_event_id"
   end
 
-  create_table "topical_event_memberships", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "topical_event_memberships", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "topical_event_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -1013,7 +1033,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["topical_event_id"], name: "index_topical_event_memberships_on_topical_event_id"
   end
 
-  create_table "topical_event_organisations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "topical_event_organisations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "organisation_id", null: false
     t.integer "topical_event_id", null: false
     t.datetime "created_at", precision: nil
@@ -1026,7 +1046,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["topical_event_id"], name: "index_topical_event_org_on_topical_event_id"
   end
 
-  create_table "topical_events", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "topical_events", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -1042,7 +1062,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["slug"], name: "index_topical_events_on_slug"
   end
 
-  create_table "unpublishings", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "unpublishings", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "edition_id"
     t.integer "unpublishing_reason_id"
     t.text "explanation"
@@ -1058,13 +1078,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["unpublishing_reason_id"], name: "index_unpublishings_on_unpublishing_reason_id"
   end
 
-  create_table "user_world_locations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "user_world_locations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "user_id"
     t.integer "world_location_id"
     t.index ["user_id", "world_location_id"], name: "index_user_world_locations_on_user_id_and_world_location_id", unique: true
   end
 
-  create_table "users", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "users", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -1079,7 +1099,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["organisation_slug"], name: "index_users_on_organisation_slug"
   end
 
-  create_table "versions", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "versions", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
@@ -1090,14 +1110,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
-  create_table "world_location_news", charset: "utf8mb3", force: :cascade do |t|
+  create_table "world_location_news", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "world_location_id"
     t.string "content_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "world_location_news_translations", charset: "utf8mb3", force: :cascade do |t|
+  create_table "world_location_news_translations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "world_location_news_id"
     t.string "locale"
     t.string "title"
@@ -1106,7 +1126,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "world_location_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "world_location_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "world_location_id"
     t.string "locale"
     t.string "name"
@@ -1116,7 +1136,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["world_location_id"], name: "index_world_location_translations_on_world_location_id"
   end
 
-  create_table "world_locations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "world_locations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.string "slug"
@@ -1137,17 +1157,19 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "worldwide_offices", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "worldwide_offices", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "worldwide_organisation_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "worldwide_office_type_id", null: false
     t.string "slug"
+    t.text "access_and_opening_times"
+    t.string "content_id"
     t.index ["slug"], name: "index_worldwide_offices_on_slug"
     t.index ["worldwide_organisation_id"], name: "index_worldwide_offices_on_worldwide_organisation_id"
   end
 
-  create_table "worldwide_organisation_roles", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "worldwide_organisation_roles", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "worldwide_organisation_id"
     t.integer "role_id"
     t.datetime "created_at", precision: nil
@@ -1156,11 +1178,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.index ["worldwide_organisation_id"], name: "index_worldwide_org_roles_on_worldwide_organisation_id"
   end
 
-  create_table "worldwide_organisation_translations", id: :integer, charset: "utf8mb3", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "worldwide_organisation_translations", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "worldwide_organisation_id"
     t.string "locale"
     t.string "name"
-    t.text "services"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["locale"], name: "index_worldwide_org_translations_on_locale"
@@ -1186,6 +1207,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_091720) do
     t.integer "default_news_organisation_image_data_id"
     t.string "analytics_identifier"
     t.string "content_id"
+    t.text "default_access_and_opening_times"
     t.index ["default_news_organisation_image_data_id"], name: "index_worldwide_organisations_on_image_data_id"
     t.index ["slug"], name: "index_worldwide_organisations_on_slug", unique: true
   end

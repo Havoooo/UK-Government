@@ -1,4 +1,6 @@
 class HistoricalAccount < ApplicationRecord
+  include PublishesToPublishingApi
+
   belongs_to :person, inverse_of: :historical_accounts
   has_many   :historical_account_roles
   has_many   :roles, through: :historical_account_roles
@@ -9,6 +11,8 @@ class HistoricalAccount < ApplicationRecord
   validates :born, :died, length: { maximum: 256 }
   validate :roles_support_historical_accounts
   validate :validate_correct_political_party
+  after_save :republish_prime_ministers_index_page_to_publishing_api
+  after_destroy :republish_prime_ministers_index_page_to_publishing_api
 
   serialize :political_party_ids, Array
 
@@ -36,6 +40,10 @@ class HistoricalAccount < ApplicationRecord
 
   def role
     roles.first
+  end
+
+  def republish_prime_ministers_index_page_to_publishing_api
+    PresentPageToPublishingApi.new.publish(PublishingApi::HistoricalAccountsIndexPresenter) unless role.slug != "prime-minister"
   end
 
   def appointment_info_array
@@ -73,7 +81,27 @@ class HistoricalAccount < ApplicationRecord
          .join(", ")
   end
 
+  def base_path
+    "/government/history/past-prime-ministers/#{person.slug}" if previous_prime_minister?
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options) if previous_prime_minister?
+  end
+
+  def public_url(options = {})
+    Plek.website_root + public_path(options) if previous_prime_minister?
+  end
+
+  def can_publish_to_publishing_api?
+    super && previous_prime_minister?
+  end
+
 private
+
+  def previous_prime_minister?
+    roles.map(&:slug).include?("prime-minister")
+  end
 
   def roles_support_historical_accounts
     unless roles.all?(&:supports_historical_accounts?)

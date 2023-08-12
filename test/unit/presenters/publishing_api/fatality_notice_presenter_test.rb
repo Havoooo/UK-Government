@@ -13,10 +13,12 @@ class PublishingApi::FatalityNoticePresenterTest < ActiveSupport::TestCase
 
     @presented_fatality_notice = PublishingApi::FatalityNoticePresenter.new(@fatality_notice)
     @presented_content = I18n.with_locale("de") { @presented_fatality_notice.content }
+    @presented_links = I18n.with_locale("de") { @presented_fatality_notice.links }
   end
 
   test "it presents a valid fatality_notice content item" do
     assert_valid_against_publisher_schema @presented_content, "fatality_notice"
+    assert_valid_against_links_schema({ links: @presented_links }, "fatality_notice")
   end
 
   test "it delegates the content id" do
@@ -32,7 +34,7 @@ class PublishingApi::FatalityNoticePresenterTest < ActiveSupport::TestCase
   end
 
   test "it presents the base_path" do
-    assert_equal "/government/fatalities/fatality-notice-title", @presented_content[:base_path]
+    assert_equal "/government/fatalities/fatality-notice-title.de", @presented_content[:base_path]
   end
 
   test "it presents updated_at if public_timestamp is nil" do
@@ -42,7 +44,7 @@ class PublishingApi::FatalityNoticePresenterTest < ActiveSupport::TestCase
   end
 
   test "it presents the publishing_app as whitehall" do
-    assert_equal "whitehall", @presented_content[:publishing_app]
+    assert_equal Whitehall::PublishingApp::WHITEHALL, @presented_content[:publishing_app]
   end
 
   test "it presents the rendering_app as government-frontend" do
@@ -119,6 +121,9 @@ class PublishingApi::FatalityNoticePresenterDetailsTest < ActiveSupport::TestCas
       body: "*Test string*",
     )
 
+    @casualty_one = create(:fatality_notice_casualty, fatality_notice: @fatality_notice)
+    @casualty_two = create(:fatality_notice_casualty, fatality_notice: @fatality_notice)
+
     @presented_details = PublishingApi::FatalityNoticePresenter.new(@fatality_notice).content[:details]
   end
 
@@ -131,6 +136,14 @@ class PublishingApi::FatalityNoticePresenterDetailsTest < ActiveSupport::TestCas
 
   test "it presents first_public_at as nil for draft" do
     assert_nil @presented_details[:first_published_at]
+  end
+
+  test "it presents the roll call introduction" do
+    assert_equal(@fatality_notice.roll_call_introduction, @presented_details[:roll_call_introduction])
+  end
+
+  test "it presents the casualties" do
+    assert_equal [@casualty_one.personal_details, @casualty_two.personal_details], @presented_details[:casualties]
   end
 end
 

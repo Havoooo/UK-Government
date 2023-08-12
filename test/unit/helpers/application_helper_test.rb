@@ -16,11 +16,6 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal %(<a href="#{attachment.url}">#{File.basename(attachment.filename)}</a>), link_to_attachment(attachment)
   end
 
-  test "#link_to_attachment truncates filename if :truncate is true" do
-    attachment = create(:file_attachment, file: File.open(Rails.root.join("test/fixtures/consultation_uploader_test_sample.csv")))
-    assert_equal %(<a href="#{attachment.url}">consultation_uploader_test_...</a>), link_to_attachment(attachment, truncate: true)
-  end
-
   test "should format into paragraphs" do
     assert_equal "", format_in_paragraphs(nil)
     assert_equal "", format_in_paragraphs("")
@@ -44,18 +39,6 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal "line 1<br/><br/>line 2", format_with_html_line_breaks("line 1\r\n\r\nline 2")
     assert_equal "&lt;script&gt;&amp;", format_with_html_line_breaks("<script>&")
     assert format_with_html_line_breaks("").html_safe?
-  end
-
-  test "should raise unless you supply the content of the list item" do
-    e = assert_raise(ArgumentError) { render_list_of_ministerial_roles([]) }
-    assert_match %r{please supply the content of the list item}i, e.message
-  end
-
-  test "should render a list of ministerial roles" do
-    roles = [build(:ministerial_role, name: "Jack"), build(:ministerial_role, name: "Jill")]
-    html = render_list_of_ministerial_roles(roles) { |ministerial_role| "<p>#{ministerial_role.name}</p>" }
-    assert_select_within_html(html, "ul li p", text: "Jack")
-    assert_select_within_html(html, "ul li p", text: "Jill")
   end
 
   test "should render a object's datetime using the datetime microformat" do

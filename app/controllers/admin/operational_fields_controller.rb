@@ -1,5 +1,6 @@
 class Admin::OperationalFieldsController < Admin::BaseController
   before_action :require_fatality_handling_permission!
+  layout "design_system"
 
   def index
     @operational_fields = OperationalField.order(:name)
@@ -14,7 +15,7 @@ class Admin::OperationalFieldsController < Admin::BaseController
     if @operational_field.save
       redirect_to admin_operational_fields_path, notice: %("#{@operational_field.name}" created.)
     else
-      render action: "new"
+      render :new
     end
   end
 
@@ -27,7 +28,7 @@ class Admin::OperationalFieldsController < Admin::BaseController
     if @operational_field.update(operational_field_params)
       redirect_to admin_operational_fields_path, notice: %("#{@operational_field.name}" saved.)
     else
-      render action: "edit"
+      render :edit
     end
   end
 

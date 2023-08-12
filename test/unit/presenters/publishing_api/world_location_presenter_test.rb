@@ -14,7 +14,7 @@ class PublishingApi::WorldLocationPresenterTest < ActiveSupport::TestCase
       schema_name: "world_location",
       document_type: "world_location",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "whitehall-frontend",
       public_updated_at: world_location.updated_at,
       redirects: [],
@@ -32,5 +32,34 @@ class PublishingApi::WorldLocationPresenterTest < ActiveSupport::TestCase
     assert_equal world_location.content_id, presented_item.content_id
 
     assert_valid_against_publisher_schema(presented_item.content, "world_location")
+    assert_valid_against_links_schema({ links: presented_item.links }, "world_location")
+  end
+
+  test "presents the correct routes for an international delegation with a translation" do
+    world_location = create(:international_delegation,
+                            name: "UK Delegation to Narnia",
+                            translated_into: [:cy])
+
+    expected_base_path = "/world/uk-delegation-to-narnia"
+
+    I18n.with_locale(:en) do
+      presented_item = present(world_location)
+
+      assert_equal expected_base_path, presented_item.content[:base_path]
+
+      assert_equal [
+        { path: expected_base_path, type: "exact" },
+      ], presented_item.content[:routes]
+    end
+
+    I18n.with_locale(:cy) do
+      presented_item = present(world_location)
+
+      assert_equal "#{expected_base_path}.cy", presented_item.content[:base_path]
+
+      assert_equal [
+        { path: "#{expected_base_path}.cy", type: "exact" },
+      ], presented_item.content[:routes]
+    end
   end
 end

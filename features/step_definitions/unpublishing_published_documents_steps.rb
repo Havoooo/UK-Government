@@ -14,15 +14,8 @@ When(/^I unpublish the duplicate, marking it as consolidated into the other page
   visit admin_edition_path(@duplicate_edition)
   click_on "Withdraw or unpublish"
   choose "Unpublish: consolidated into another GOV.UK page"
-
-  form_container = if using_design_system?
-                     ".js-unpublish-withdraw-form__consolidated"
-                   else
-                     "#js-consolidated-form"
-                   end
-
-  within form_container do
-    fill_in "consolidated_alternative_url", with: Whitehall.url_maker.publication_url(@existing_edition.document)
+  within ".js-app-view-unpublish-withdraw-form__consolidated" do
+    fill_in "consolidated_alternative_url", with: @existing_edition.public_url
     click_button "Unpublish"
   end
 end
@@ -32,14 +25,7 @@ def withdraw_publication(explanation)
   visit admin_edition_path(@publication)
   click_on "Withdraw or unpublish"
   choose "Withdraw: no longer current government policy/activity"
-
-  form_container = if using_design_system?
-                     ".js-unpublish-withdraw-form__withdrawal"
-                   else
-                     "#js-withdraw-form"
-                   end
-
-  within form_container do
+  within ".js-app-view-unpublish-withdraw-form__withdrawal" do
     fill_in "Public explanation", with: explanation
     click_button "Withdraw"
   end
@@ -82,7 +68,7 @@ end
 
 Then(/^the unpublishing should redirect to the existing edition$/) do
   unpublishing = @duplicate_edition.unpublishing
-  path = publication_path(@existing_edition.document)
+  path = @existing_edition.public_path
   expect(unpublishing.alternative_url.end_with?(path)).to be(true)
 end
 
@@ -93,11 +79,6 @@ end
 Then(/^there should be an editorial remark recording the fact that the document was unpublished$/) do
   edition = Edition.last
   expect("Reset to draft").to eq(edition.editorial_remarks.last.body)
-end
-
-Then(/^there should be an editorial remark recording the fact that the document was withdrawn$/) do
-  edition = Edition.last
-  expect("Withdrawn").to eq(edition.editorial_remarks.last.body)
 end
 
 Then(/^there should be an unpublishing explanation of "([^"]*)" and a reason of "([^"]*)"$/) do |explanation, reason_name|
@@ -143,6 +124,6 @@ end
 
 Then(/^I should not be able to discard the draft resulting from the unpublishing$/) do
   visit admin_edition_path(Edition.last)
-
-  expect(page).not_to have_button("Discard draft")
+  button_text = using_design_system? ? "Delete draft" : "Discard draft"
+  expect(page).not_to have_button(button_text)
 end

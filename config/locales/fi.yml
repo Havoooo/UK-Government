@@ -21,6 +21,15 @@ fi:
         nation_inapplicabilities: Poissuljetut kansat
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Liitetiedosto
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Liitetiedoston paperin numero
         hoc_paper_number: Alahuoneen asiakirjan numero
@@ -39,8 +48,22 @@ fi:
       title: Liitteen otsikko
       unique_reference: Liitteen yksilöllinen viite
       unnumbered_hoc_paper: Alahuoneen numeroimaton asiakirja
-  announcements:
-    heading: Ilmoitukset
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ fi:
     caution:
       subheading: Olemme löytäneet joitakin ongelmia linkeissä, jotka voivat viitata ongelmiin, sinun on noudatettava varovaisuutta linkittämällä niihin
     title: Katkenneet linkit
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Suljettu
     closing_today: Suljetaan tänään
@@ -150,6 +178,12 @@ fi:
       blog_post:
         one: Blogipostaus
         other: Blogiviestit
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Kampanja
         other: Kampanjat
@@ -159,6 +193,9 @@ fi:
       case_study:
         one: Tapaustutkimus
         other: Tapaustutkimuksia
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Suljettu kuuleminen
         other: Suljetut neuvottelut
@@ -261,6 +298,9 @@ fi:
       official_statistics:
         one: Viralliset tilastot
         other: Viralliset tilastot
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Avoin kuuleminen
         other: Avoimet kuulemiset
@@ -356,12 +396,6 @@ fi:
         other: Kirjallinen lausumat parlamentille
     updated: päivitetty
   document_filters:
-    description: Voit käyttää suodattimia näyttääksesi vain kiinnostuksen kohteitasi vastaavat tulokset
-    no_results:
-      description: Yritä laajentaa hakua ja yritä uudelleen.
-      title: Vastaavia asiakirjoja ei ole.
-      tna_heading: Vanhempi sisältö
-      tna_link_html: Kaikkia ennen toukokuuta 2010 julkaistuja osastojulkaisuja ei siirretty GOV.UK. Löytääksesi julkaisuja ennen toukokuuta 2010, yritä etsiä <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Kansallisarkisto</a>.
     world_locations:
       all: Kaikki sijainnit
       label: Maailman sijainnit
@@ -443,20 +477,6 @@ fi:
   latest_feed:
     no_updates: Ei vielä päivityksiä.
     title: Uusin
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Pääsy tietoihimme
@@ -465,8 +485,7 @@ fi:
       organisation_chart: Organisaatiomme kaavio
       transparency: Avoimuustiedot
     embassies:
-      find_an_embassy_lowercase: Etsi Britannian suurlähetystö, korkea edustusto tai konsulaatti
-      find_an_embassy_uppercase: Etsi Britannian suurlähetystö, korkea edustusto tai konsulaatti
+      find_an_embassy_title:
     headings:
       corporate_information: Yritystiedot
       corporate_reports: Yritysraportit
@@ -478,18 +497,15 @@ fi:
       works_with: Toimii
     type:
       courts_and_tribunals: Tuomioistuimet
-  publications:
-    heading: Julkaisut
-    recent: Viimeaikaiset julkaisut
-    statistics:
-      link_to_published_statistics: Löydät luettelon julkistetuista ja tulevista valtion tilastoista %{link} tilastot -osiosta.
-      moved_notice: Tilastojulkaisut ovat muuttaneet.
   roles:
     unassigned: Ketään ei ole määrätty tähän rooliin
   see_all:
     announcement: Katso kaikki ilmoituksemme
     authored_article: Katso kaikki kirjoittamamme artikkelit
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Katso kaikki tapaustutkimuksemme
+    closed_call_for_evidence:
     closed_consultation: Katso kaikki suljetut konsultaatiomme
     consultation: Katso kaikki konsultaatiomme
     consultation_outcome: Katso kaikki kuulemistuloksemme
@@ -512,6 +528,7 @@ fi:
     news_article: Katso kaikki uutiset
     news_story: Katso kaikki uutisemme
     notice: Katso kaikki ilmoituksemme
+    open_call_for_evidence:
     open_consultation: Katso kaikki avoimet neuvottelumme
     oral_statement: Katso kaikki suulliset lausuntomme parlamentille
     policy: Tutustu kaikkiin käytäntöihimme
@@ -550,15 +567,7 @@ fi:
       heading:
       list_link:
     headings:
-      announcements: Ilmoituksemme
-      documents: Asiakirjat
-      featured:
-      mission: Tehtävämme
-      news: Maailman sijaintiuutisia
-      organisations: Organisaatiot
-      publications: Julkaisumme
       search: Hae maan tai alueen mukaan
-      statistics: Tilastomme
     search_description:
       international_delegation:
       world_location:

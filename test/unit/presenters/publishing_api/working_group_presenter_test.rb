@@ -14,7 +14,7 @@ class PublishingApi::WorkingGroupPresenterTest < ActiveSupport::TestCase
 
     expected_hash = {
       base_path: public_path,
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "government-frontend",
       schema_name: "working_group",
       document_type: "working_group",
@@ -41,6 +41,7 @@ class PublishingApi::WorkingGroupPresenterTest < ActiveSupport::TestCase
 
     assert_equal expected_hash, presenter.content
     assert_valid_against_publisher_schema(presenter.content, "working_group")
+    assert_valid_against_links_schema({ links: presenter.links }, "working_group")
   end
 
   test "renders attachments in the body" do

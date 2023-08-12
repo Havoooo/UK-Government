@@ -21,6 +21,15 @@ ta:
         nation_inapplicabilities: விலக்கபப்ட்ட தேசங்கள்
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: இணைக்கப்பட்ட கோப்பு
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: இணைப்பு கட்டளை ஆவண எண்
         hoc_paper_number: கீழ்ச்சபை ஆவண எண்
@@ -39,8 +48,22 @@ ta:
       title: இணைப்பு தலைப்பு
       unique_reference: தலைப்பு பிரத்யேகப் பார்வை
       unnumbered_hoc_paper: எண்ணிடப்படாத கீழ்ச்சபை ஆவணம்
-  announcements:
-    heading: அறிவிப்புகள்
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ ta:
     caution:
       subheading: பிரச்சினைகளைச் சுட்டிக்காட்டக்கூடிய இணைப்புகளுடன் சில பிரச்சினைகளைக் கண்டறிந்துள்ளோம். அவற்றைத் தொடர்வதில் கவனமாய் இருக்கவும்
     title: முறிந்த இணைப்புகள்
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: மூடப்பட்டது
     closing_today: இன்று மூடப்படுகிறது
@@ -149,6 +177,12 @@ ta:
       blog_post:
         one: வலைப்பூப் பதிவு
         other: வலைப்பூப் பதிவுகள்
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: பிரச்சாரம்
         other: பிரச்சாரங்கள்
@@ -158,6 +192,9 @@ ta:
       case_study:
         one: நிகழ்வு ஆய்வு
         other: நிகழ்வு ஆய்வுகள்
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: மூடிய கலந்தாய்வு
         other: மூடிய கலந்தாய்வுகள்
@@ -260,6 +297,9 @@ ta:
       official_statistics:
         one: அதிகாரப்பூர்வ புள்ளியியல்
         other: அதிகாரப்பூர்வ புள்ளியியல்
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: திறந்த கலந்தாலோசனை
         other: திறந்த கலந்தாலோசனைகள்
@@ -355,12 +395,6 @@ ta:
         other: பாராளுமன்றத்துக்கு எழுத்துப்பூர்வ அறிவிப்புகள்
     updated: புதுப்பிக்கப்பட்டது
   document_filters:
-    description: உங்கள் ஆர்வங்களுக்குப் பொருத்தமான முடிவுகளை மட்டும் காட்ட வடிகட்டிகளை நீங்கள் பயன்படுத்தலாம்
-    no_results:
-      description: உங்கள் தேடலை விரிவானதாக்கி மீண்டும் முயற்சிக்கவும்.
-      title: பொருந்தக்கூடிய ஆவணங்கள் ஏதுமில்லை.
-      tna_heading: பழைய உள்ளடக்கம்
-      tna_link_html: மே 2010க்கு முந்தைய சில துறை வெளியீடுகள் மட்டுமே GOV.UKவுக்குக் கொண்டுவரப்பட்டுள்ளன. மே 2010க்கு முந்தைய வெளியீடுகளைக் கண்டறிய <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">தேசிய ஆவணக் காப்பகத்தில் தேட முயற்சிக்கவும்</a>.
     world_locations:
       all: அனைத்து இருப்பிடங்கள்
       label: உலக இருப்பிடங்கள்
@@ -442,20 +476,6 @@ ta:
   latest_feed:
     no_updates: எந்த புதுப்பித்தல்களும் இல்லை.
     title: சமீபத்தியது
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: எங்கள் தகவலை அணுகவும்
@@ -464,8 +484,7 @@ ta:
       organisation_chart: எங்கள் அமைப்பு வரைபடம்
       transparency: வெளிப்படையான தரவு
     embassies:
-      find_an_embassy_lowercase: ஒரு பிரிட்டிஷ் தூதரகம், உயர் ஆணைக்குழு அல்லது துணைத்தூதரகத்தைக் கண்டறியுங்கள்
-      find_an_embassy_uppercase: ஒரு பிரிட்டிஷ் தூதரகம், உயர் ஆணைக்குழு அல்லது துணைத்தூதரகத்தைக் கண்டறியுங்கள்
+      find_an_embassy_title:
     headings:
       corporate_information: குழுமத் தகவல்கள்
       corporate_reports: குழும அறிக்கைகள்
@@ -477,18 +496,15 @@ ta:
       works_with: இதனுடன் பணியாற்றுகிறது
     type:
       courts_and_tribunals: நீதிமன்றங்களும் தீர்ப்பாயங்களும்
-  publications:
-    heading: பிரசுரங்கள்
-    recent: சமீபத்திய பிரசுரங்கள்
-    statistics:
-      link_to_published_statistics: "%{link} புள்ளியியல் பிரிவில் வெளியிடப்பட்ட மற்றும் வரவிருக்கும் அரசு புள்ளியியலின் பட்டியலைக் காணுங்கள்."
-      moved_notice: புள்ளியியல் வெளியீடுகள் வேறிடத்திற்கு நகர்த்தப்பட்டுள்ளன.
   roles:
     unassigned: இந்தப் பதவிக்கு யாரும் நியமிக்கப்படவில்லை
   see_all:
     announcement: எங்கள் அனைத்து அறிவிப்புகளையும் காண்க
     authored_article: எங்கள் அனைத்து எழுதப்பட்ட கட்டுரைகளையும் காண்க
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: எங்கள் அனைத்து நிகழ்வு ஆய்வுகளையும் காண்க
+    closed_call_for_evidence:
     closed_consultation: எங்கள் அனைத்து மூடிய கலந்தாலோசனைகளையும் காண்க
     consultation: எங்கள் அனைத்து கலந்தாலோசனைகளையும் காண்க
     consultation_outcome: எங்கள் அனைத்து கலந்தாலோசனை பலன்களையும் காண்க
@@ -511,6 +527,7 @@ ta:
     news_article: எங்கள் அனைத்து செய்திக் கட்டுரைகளையும் காண்க
     news_story: எங்கள் அனைத்து செய்திகளையும் காண்க
     notice: எங்கள் அனைத்து அறிவிப்புகளையும் காண்க
+    open_call_for_evidence:
     open_consultation: எங்கள் அனைத்து திறந்த கலந்தாலோசனைகளையும் காண்க
     oral_statement: எங்கள் அனைத்து நாடாளுமன்றத்துக்கான வாய்வழி அறிவிப்புகளையும் காண்க
     policy: எங்கள் அனைத்து கொள்கைகளையும் காண்க
@@ -549,15 +566,7 @@ ta:
       heading:
       list_link:
     headings:
-      announcements: எங்கள் அறிவிப்புகள்
-      documents: ஆவணங்கள்
-      featured:
-      mission: எங்கள் செயல் இலக்கு
-      news: உலக இருப்பிடச் செய்தி
-      organisations: நிறுவனங்கள்
-      publications: எங்கள் வெளியீடுகள்
       search: நாடு அல்லது பிரதேசம் வாரியாகத் தேடு
-      statistics: எங்கள் புள்ளியியல்
     search_description:
       international_delegation:
       world_location:

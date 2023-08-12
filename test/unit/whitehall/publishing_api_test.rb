@@ -166,7 +166,7 @@ class Whitehall::PublishingApiTest < ActiveSupport::TestCase
         "TakePartPage",
         take_part_page.id,
         "republish",
-        :en,
+        "en",
       )
     Whitehall::PublishingApi.bulk_republish_async(take_part_page)
   end
@@ -199,8 +199,8 @@ class Whitehall::PublishingApiTest < ActiveSupport::TestCase
       edition.save!
     end
 
-    english_path = Whitehall.url_maker.public_document_path(edition)
-    french_path  = Whitehall.url_maker.public_document_path(edition, locale: :fr)
+    english_path = edition.public_path
+    french_path  = edition.public_path(locale: :fr)
 
     Whitehall::PublishingApi.schedule_async(edition)
 
@@ -224,8 +224,8 @@ class Whitehall::PublishingApiTest < ActiveSupport::TestCase
       updated_edition.save!
     end
 
-    english_path = Whitehall.url_maker.public_document_path(updated_edition)
-    spanish_path = Whitehall.url_maker.public_document_path(updated_edition, locale: :es)
+    english_path = updated_edition.public_path
+    spanish_path = updated_edition.public_path(locale: :es)
 
     Whitehall::PublishingApi.schedule_async(updated_edition)
 
@@ -247,8 +247,8 @@ class Whitehall::PublishingApiTest < ActiveSupport::TestCase
       edition.save!(validate: false)
     end
 
-    english_path = Whitehall.url_maker.public_document_path(edition)
-    german_path = Whitehall.url_maker.public_document_path(edition, locale: :de)
+    english_path = edition.public_path
+    german_path = edition.public_path(locale: :de)
 
     Whitehall::PublishingApi.unschedule_async(edition)
 
@@ -265,8 +265,8 @@ class Whitehall::PublishingApiTest < ActiveSupport::TestCase
       updated_edition.save!(validate: false)
     end
 
-    english_path = Whitehall.url_maker.public_document_path(updated_edition)
-    german_path = Whitehall.url_maker.public_document_path(updated_edition, locale: :de)
+    english_path = updated_edition.public_path
+    german_path = updated_edition.public_path(locale: :de)
 
     Whitehall::PublishingApi.unschedule_async(updated_edition)
 
@@ -329,7 +329,33 @@ class Whitehall::PublishingApiTest < ActiveSupport::TestCase
     Whitehall::PublishingApi.unpublish_async(unpublishing)
   end
 
-  test ".publish handles specific exceptions" do
+  test ".publish handles the specific exception for a worldwide organisation" do
+    raises_exception = lambda { |_, _, _|
+      body = {
+        "error" => {
+          "code" => 422,
+          "message" => "base path=/world/organisations/uk-science-innovation-network-in-belgium conflicts with content_id=9bb528b1-743c-4ea2-a323-5b1aaf41818b and locale=en",
+          "fields" => {
+            "base" => [
+              "base path=/world/organisations/uk-science-innovation-network-in-belgium conflicts with content_id=9bb528b1-743c-4ea2-a323-5b1aaf41818b and locale=en",
+            ],
+          },
+        },
+      }.to_json
+      raise GdsApi::HTTPUnprocessableEntity.new(422, body)
+    }
+
+    document = create(:worldwide_organisation)
+    destination = "/world/organisations/uk-science-innovation-network-in-belgium"
+
+    Services.publishing_api.stub(:publish, raises_exception) do
+      assert_nothing_raised do
+        Whitehall::PublishingApi.publish(document, destination)
+      end
+    end
+  end
+
+  test ".publish handles the specific exception for an object that isn't a worldwide organisation" do
     raises_exception = lambda { |_, _, _|
       body = {
         "error" => {

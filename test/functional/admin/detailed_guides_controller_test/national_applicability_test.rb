@@ -5,7 +5,8 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
     tests Admin::DetailedGuidesController
 
     setup do
-      login_as create(:writer, organisation: create(:organisation))
+      login_as(:writer)
+
       stub_request(
         :get,
         %r{\A#{Plek.find('publishing-api')}/v2/links},

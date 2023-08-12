@@ -36,7 +36,7 @@ class LinkCheckerApiService
     converted = links.map do |link|
       edition = Whitehall::AdminLinkLookup.find_edition(link)
       if edition
-        Whitehall.url_maker.public_document_url(edition) if edition.published?
+        edition.public_url if edition.published?
       else
         link
       end
@@ -49,7 +49,7 @@ class LinkCheckerApiService
   end
 
   def self.website_root
-    @website_root ||= Plek.new.website_root
+    @website_root ||= Plek.website_root
   end
 
   private_class_method :webhook_secret_token, :website_root, :convert_admin_links

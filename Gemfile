@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "7.0.4"
+gem "rails", "7.0.5.1"
 
 gem "activemodel-serializers-xml"
 gem "addressable"
@@ -11,7 +11,7 @@ gem "carrierwave"
 gem "carrierwave-i18n"
 gem "chronic"
 gem "dalli"
-gem "faraday"
+gem "diffy"
 gem "fog-aws"
 gem "friendly_id"
 gem "fuzzy_match"
@@ -42,8 +42,8 @@ gem "pdf-reader"
 gem "plek"
 gem "ptools"
 gem "rack"
-gem "rack_strip_client_ip"
 gem "rails-i18n"
+gem "rails_translation_manager"
 gem "rake"
 gem "record_tag_helper", require: false
 gem "responders"
@@ -55,9 +55,10 @@ gem "sentry-sidekiq"
 gem "sidekiq-scheduler"
 gem "slimmer"
 gem "sprockets-rails"
+gem "terser"
 gem "transitions", require: ["transitions", "active_record/transitions"]
-gem "uglifier"
 gem "validates_email_format_of"
+gem "view_component"
 gem "whenever", require: false
 
 group :development, :test do
@@ -65,7 +66,6 @@ group :development, :test do
   gem "pact_broker-client"
   gem "pry-byebug"
   gem "pry-rails"
-  gem "rails_translation_manager"
   gem "rubocop-govuk", require: false
 end
 
@@ -77,6 +77,7 @@ group :development do
 end
 
 group :test do
+  gem "climate_control"
   gem "database_cleaner-active_record"
   gem "equivalent-xml"
   gem "factory_bot"

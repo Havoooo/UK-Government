@@ -223,7 +223,7 @@ class Admin::EditionWorkflowControllerTest < ActionController::TestCase
     get :confirm_unpublish, params: { id: publication, lock_version: publication.lock_version }
 
     assert_response :success
-    assert_template :confirm_unpublish_legacy
+    assert_template :confirm_unpublish
     assert_equal publication, assigns(:edition)
   end
 
@@ -321,7 +321,7 @@ class Admin::EditionWorkflowControllerTest < ActionController::TestCase
                                unpublishing: unpublish_params }
 
     assert_response :success
-    assert_template :confirm_unpublish_legacy
+    assert_template :confirm_unpublish
     assert_equal "Select which withdrawal date you want to use", flash[:alert]
     assert published_edition.reload.published?
   end
@@ -334,29 +334,15 @@ class Admin::EditionWorkflowControllerTest < ActionController::TestCase
     }
     post :unpublish, params: { id: published_edition, lock_version: published_edition.lock_version, unpublishing: unpublish_params }
     assert_response :success
-    assert_template :confirm_unpublish_legacy
-    assert_match %r{Alternative url must be provided}, flash[:alert]
+    assert_template :confirm_unpublish
+    assert_nil flash[:alert]
+    assert_equal "Alternative url must be provided to redirect the document", assigns(:unpublishing).errors.full_messages.to_sentence
     assert published_edition.reload.published?
   end
 
   test "unpublish responds with 422 if missing a lock version" do
     login_as create(:managing_editor)
     post :unpublish, params: { id: published_edition }
-
-    assert_response :unprocessable_entity
-    assert_equal "All workflow actions require a lock version", response.body
-  end
-
-  test "convert_to_draft turns the given edition into a draft and redirects back to the imported editions page" do
-    imported_edition = create(:imported_edition)
-    post :convert_to_draft, params: { id: imported_edition, lock_version: imported_edition.lock_version }
-
-    assert_equal "The imported document #{imported_edition.title} has been converted into a draft", flash[:notice]
-    assert_redirected_to admin_editions_path(state: :imported)
-  end
-
-  test "convert_to_draft responds with 422 if missing a lock version" do
-    post :convert_to_draft, params: { id: imported_edition }
 
     assert_response :unprocessable_entity
     assert_equal "All workflow actions require a lock version", response.body
@@ -399,10 +385,6 @@ private
 
   def published_edition(options = {})
     @published_edition ||= create(:published_publication, options)
-  end
-
-  def imported_edition
-    @imported_edition ||= create(:imported_edition)
   end
 
   def withdrawn_edition

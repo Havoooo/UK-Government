@@ -1,51 +1,60 @@
-Feature: World location news
-  As a citizen,
-  I want news articles which are only relevant in a specific world location to be excluded from the main list of announcements on inside government unless I choose to see them,
-  So that I can ignore this niche interest content unless I want it
-
-  ---
-
-  World Location News Articles are being replaced by News Articles of type
-  'World news story' and it is not possible to create these anymore. They can
-  still be viewed though.
-
-  Include these on the location page's list of recent announcements,
-  latest feed etc, and allow them to be featured on a world location
-  page.
-
-  Omit these from the /announcements list unless a frontend user
-  selects to reveal them (needs UX input, but something like a
-  checkbox below the worldwide filter: 'Include location-specific
-  news' defaulting to unchecked).
-
-  Users can still see any standard news articles that are tagged to
-  countries (eg FCO news about Syria) - only the location-specific
-  stuff should be filtered out.
-
-  'See all our announcements' link from the location goes to filtered
-  announcements list including the location specific stuff.
-
-  World location-specific news articles should be associated to
-  Worldwide organisations, as well as to locations, so the world
-  organisation logos are shown as the producing orgs.
-
+@design-system-only
+Feature: Administering world location news information
   Background:
-    Given I am an GDS editor
+    Given I am a GDS admin
+    And a world location news exists
 
-  Scenario: View news articles relating to an international delegation
-    Given an international delegation "UK and the World Government" exists
-    And a published news article "World Government publishes fishing statistics for the Atlantic Ocean" exists relating to the international delegation "UK and the World Government"
-    When I view the international delegation "UK and the World Government"
-    Then I should see the news article "World Government publishes fishing statistics for the Atlantic Ocean"
+  Scenario: Viewing the list presents no world location news message, when no news exists
+    Given no world locations exist
+    When I visit the world location news index page
+    Then I should see the "No active world location news" message
+    When I click the Inactive tab
+    Then I should see the "No inactive world location news" message
 
-  Scenario: The publication is about an international delegation
-    Given an international delegation "UK and the World Government" exists
-    And a published publication "Penguins have rights too" exists that is about "UK and the World Government"
-    When I view the international delegation "UK and the World Government"
-    Then I should see the publication "Penguins have rights too"
+  Scenario: Reordering currently featured documents
+    Given the world location has a feature list with 2 featured documents
+    When I visit the world location news page
+    And I set the order of the featured documents to:
+      | title      | order |
+      | Document 2 | 0     |
+      | Document 1 | 1     |
+    Then the featured documents should be in the following order:
+      | title      |
+      | Document 2 |
+      | Document 1 |
 
-  Scenario: Inactive world locations are listed but not linked
-    Given the world location "Democratic People's Republic of South London" is inactive
-    When I visit the world locations page
-    Then I should see a world location called "Democratic People's Republic of South London"
-    But I should not see a link to the world location called "Democratic People's Republic of South London"
+    Scenario: Unfeaturing a document
+      Given the world location has a feature list with 1 featured document
+      When I visit the world location news page
+      And I unfeature the document
+      Then I see that I have no featured documents
+
+    Scenario: Featuring a document
+      Given there is a published document with the tile "Featured document"
+      When I visit the world location news page
+      And filter documents by all organisations
+      And I feature "Featured document"
+      Then I see that "Featured document" has been featured
+
+    Scenario: Featuring a non-GOV.UK link
+      Given the world location has an offsite link with the title "Featured link"
+      When I visit the world location news page
+      And I feature "Featured link"
+      Then I see that "Featured link" has been featured
+
+    Scenario: Creating a non-GOV.UK link
+      When I visit the world location news page
+      And I create a new a non-GOV.UK link with the title "Featured link"
+      Then I can see the non-GOV.UK link with the title "Featured link"
+
+    Scenario: Editing a non-GOV.UK link
+      Given the world location has an offsite link with the title "Featured link"
+      When I visit the world location news page
+      And I update the title of a featured link from "Featured link" to "New title"
+      Then I can see the non-GOV.UK link with the title "New title"
+
+    Scenario: Deleting a non-GOV.UK link
+      Given the world location has an offsite link with the title "Featured link"
+      When I visit the world location news page
+      And I delete "Featured link"
+      Then I can see that "Featured link" has been deleted

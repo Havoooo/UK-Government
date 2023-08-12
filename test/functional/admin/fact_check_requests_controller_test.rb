@@ -14,7 +14,7 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
       get :show, params: { id: fact_check_request }
     end
 
-    assert_select ".body", text: "body-in-html"
+    assert_select ".app-view-editions-edition__document__body", text: "body-in-html"
   end
 
   view_test "should not display the edition if it has been deleted" do
@@ -23,9 +23,9 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
 
     get :show, params: { id: fact_check_request }
 
-    assert_select ".fact_check_request .apology", text: "We’re sorry, but this document is no longer available for fact checking."
-    refute_select ".title", text: "deleted-publication-title"
-    refute_select ".body", text: "deleted-publication-body"
+    assert_select ".app-view-editions-edition__document__apology", text: "We’re sorry, but this document is no longer available for fact checking."
+    refute_select ".app-view-editions-edition__document__title", text: "deleted-publication-title"
+    refute_select ".app-view-editions-edition__document__body", text: "deleted-publication-body"
   end
 
   test "users with a valid.to_param should be able to access the publication" do
@@ -49,9 +49,9 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
 
     get :edit, params: { id: fact_check_request }
 
-    assert_select ".fact_check_request .apology", text: "We’re sorry, but this document is no longer available for fact checking."
-    refute_select ".document .title", text: "deleted-publication-title"
-    refute_select ".document .body", text: "deleted-publication-body"
+    assert_select ".app-view-editions-edition__document__apology", text: "We’re sorry, but this document is no longer available for fact checking."
+    refute_select ".app-view-editions-edition__document__title", text: "deleted-publication-title"
+    refute_select ".app-view-editions-edition__document__body", text: "deleted-publication-body"
   end
 
   view_test "turn govspeak into nice markup when editing" do
@@ -61,7 +61,7 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
       get :edit, params: { id: fact_check_request }
     end
 
-    assert_select ".body", text: "body-in-html"
+    assert_select ".app-view-editions-edition__document__body", text: "body-in-html"
   end
 
   test "adding comments to a publication" do
@@ -78,7 +78,10 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
 
     get :edit, params: { id: fact_check_request }
 
-    assert_select "#fact_check_request_instructions", text: /Please concentrate on the content/
+    assert_select ".govuk-grid-column-one-third" do
+      assert_select "h2", text: "Extra instructions"
+      assert_select ".govuk-body", text: /Please concentrate on the content/
+    end
   end
 
   view_test "should not display the extra instructions section" do
@@ -86,7 +89,9 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
 
     get :edit, params: { id: fact_check_request }
 
-    refute_select "#fact_check_request_instructions"
+    assert_select ".govuk-grid-column-one-third" do
+      refute_select "h2", text: "Extra instructions"
+    end
   end
 
   test "save the fact checkers comment" do
@@ -159,7 +164,7 @@ class Admin::FactCheckRequestsControllerTest < ActionController::TestCase
 
     put :update, params: { id: fact_check_request, fact_check_request: attributes }
 
-    assert_select ".fact_check_request .apology", text: "We’re sorry, but this document is no longer available for fact checking."
+    assert_select ".app-view-editions-edition__document__apology", text: "We’re sorry, but this document is no longer available for fact checking."
   end
 end
 
@@ -266,7 +271,7 @@ class Admin::CreatingFactCheckRequestsControllerTest < ActionController::TestCas
     edition = create(:deleted_publication)
     post :create, params: { edition_id: edition.id, fact_check_request: @attributes }
 
-    assert_select ".fact_check_request .apology", text: "We’re sorry, but this document is no longer available for fact checking."
+    assert_select ".app-view-editions-edition__document__apology", text: "We’re sorry, but this document is no longer available for fact checking."
   end
 
 private

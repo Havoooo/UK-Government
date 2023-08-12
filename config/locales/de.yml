@@ -21,6 +21,15 @@ de:
         nation_inapplicabilities: Ausgeschlossene Nationen
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Die angehängte Datei
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Anhang Anweisungspapier Nummer
         hoc_paper_number: Unterhauspapier Nummer
@@ -39,8 +48,22 @@ de:
       title: Anhang Titel
       unique_reference: Anhang eindeutige Referenz
       unnumbered_hoc_paper: Nicht nummeriertes Unterhauspapier
-  announcements:
-    heading: Ankündigungen
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ de:
     caution:
       subheading: Wir haben einige Links gefunden, die auf Probleme hindeuten. Sie sollten bei der Verlinkung auf diese Links vorsichtig sein.
     title: Kaputte Links
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Geschlossen
     closing_today: Schließt heute
@@ -149,6 +177,12 @@ de:
       blog_post:
         one: Blogbeitrag
         other: Blogbeiträge
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: Kampagne
         other: Kampagnen
@@ -158,6 +192,9 @@ de:
       case_study:
         one: Fallstudie
         other: Fallstudien
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: Abgeschlossene Beratung
         other: Abgeschlossene Beratungen
@@ -260,6 +297,9 @@ de:
       official_statistics:
         one: Statistiken
         other: Statistiken
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: Laufende Beratung
         other: Laufende Beratungen
@@ -355,12 +395,6 @@ de:
         other: Schriftliche Erklärungen vor dem Parlament
     updated: aktualisiert
   document_filters:
-    description: Mit Hilfe der Filter erhalten Sie nur Ergebnisse, die Ihren Interessen entsprechen
-    no_results:
-      description: Formulieren Sie Ihre Suche allgemeiner.
-      title: Ihre Suchanfrage hat keine Ergebnisse gebracht.
-      tna_heading: Älterer Inhalt
-      tna_link_html: Nicht alle Veröffentlichungen der Ministerien aus der Zeit vor Mai 2010 wurden auf GOV.UK übernommen. Um Veröffentlichungen vor Mai 2010 zu finden, suchen Sie im <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Nationalarchiv</a>.
     world_locations:
       all: Alle Standorte
       label: Weltweite Standorte
@@ -442,20 +476,6 @@ de:
   latest_feed:
     no_updates: Es liegen noch keine Aktualisierungen vor.
     title: Neueste
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Auf unsere Informationen zugreifen
@@ -464,8 +484,7 @@ de:
       organisation_chart: Unser Organisationsplan
       transparency: Transparenzdaten
     embassies:
-      find_an_embassy_lowercase: Finden Sie eine britische Botschaft, ein Hochkommissariat oder Konsulat
-      find_an_embassy_uppercase: Finden Sie eine britische Botschaft, ein Hochkommissariat oder Konsulat
+      find_an_embassy_title:
     headings:
       corporate_information: Unternehmensinformationen
       corporate_reports: Unternehmensberichte
@@ -477,18 +496,15 @@ de:
       works_with: Arbeitet mit
     type:
       courts_and_tribunals: Gerichte und Gerichtshöfe
-  publications:
-    heading: Veröffentlichungen
-    recent: Jüngste Veröffentlichungen
-    statistics:
-      link_to_published_statistics: Eine Liste der veröffentlichten und kommenden Regierungsstatistiken finden Sie in der Rubrik %{link} Statistiken.
-      moved_notice: Die statistischen Veröffentlichungen sind verlagert worden.
   roles:
     unassigned: Diese Funktion wurde niemandem zugewiesen
   see_all:
     announcement: Alle unsere Ankündigungen
     authored_article: Alle unsere Namensartikel
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Alle unsere Fallstudien
+    closed_call_for_evidence:
     closed_consultation: Alle unsere abgeschlossenen Beratungen
     consultation: Alle unsere Beratungen
     consultation_outcome: Alle unsere Beratungsergebnisse
@@ -511,6 +527,7 @@ de:
     news_article: Alle unsere Nachrichtenartikel
     news_story: Alle unsere Nachrichtenberichte
     notice: Alle unsere Mitteilungen
+    open_call_for_evidence:
     open_consultation: Alle unsere offenen Beratungen
     oral_statement: Alle unsere mündlichen Erklärungen vor dem Parlament
     policy: Alle unsere Richtlinien
@@ -549,15 +566,7 @@ de:
       heading:
       list_link:
     headings:
-      announcements: Unsere Ankündigungen
-      documents: Dokumente
-      featured:
-      mission: Unsere Aufgabe
-      news: Weltweite Standortnachrichten
-      organisations: Organisationen
-      publications: Unsere Veröffentlichungen
       search: Nach Land oder Gebiet suchen
-      statistics: Unsere Statistiken
     search_description:
       international_delegation:
       world_location:

@@ -64,11 +64,6 @@ FactoryBot.define do
       end
     end
 
-    trait(:imported) do
-      state { "imported" }
-      first_published_at { 1.year.ago }
-    end
-
     trait(:draft) { state { "draft" } }
 
     trait(:submitted) do
@@ -95,14 +90,28 @@ FactoryBot.define do
       after :create, &:refresh_index_if_required
     end
 
+    trait(:non_english) { primary_locale { "cy" } }
+
+    trait(:force_published) do
+      state { "published" }
+      first_published_at { 2.days.ago }
+      major_change_published_at { 1.day.ago }
+      force_published { true }
+      published_major_version { 1 }
+      published_minor_version { 0 }
+      after :create, &:refresh_index_if_required
+    end
+
     trait(:deleted) { state { "deleted" } }
 
     trait(:superseded) do
       state { "superseded" }
+      first_published_at { 2.days.ago }
     end
 
     trait(:superseded_with_published) do
       state { "superseded" }
+      first_published_at { 2.days.ago }
 
       after(:create) do |edition|
         create(:published_edition, document: edition.document)
@@ -176,11 +185,11 @@ FactoryBot.define do
   factory :announcement, parent: :edition, class: Announcement, traits: %i[with_organisations]
 
   factory :edition_with_document, parent: :edition, traits: [:with_document]
-  factory :imported_edition, parent: :edition, traits: [:imported]
   factory :draft_edition, parent: :edition, traits: [:draft]
   factory :submitted_edition, parent: :edition, traits: [:submitted]
   factory :rejected_edition, parent: :edition, traits: [:rejected]
   factory :published_edition, parent: :edition, traits: [:published]
+  factory :non_english_published_edition, parent: :edition, traits: %i[non_english published]
   factory :deleted_edition, parent: :edition, traits: [:deleted]
   factory :superseded_edition, parent: :edition, traits: [:superseded]
   factory :scheduled_edition, parent: :edition, traits: [:scheduled]

@@ -5,7 +5,6 @@ class AttachmentLinkHeaderIntegrationTest < ActionDispatch::IntegrationTest
   extend Minitest::Spec::DSL
   include Capybara::DSL
   include Rails.application.routes.url_helpers
-  include PublicDocumentRoutesHelper
   include TaxonomyHelper
 
   describe "attachment link header" do
@@ -38,7 +37,7 @@ class AttachmentLinkHeaderIntegrationTest < ActionDispatch::IntegrationTest
           visit admin_news_article_path(edition)
           force_publish_document
 
-          parent_document_url = Whitehall.url_maker.public_document_url(edition)
+          parent_document_url = edition.public_url
 
           Services.asset_manager.expects(:update_asset)
             .at_least_once

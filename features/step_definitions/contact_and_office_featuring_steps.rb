@@ -16,7 +16,7 @@ When(/^I add a new office to be featured on the home page of the worldwide organ
   click_on "All"
   click_on "Add"
 
-  fill_in_contact_details(feature_on_home_page: "yes")
+  legacy_fill_in_contact_details(feature_on_home_page: "yes")
   select WorldwideOfficeType.all.sample.name, from: "Office type"
 
   click_on "Save"
@@ -41,7 +41,7 @@ When(/^I reorder the offices to highlight my new office$/) do
 end
 
 Then(/^I see the offices in my specified order including the new one under the main office on the home page of the worldwide organisation$/) do
-  visit worldwide_organisation_path(@the_organisation)
+  visit @the_organisation.public_path
 
   contact_headings = all(".contact-section .gem-c-heading").map(&:text)
 
@@ -64,7 +64,7 @@ When(/^I decide that one of the offices no longer belongs on the home page$/) do
 end
 
 Then(/^that office is no longer visible on the home page of the worldwide organisation$/) do
-  visit worldwide_organisation_path(@the_organisation)
+  visit @the_organisation.public_path
 
   within ".contact-section:first-of-type" do
     expect(page).to_not have_selector("h2", text: @the_removed_office.title)

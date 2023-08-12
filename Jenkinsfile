@@ -3,10 +3,11 @@
 library("govuk")
 
 REPOSITORY = 'whitehall'
-DEFAULT_SCHEMA_BRANCH = 'deployed-to-production'
+DEFAULT_SCHEMA_BRANCH = 'main'
 
 node {
   govuk.setEnvar("TEST_DATABASE_URL", "mysql2://root:root@127.0.0.1:33068/whitehall_test")
+  govuk.setEnvar("REDIS_URL", "redis://127.0.0.1:63796")
   govuk.buildProject(
     brakeman: true,
     overrideTestTask: {
@@ -15,7 +16,9 @@ node {
           echo "Running a subset of the tests to check the content schema changes"
           govuk.runRakeTask("test:publishing_schemas --trace")
         } else {
-          sh("bundle exec rake")
+          // Run rake default tasks except for pact:verify as that is ran via
+          // a separate GitHub action.
+          sh("bundle exec rake lint test cucumber jasmine")
         }
       }
     }

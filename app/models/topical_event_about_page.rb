@@ -12,16 +12,34 @@ class TopicalEventAboutPage < ApplicationRecord
   validates_with SafeHtmlValidator
   validates_with NoFootnotesInGovspeakValidator, attribute: :body
 
+  after_commit :republish_topical_event_to_publishing_api
+
   searchable title: :name,
              link: :search_link,
              content: :indexable_content,
              description: :summary
 
   def search_link
-    Whitehall.url_maker.topical_event_about_pages_path(topical_event.slug)
+    base_path
   end
 
   def indexable_content
     Govspeak::Document.new(body).to_text
+  end
+
+  def base_path
+    "/government/topical-events/#{topical_event.slug}/about"
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options)
+  end
+
+  def public_url(options = {})
+    Plek.website_root + public_path(options)
+  end
+
+  def republish_topical_event_to_publishing_api
+    Whitehall::PublishingApi.republish_async(topical_event)
   end
 end

@@ -37,7 +37,7 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     minister = create(:person)
     create(:ministerial_role_appointment, role:, person: minister)
 
-    public_path = Whitehall.url_maker.organisation_path(organisation)
+    public_path = organisation.public_path
     public_atom_path = "#{public_path}.atom"
 
     expected_hash = {
@@ -47,10 +47,10 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
       schema_name: "organisation",
       document_type: "organisation",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       routes: [
-        { path: public_path, type: "exact" },
+        { path: public_path, type: "prefix" },
         { path: public_atom_path, type: "exact" },
       ],
       redirects: [],
@@ -112,6 +112,7 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     assert_equal organisation.content_id, presented_item.content_id
 
     assert_valid_against_publisher_schema(presented_item.content, "organisation")
+    assert_valid_against_links_schema({ links: presented_item.links }, "organisation")
   end
 
   test "caps number of featured documents at 6" do
@@ -180,25 +181,56 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     assert_equal(govspeak_to_html(""), presented_item.content[:details][:body])
   end
 
+  test "presents an organisation with children" do
+    child_organisation = create(:organisation, name: "Department for Stuff")
+    organisation = create(
+      :organisation,
+      name: "Organisation of Things",
+      child_organisations: [child_organisation],
+    )
+
+    presented_item = present(organisation)
+
+    assert_includes presented_item.content.dig(:details, :body), "/government/organisations#organisation-of-things"
+  end
+
   test "presents an eligible organisation with promotional features" do
-    promotional_feature = create(:promotional_feature)
+    promotional_feature1 = create(:promotional_feature)
+    promotional_feature_item1 = create(:promotional_feature_item, promotional_feature: promotional_feature1)
+    promotional_feature2 = create(:promotional_feature)
+    promotional_feature_item2 = create(:promotional_feature_item, :with_youtube_video_url, promotional_feature: promotional_feature2)
+
     organisation = create(
       :organisation,
       name: "Organisation of Things",
       organisation_type: OrganisationType.executive_office,
-      promotional_features: [promotional_feature],
+      promotional_features: [
+        promotional_feature1,
+        promotional_feature2,
+      ],
     )
     presented_item = present(organisation)
 
-    assert_equal(
-      [
-        {
-          title: promotional_feature.title,
-          items: [],
-        },
-      ],
-      presented_item.content[:details][:ordered_promotional_features],
-    )
+    expected_output = [
+      {
+        title: promotional_feature1.title,
+        items: [
+          summary: promotional_feature_item1.summary,
+          image: { url: promotional_feature_item1.image.url, alt_text: promotional_feature_item1.image_alt_text },
+          links: promotional_feature_item2.links,
+        ],
+      },
+      {
+        title: promotional_feature2.title,
+        items: [
+          summary: promotional_feature_item2.summary,
+          youtube_video: { id: promotional_feature_item2.youtube_video_id, alt_text: promotional_feature_item2.youtube_video_alt_text },
+          links: promotional_feature_item2.links,
+        ],
+      },
+    ]
+
+    assert_equal(expected_output, presented_item.content[:details][:ordered_promotional_features])
   end
 
   test "does not present an ineligible organisation with promotional features" do
@@ -254,7 +286,7 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     assert_equal("<div class=\"govspeak\"><p>Habeus loudius noisus</p>\n</div>", presented_item.content[:details][:body])
   end
 
-  test "renders courts and tribunals using Collections" do
+  test "renders courts and tribunals with 'exact' route using Collections" do
     organisation = create(
       :court,
       name: "Court at mid-wicket",
@@ -311,5 +343,34 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     organisation_political = presented_item.content.dig(:details, :organisation_political)
 
     assert organisation_political
+  end
+
+  test "presents the correct routes for an organisation with a translation" do
+    organisation = create(
+      :organisation,
+      translated_into: %i[en cy],
+    )
+
+    I18n.with_locale(:en) do
+      presented_item = present(organisation)
+
+      assert_equal organisation.base_path, presented_item.content[:base_path]
+
+      assert_equal [
+        { path: organisation.base_path, type: "prefix" },
+        { path: "#{organisation.base_path}.atom", type: "exact" },
+      ], presented_item.content[:routes]
+    end
+
+    I18n.with_locale(:cy) do
+      presented_item = present(organisation)
+
+      assert_equal "#{organisation.base_path}.cy", presented_item.content[:base_path]
+
+      assert_equal [
+        { path: "#{organisation.base_path}.cy", type: "prefix" },
+        { path: "#{organisation.base_path}.cy.atom", type: "exact" },
+      ], presented_item.content[:routes]
+    end
   end
 end

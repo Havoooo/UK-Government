@@ -3,7 +3,6 @@ module Whitehall
   autoload :RandomKey, "whitehall/random_key"
   autoload :FormBuilder, "whitehall/form_builder"
   autoload :Uploader, "whitehall/uploader"
-  autoload :UrlMaker, "whitehall/url_maker"
   autoload :ExtraQuoteRemover, "whitehall/extra_quote_remover"
   autoload :GovspeakRenderer, "whitehall/govspeak_renderer"
 
@@ -15,7 +14,6 @@ module Whitehall
   mattr_accessor :link_checker_api_client
   mattr_accessor :maslow
   mattr_accessor :publishing_api_client
-  mattr_accessor :search_backend
   mattr_accessor :search_client
   mattr_accessor :skip_safe_html_validation
   mattr_accessor :uploads_cache_max_age
@@ -23,11 +21,11 @@ module Whitehall
   class NoConfigurationError < StandardError; end
 
   def self.public_protocol
-    Plek.new.website_uri.scheme
+    URI(Plek.website_root).scheme
   end
 
   def self.support_url
-    Plek.new.external_url_for("support")
+    Plek.external_url_for("support")
   end
 
   def self.available_locales
@@ -118,19 +116,19 @@ module Whitehall
 
   def self.internal_admin_host
     @internal_admin_host ||=
-      URI(Plek.new.find("whitehall-admin")).host
+      URI(Plek.find("whitehall-admin")).host
   end
 
   def self.public_host
-    @public_host ||= Plek.new.website_uri.host
+    @public_host ||= URI(public_root).host
   end
 
   def self.public_root
-    @public_root ||= Plek.new.website_root
+    @public_root ||= Plek.website_root
   end
 
   def self.admin_root
-    @admin_root ||= Plek.new.external_url_for("whitehall-admin")
+    @admin_root ||= Plek.external_url_for("whitehall-admin")
   end
 
   # The base folder where uploads live.
@@ -158,6 +156,7 @@ module Whitehall
   def self.edition_classes
     [
       CaseStudy,
+      CallForEvidence,
       Consultation,
       CorporateInformationPage,
       DetailedGuide,
@@ -171,7 +170,7 @@ module Whitehall
   end
 
   def self.edition_route_path_segments
-    %w[news speeches policies publications consultations priority detailed-guides case-studies statistical-data-sets fatalities collections supporting-pages]
+    %w[news speeches policies publications consultations priority detailed-guides case-studies statistical-data-sets fatalities collections supporting-pages calls-for-evidence]
   end
 
   def self.analytics_format(format)
@@ -184,10 +183,6 @@ module Whitehall
 
   def self.rummager_work_queue_name
     "rummager-delayed-indexing"
-  end
-
-  def self.url_maker
-    @url_maker ||= Whitehall::UrlMaker.new(host: Whitehall.public_host, protocol: Whitehall.public_protocol)
   end
 
   def self.atom_feed_maker

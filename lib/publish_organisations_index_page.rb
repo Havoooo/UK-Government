@@ -21,7 +21,7 @@ private
         schema_name: "organisations_homepage",
         locale: "en",
         base_path: BASE_PATH,
-        publishing_app: "whitehall",
+        publishing_app: Whitehall::PublishingApp::WHITEHALL,
         rendering_app: Whitehall::RenderingApp::COLLECTIONS_FRONTEND,
         routes: [
           {
@@ -51,7 +51,7 @@ private
     presented_organisations.send(organisation_type_key).map do |organisation|
       {
         title: organisation.name,
-        href: Whitehall.url_maker.polymorphic_path(organisation),
+        href: organisation.public_path,
         brand: organisation.organisation_brand,
         logo: organisation_logo(organisation),
         separate_website: organisation.exempt?,
@@ -120,7 +120,7 @@ private
   def summary_organisation(organisation)
     {
       title: organisation.name,
-      href: Whitehall.url_maker.polymorphic_path(organisation),
+      href: organisation.public_path,
     }
   end
 

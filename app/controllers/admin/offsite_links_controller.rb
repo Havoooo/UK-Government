@@ -1,9 +1,12 @@
 class Admin::OffsiteLinksController < Admin::BaseController
   before_action :load_parent
   before_action :load_offsite_link, except: %i[new create]
+  layout :get_layout
 
   def new
     @offsite_link = OffsiteLink.new
+
+    render_design_system(:new, :legacy_new)
   end
 
   def create
@@ -13,19 +16,23 @@ class Admin::OffsiteLinksController < Admin::BaseController
       flash[:notice] = "An offsite link has been created for #{@parent.name}"
       redirect_to offsite_links_path
     else
-      render :new
+      render_design_system(:new, :legacy_new)
     end
   end
 
-  def edit; end
+  def edit
+    render_design_system(:edit, :legacy_edit)
+  end
 
   def update
     if @offsite_link.update(offsite_link_params)
       redirect_to offsite_link_path(@offsite_link)
     else
-      render :edit
+      render_design_system(:edit, :legacy_edit)
     end
   end
+
+  def confirm_destroy; end
 
   def destroy
     @offsite_link.destroy!
@@ -34,6 +41,14 @@ class Admin::OffsiteLinksController < Admin::BaseController
   end
 
 private
+
+  def get_layout
+    if preview_design_system?(next_release: false)
+      "design_system"
+    else
+      "admin"
+    end
+  end
 
   def load_parent
     @parent = WorldLocation.friendly.find(params[:world_location_news_id]).world_location_news if params[:world_location_news_id]
@@ -55,9 +70,9 @@ private
 
   def offsite_links_path
     if @parent.is_a? TopicalEvent
-      polymorphic_path([:admin, @parent, :topical_event_featurings])
+      polymorphic_path([:admin, @parent, :topical_event_featurings], anchor: preview_design_system?(next_release: false) ? "non_govuk_government_links_tab" : nil)
     else
-      polymorphic_path([:features, :admin, @parent])
+      polymorphic_path([:features, :admin, @parent], anchor: preview_design_system?(next_release: false) ? "non_govuk_government_links_tab" : nil)
     end
   end
 

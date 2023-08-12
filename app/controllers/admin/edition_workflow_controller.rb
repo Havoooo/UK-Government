@@ -1,6 +1,5 @@
 class Admin::EditionWorkflowController < Admin::BaseController
   include HistoricContentConcern
-  include PublicDocumentRoutesHelper
 
   layout :get_layout
 
@@ -30,18 +29,20 @@ class Admin::EditionWorkflowController < Admin::BaseController
 
   def enforce_permissions!
     case action_name
-    when "submit", "unschedule", "convert_to_draft"
+    when "submit", "unschedule", "confirm_unschedule"
       enforce_permission!(:update, @edition)
     when "reject"
       enforce_permission!(:reject, @edition)
     when "publish", "schedule"
       enforce_permission!(:publish, @edition)
-    when "force_publish", "confirm_force_publish", "force_schedule"
+    when "force_publish", "confirm_force_publish", "force_schedule", "confirm_force_schedule"
       enforce_permission!(:force_publish, @edition)
     when "unpublish", "confirm_unpublish"
       enforce_permission!(:unpublish, @edition)
     when "unwithdraw", "confirm_unwithdraw"
       enforce_permission!(:unwithdraw, @edition)
+    when "confirm_approve_retrospectively"
+      enforce_permission!(:approve, @edition)
     when "approve_retrospectively"
       enforce_permission!(:approve, @edition)
     else
@@ -61,7 +62,7 @@ class Admin::EditionWorkflowController < Admin::BaseController
       MailNotifications.edition_rejected(user, @edition, admin_edition_url(@edition)).deliver_now
     end
     redirect_to new_admin_edition_editorial_remark_path(@edition),
-                notice: "Document rejected; please explain why in an editorial remark"
+                notice: "Document rejected; please explain why in an internal note"
   end
 
   def publish
@@ -75,9 +76,7 @@ class Admin::EditionWorkflowController < Admin::BaseController
   end
 
   def confirm_force_publish
-    unless @edition.valid?(:publish)
-      redirect_to admin_edition_path(@edition), alert: @edition.errors[:base].join(". ")
-    end
+    redirect_to admin_edition_path(@edition), alert: @edition.errors[:base].join(". ") and return unless @edition.valid?(:publish)
   end
 
   def force_publish
@@ -95,8 +94,6 @@ class Admin::EditionWorkflowController < Admin::BaseController
 
   def confirm_unpublish
     @unpublishing = @edition.build_unpublishing
-
-    render_design_system(:confirm_unpublish, :confirm_unpublish_legacy, next_release: true)
   end
 
   def unpublish
@@ -106,18 +103,12 @@ class Admin::EditionWorkflowController < Admin::BaseController
       redirect_to admin_edition_path(@edition), notice: message
     else
       @unpublishing = @edition.unpublishing || @edition.build_unpublishing(unpublishing_params)
-      if preview_design_system?(next_release: true) && @unpublishing.errors.blank?
-        flash.now[:alert] = message
-      elsif !preview_design_system?
-        flash.now[:alert] = message
-      end
-      render_design_system("confirm_unpublish", "confirm_unpublish_legacy", next_release: true)
+      flash.now[:alert] = message if @unpublishing.errors.blank?
+      render :confirm_unpublish
     end
   end
 
-  def confirm_unwithdraw
-    render_design_system(:confirm_unwithdraw, :confirm_unwithdraw_legacy, next_release: true)
-  end
+  def confirm_unwithdraw; end
 
   def unwithdraw
     edition_unwithdrawer = Whitehall.edition_services.unwithdrawer(@edition, user: current_user)
@@ -126,7 +117,7 @@ class Admin::EditionWorkflowController < Admin::BaseController
       redirect_to admin_edition_path(new_edition), notice: "This document has been unwithdrawn"
     else
       flash.now[:alert] = edition_unwithdrawer.failure_reason
-      render_design_system(:confirm_unwithdraw, :confirm_unwithdraw_legacy, next_release: true)
+      render :confirm_unwithdraw
     end
   end
 
@@ -140,6 +131,8 @@ class Admin::EditionWorkflowController < Admin::BaseController
     end
   end
 
+  def confirm_force_schedule; end
+
   def force_schedule
     force_scheduler = Whitehall.edition_services.force_scheduler(@edition)
     if force_scheduler.perform!
@@ -148,6 +141,8 @@ class Admin::EditionWorkflowController < Admin::BaseController
       redirect_to admin_edition_path(@edition), alert: force_scheduler.failure_reason
     end
   end
+
+  def confirm_unschedule; end
 
   def unschedule
     unscheduler = Whitehall.edition_services.unscheduler(@edition)
@@ -158,6 +153,8 @@ class Admin::EditionWorkflowController < Admin::BaseController
     end
   end
 
+  def confirm_approve_retrospectively; end
+
   def approve_retrospectively
     if @edition.approve_retrospectively
       redirect_to admin_edition_path(@edition),
@@ -167,17 +164,11 @@ class Admin::EditionWorkflowController < Admin::BaseController
     end
   end
 
-  def convert_to_draft
-    @edition.convert_to_draft!
-    redirect_to admin_editions_path(session_filters.merge(state: :imported)),
-                notice: "The imported document #{@edition.title} has been converted into a draft"
-  end
-
 private
 
   def get_layout
-    design_system_actions = %w[confirm_unpublish confirm_unwithdraw unpublish]
-    if preview_design_system?(next_release: true) && design_system_actions.include?(action_name)
+    design_system_actions = %w[confirm_approve_retrospectively confirm_force_schedule confirm_unpublish confirm_unschedule confirm_unwithdraw unpublish confirm_force_publish]
+    if design_system_actions.include?(action_name)
       "design_system"
     else
       "admin"
@@ -296,8 +287,6 @@ private
 
   def action_name_as_human_interaction(action_name)
     case action_name.to_s
-    when "convert_to_draft"
-      "convert this imported edition to a draft"
     when "approve_retrospectively"
       "retrospectively approve this edition"
     when "confirm_unpublish"

@@ -16,7 +16,6 @@ class Publication < Publicationesque
   include Edition::CanApplyToLocalGovernmentThroughRelatedPolicies
   include Edition::TopicalEvents
 
-  validates :first_published_at, presence: true, if: ->(e) { e.trying_to_convert_to_draft == true }
   validates :publication_type_id, presence: true
   validate :only_publications_allowed_invalid_data_can_be_awaiting_type
   validate :attachment_required_before_moving_out_of_draft
@@ -156,6 +155,12 @@ class Publication < Publicationesque
     if statistics_announcement_id.present?
       self.statistics_announcement = StatisticsAnnouncement.find(statistics_announcement_id)
     end
+  end
+
+  def base_path
+    return "/government/statistics/#{slug}" if statistics? || national_statistic?
+
+    "/government/publications/#{slug}"
   end
 
 private

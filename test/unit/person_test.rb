@@ -18,6 +18,26 @@ class PersonTest < ActiveSupport::TestCase
     assert_not person.valid?
   end
 
+  test "public_path returns the correct path for person" do
+    person = create(:person, forename: " forename ", surname: " surname ")
+    assert_equal "/government/people/forename-surname", person.public_path
+  end
+
+  test "public_path returns the correct path with options" do
+    person = create(:person, forename: " forename ", surname: " surname ")
+    assert_equal "/government/people/forename-surname?cachebust=123", person.public_path(cachebust: "123")
+  end
+
+  test "public_url returns the correct path for a Person object" do
+    person = create(:person, forename: " forename ", surname: " surname ")
+    assert_equal "https://www.test.gov.uk/government/people/forename-surname", person.public_url
+  end
+
+  test "public_url returns the correct path for a TakePart object with options" do
+    person = create(:person, forename: " forename ", surname: " surname ")
+    assert_equal "https://www.test.gov.uk/government/people/forename-surname?cachebust=123", person.public_url(cachebust: "123")
+  end
+
   test "should be valid if legacy image isn't 960x640px" do
     person = build(
       :person,
@@ -187,5 +207,30 @@ class PersonTest < ActiveSupport::TestCase
 
       assert_equal Time.zone.now, role_appointment.reload.updated_at
     end
+  end
+
+  test "#current_or_previous_prime_minister returns true when the persons ministerial_roles includes Prime Minister" do
+    person = build(:person)
+    prime_minister_role = build(:ministerial_role, slug: "prime-minister")
+    person.stubs(:ministerial_roles).returns([prime_minister_role])
+
+    assert_equal true, person.current_or_previous_prime_minister?
+  end
+
+  test "#current_or_previous_prime_minister returns false when the persons ministerial_roles does not include Prime Minister" do
+    person = build(:person)
+
+    assert_equal false, person.current_or_previous_prime_minister?
+  end
+
+  test "#current_role_appointments_title returns their role appointment names in a sentence" do
+    person = build(:person)
+    role1 = build(:role, :occupied, name: "Prime Minister")
+    role2 = build(:role, :occupied, name: "Big Cheese")
+    role_appointment1 = build(:role_appointment, person:, role: role1)
+    role_appointment2 = build(:role_appointment, person:, role: role2)
+    person.stubs(:current_role_appointments).returns([role_appointment1, role_appointment2])
+
+    assert_equal "Prime Minister and Big Cheese", person.current_role_appointments_title
   end
 end

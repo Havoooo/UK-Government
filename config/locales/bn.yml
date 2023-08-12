@@ -21,6 +21,15 @@ bn:
         nation_inapplicabilities: বাদ দেওয়া জাতিসমূহ
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: সংযুক্ত নথি
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: সংযুক্ত আদেশ পত্র নম্বর
         hoc_paper_number: হাউজ অব কমন্সের পেপার নাম্বার
@@ -39,8 +48,22 @@ bn:
       title: সংযুক্তির শিরোনাম
       unique_reference: সংযুক্তির অনন্য সূত্র
       unnumbered_hoc_paper: নম্বরবিহীন হাউজ অব কমন্সের পেপার
-  announcements:
-    heading: ঘোষণা
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ bn:
     caution:
       subheading: লিংকগুলোতে আমরা কিছু বিষয় পেয়েছি, যেগুলো সমস্যা নির্দেশ করতে পারে, এগুলোর সাথে লিংক করতে আপনার সতর্ক হওয়া উচিত
     title: অকার্যকর লিংকসমূহ
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: বন্ধ হয়ে গেছে
     closing_today: আজকে বন্ধ হচ্ছে
@@ -149,6 +177,12 @@ bn:
       blog_post:
         one: ব্লগ পোস্ট
         other: ব্লগ পোস্টসমূহ
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: ক্যাম্পেইন
         other: ক্যাম্পেইনসমূহ
@@ -158,6 +192,9 @@ bn:
       case_study:
         one: কেস স্টাডি
         other: কেস স্টাডিসমূহ
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: ক্লোজড কনসাল্টেশন
         other: ক্লোজড কনসাল্টেশন
@@ -260,6 +297,9 @@ bn:
       official_statistics:
         one: দাপ্তরিক পরিসংখ্যান
         other: দাপ্তরিক পরিসংখ্যান
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: উম্মুক্ত পরামর্শ
         other: উম্মুক্ত পরামর্শসমূহ
@@ -355,12 +395,6 @@ bn:
         other: সংসদে লিখিত বিবৃতিসমূহ
     updated: হালনাগাদ করা হয়েছে
   document_filters:
-    description: আপনার আগ্রহের সাথে মিলে যায় শুধুমাত্র সেই ফলাফলগুলো দেখাতে আপনি ফিল্টারগুলো ব্যবহার করতে পারেন
-    no_results:
-      description: অনুসন্ধানের ক্ষেত্র আরও বড় করে আবার চেষ্টা করুন।
-      title: মিলে যায় এমন কোনো নথি নেই।
-      tna_heading: পুরনো বিষয়বস্তু
-      tna_link_html: মে 2010-এর পূর্বের সকল বিভাগের নথিপত্র GOV.UK-তে মাইগ্রেট করা হয়নি। মে 2010-এর পূর্বের প্রকাশনাগুলো খুঁজে পেতে, <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">জাতীয় আর্কাইভ</a>-এ খোঁজার চেষ্টা করুন।
     world_locations:
       all: সকল স্থান
       label: বিশ্বের অবস্থানসমূহ
@@ -442,20 +476,6 @@ bn:
   latest_feed:
     no_updates: এখনও কোনো আপডেট নেই।
     title: সাম্প্রতিক
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: আমাদের তথ্যে প্রবেশাধিকার
@@ -464,8 +484,7 @@ bn:
       organisation_chart: আমাদের প্রতিষ্ঠানের চার্ট
       transparency: স্বচ্ছতার তথ্য
     embassies:
-      find_an_embassy_lowercase: একটি ব্রিটিশ দূতাবাস, হাই কমিশন বা কনসিউলেট খুঁজুন
-      find_an_embassy_uppercase: একটি ব্রিটিশ দূতাবাস, হাই কমিশন বা কনসিউলেট খুঁজুন
+      find_an_embassy_title:
     headings:
       corporate_information: কর্পোরেট তথ্য
       corporate_reports: কর্পোরেট রিপোর্টসমূহ
@@ -477,18 +496,15 @@ bn:
       works_with: যার সাথে কাজ করে
     type:
       courts_and_tribunals: আদালত ও ট্রাইব্যুনাল
-  publications:
-    heading: প্রকাশনাসমূহ
-    recent: সাম্প্রতিক প্রকাশনাসমূহ
-    statistics:
-      link_to_published_statistics: "%{link} পরিসংখ্যান অংশে সরকারি পরিসংখ্যানের একটি প্রকাশিত ও আসন্ন তালিকা খুঁজে দেখুন।"
-      moved_notice: পরিসংখ্যান প্রকাশনাগুলো সরিয়ে ফেলা হয়েছে।
   roles:
     unassigned: এই ভূমিকায় কাউকে দায়িত্ব দেওয়া হয়নি
   see_all:
     announcement: আমাদের সকল ঘোষণা দেখুন
     authored_article: আমাদের লেখকের উৎস সহ সকল নিবন্ধ দেখুন
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: আমাদের সকল কেস স্টাডি দেখুন
+    closed_call_for_evidence:
     closed_consultation: আমাদের সকল ক্লোজড কনসাল্টেশন দেখুন
     consultation: আমাদের সকল কনসাল্টেশন দেখুন
     consultation_outcome: আমাদের সকল কনসাল্টেশনের ফলাফল দেখুন
@@ -511,6 +527,7 @@ bn:
     news_article: আমাদের সকল সংবাদপত্রের নিবন্ধ দেখুন
     news_story: আমাদের সকল সংবাদের বিষয় দেখুন
     notice: আমাদের সকল বিজ্ঞপ্তি দেখুন
+    open_call_for_evidence:
     open_consultation: আমাদের সকল উম্মুক্ত পরামর্শ দেখুন
     oral_statement: সংসদে আমাদের সকল মৌখিক বিবৃতি দেখুন
     policy: আমাদের সকল নীতিমালা দেখুন
@@ -549,15 +566,7 @@ bn:
       heading:
       list_link:
     headings:
-      announcements: আমাদের ঘোষণাসমূহ
-      documents: নথিপত্র
-      featured:
-      mission: আমাদের মিশন
-      news: বিশ্বের অবস্থানসমূহের সংবাদ
-      organisations: প্রতিষ্ঠানসমূহ
-      publications: আমাদের প্রকাশনাসমূহ
       search: দেশ বা অঞ্চল হিসেবে অনুসন্ধান করুন
-      statistics: আমাদের পরিসংখ্যান
     search_description:
       international_delegation:
       world_location:

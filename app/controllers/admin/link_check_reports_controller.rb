@@ -11,14 +11,18 @@ class Admin::LinkCheckReportsController < Admin::BaseController
     respond_to do |format|
       format.js
       format.html { redirect_to [:admin, @reportable] }
+      format.json { render :show }
     end
   end
 
   def show
     @report = LinkCheckerApiReport.find(params[:id])
+    @allow_new_report = params[:allow_new_report] || false
+
     respond_to do |format|
       format.js
       format.html { redirect_to [:admin, @reportable] }
+      format.json
     end
   end
 

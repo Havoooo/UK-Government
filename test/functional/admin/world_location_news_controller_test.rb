@@ -31,6 +31,8 @@ class Admin::WorldLocationNewsControllerTest < ActionController::TestCase
     assert_template "world_location_news/edit"
     assert_select "input[name='world_location_news[title]']"
     assert_select "textarea[name='world_location_news[mission_statement]']"
+    assert_select "input[name='world_location_news[featured_links_attributes][0][title]']"
+    assert_select "input[name='world_location_news[featured_links_attributes][0][url]']"
   end
 
   test "updating should modify the world location" do
@@ -121,6 +123,6 @@ class Admin::WorldLocationNewsControllerTest < ActionController::TestCase
     create(:feature_list, locale: :en, featurable: world_location, features: [first_feature])
     get :features, params: { id: world_location }
 
-    assert_match(/Please note that you can only feature a maximum of [\d+] documents.*/, response.body)
+    assert_match(/A maximum of [\d+] documents will be featured on GOV.UK.*/, response.body)
   end
 end

@@ -1,5 +1,8 @@
 class Admin::WorldLocationNewsTranslationsController < Admin::BaseController
   include TranslationControllerConcern
+  layout "design_system"
+
+  def index; end
 
   def destroy
     translatable_item.world_location.remove_translations_for(translation_locale.code)
@@ -45,5 +48,13 @@ private
       :mission_statement, :title,
       world_location_attributes: %i[id name]
     )
+  end
+
+  def get_layout
+    if preview_design_system?(next_release: true)
+      "design_system"
+    else
+      "admin"
+    end
   end
 end

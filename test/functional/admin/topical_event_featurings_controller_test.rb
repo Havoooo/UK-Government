@@ -5,7 +5,7 @@ class Admin::TopicalEventFeaturingsControllerTest < ActionController::TestCase
 
   setup do
     @topical_event = create(:topical_event)
-    login_as :writer
+    login_as_preview_design_system_user :writer
   end
 
   test "GET :index assigns tagged_editions with a paginated collection of published editions related to the topical_event ordered by most recently created editions first" do
@@ -20,7 +20,7 @@ class Admin::TopicalEventFeaturingsControllerTest < ActionController::TestCase
     assert_equal [news_article2, news_article1], tagged_editions
     assert_equal 1, tagged_editions.current_page
     assert_equal 1, tagged_editions.total_pages
-    assert_equal 25, tagged_editions.limit_value
+    assert_equal 15, tagged_editions.limit_value
   end
 
   test "GET :index assigns a filtered list to tagged_editions when given a title" do
@@ -68,6 +68,7 @@ class Admin::TopicalEventFeaturingsControllerTest < ActionController::TestCase
   end
 
   view_test "GET :index contains a message when no results matching search criteria were found" do
+    skip("Will be re-enabled in the PR which adds the documents search tab.")
     create(:published_news_article, topical_events: [@topical_event])
 
     get :index, params: { topical_event_id: create(:topical_event) }
@@ -99,7 +100,7 @@ class Admin::TopicalEventFeaturingsControllerTest < ActionController::TestCase
     edition = create :edition
     get :new, params: { topical_event_id: @topical_event.id, edition_id: edition.id }
 
-    assert_select "#topical_event_featuring_image_attributes_file"
+    assert_select "#topical_event_featuring_image"
     assert_select "#topical_event_featuring_alt_text"
   end
 
@@ -107,7 +108,7 @@ class Admin::TopicalEventFeaturingsControllerTest < ActionController::TestCase
     offsite_link = create :offsite_link
     get :new, params: { topical_event_id: @topical_event.id, offsite_link_id: offsite_link.id }
 
-    assert_select "#topical_event_featuring_image_attributes_file"
+    assert_select "#topical_event_featuring_image"
     assert_select "#topical_event_featuring_alt_text"
   end
 

@@ -33,7 +33,7 @@ module AttachmentHelper
 
   def add_external_attachment
     location = current_url
-    click_link "Modify attachments"
+    click_link "Add attachment"
     create_external_attachment("http://www.example.com/example", "Example doc")
     visit location
   end

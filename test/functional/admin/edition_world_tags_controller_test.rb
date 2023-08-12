@@ -9,7 +9,9 @@ class Admin::EditionWorldTagsControllerTest < ActionController::TestCase
     @publishing_api_endpoint = GdsApi::TestHelpers::PublishingApi::PUBLISHING_API_V2_ENDPOINT
     @organisation = create(:organisation, content_id: "f323e83c-868b-4bcb-b6e2-a8f9bb40397e")
     @edition = create(:publication, publication_type: PublicationType::Guidance, organisations: [@organisation])
+    stub_taxonomy_with_all_taxons
     stub_taxonomy_with_world_taxons
+    stub_publishing_api_expanded_links_with_taxons(@edition.content_id, [child_taxon])
   end
 
   test "should return an error on a version conflict" do
@@ -63,6 +65,18 @@ class Admin::EditionWorldTagsControllerTest < ActionController::TestCase
 
     assert_select "input[value='#{world_child_taxon_content_id}'][checked='checked']"
     refute_select "input[value='#{world_grandchild_taxon_content_id}'][checked='checked']"
+  end
+
+  view_test "should render the correct title and miller columns" do
+    stub_publishing_api_links_with_taxons(@edition.content_id, [world_child_taxon_content_id])
+
+    get :edit, params: { edition_id: @edition }
+
+    assert_select ".govuk-caption-xl", @edition[:title]
+    assert_select "h1", "Worldwide tags"
+    assert_select "h2", "Selected topics"
+    assert_select "miller-columns", count: 1
+    assert_select "miller-columns-selected", count: 1
   end
 
   test "should also post taxons tagged to the topic and world taxonomies" do

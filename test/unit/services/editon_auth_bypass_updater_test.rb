@@ -35,7 +35,7 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
       file_attachment = create(:file_attachment, attachable: edition)
 
       SecureRandom.stubs(uuid: uid)
-      expected_attributes = { auth_bypass_ids: [uid] }
+      expected_attributes = { "auth_bypass_ids" => [uid] }
 
       service = EditionAuthBypassUpdater.new(
         edition:,
@@ -45,7 +45,8 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
 
       AssetManagerUpdateWhitehallAssetWorker.expects(:perform_async_in_queue).with(
         "asset_manager_updater",
-        file_attachment.attachment_data.to_global_id,
+        "AttachmentData",
+        file_attachment.attachment_data.id,
         expected_attributes,
       )
 
@@ -57,7 +58,7 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
       image = create(:image, edition:)
 
       SecureRandom.stubs(uuid: uid)
-      expected_attributes = { auth_bypass_ids: [uid] }
+      expected_attributes = { "auth_bypass_ids" => [uid] }
 
       service = EditionAuthBypassUpdater.new(
         edition:,
@@ -67,7 +68,8 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
 
       AssetManagerUpdateWhitehallAssetWorker.expects(:perform_async_in_queue).with(
         "asset_manager_updater",
-        image.image_data.to_global_id,
+        "ImageData",
+        image.image_data.id,
         expected_attributes,
       )
 
@@ -97,7 +99,7 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
       consultation_response_form = create(:consultation_response_form, consultation_participation: participation)
 
       SecureRandom.stubs(uuid: uid)
-      expected_attributes = { auth_bypass_ids: [uid] }
+      expected_attributes = { "auth_bypass_ids" => [uid] }
 
       service = EditionAuthBypassUpdater.new(
         edition:,
@@ -107,7 +109,8 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
 
       AssetManagerUpdateWhitehallAssetWorker.expects(:perform_async_in_queue).with(
         "asset_manager_updater",
-        consultation_response_form.consultation_response_form_data.to_global_id,
+        "ConsultationResponseFormData",
+        consultation_response_form.consultation_response_form_data.id,
         expected_attributes,
       )
 
@@ -120,7 +123,7 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
       file_attachment = create(:file_attachment, attachable: outcome)
 
       SecureRandom.stubs(uuid: uid)
-      expected_attributes = { auth_bypass_ids: [uid] }
+      expected_attributes = { "auth_bypass_ids" => [uid] }
 
       service = EditionAuthBypassUpdater.new(
         edition:,
@@ -130,7 +133,8 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
 
       AssetManagerUpdateWhitehallAssetWorker.expects(:perform_async_in_queue).with(
         "asset_manager_updater",
-        file_attachment.attachment_data.to_global_id,
+        "AttachmentData",
+        file_attachment.attachment_data.id,
         expected_attributes,
       )
 
@@ -143,7 +147,7 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
       file_attachment = create(:file_attachment, attachable: feedback)
 
       SecureRandom.stubs(uuid: uid)
-      expected_attributes = { auth_bypass_ids: [uid] }
+      expected_attributes = { "auth_bypass_ids" => [uid] }
 
       service = EditionAuthBypassUpdater.new(
         edition:,
@@ -153,7 +157,8 @@ class EditionAuthBypassUpdaterTest < ActiveSupport::TestCase
 
       AssetManagerUpdateWhitehallAssetWorker.expects(:perform_async_in_queue).with(
         "asset_manager_updater",
-        file_attachment.attachment_data.to_global_id,
+        "AttachmentData",
+        file_attachment.attachment_data.id,
         expected_attributes,
       )
 

@@ -1,5 +1,6 @@
 class Admin::RolesController < Admin::BaseController
   before_action :load_role, only: %i[edit update destroy]
+  layout "design_system"
 
   def index
     @roles = Role.includes(:role_appointments, :current_people, :translations, organisations: [:translations])
@@ -15,7 +16,7 @@ class Admin::RolesController < Admin::BaseController
     if @role.save
       redirect_to index_or_edit_path, notice: %("#{@role.name}" created.)
     else
-      render action: "new"
+      render :new
     end
   end
 
@@ -27,14 +28,18 @@ class Admin::RolesController < Admin::BaseController
     if @role.update(role_params)
       redirect_to index_or_edit_path, notice: %("#{@role.name}" updated.)
     else
-      render action: "edit"
+      render :edit
     end
+  end
+
+  def confirm_destroy
+    @role = Role.find(params[:id])
   end
 
   def destroy
     notice = %("#{@role.name}" destroyed.)
     if @role.destroy
-      redirect_to admin_roles_path, notice: notice
+      redirect_to(admin_roles_path, notice:)
     else
       message = "Cannot destroy a role with appointments, organisations, or documents"
       redirect_to admin_roles_path, alert: message

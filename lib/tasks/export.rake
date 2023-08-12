@@ -26,11 +26,11 @@ namespace :export do
             document.slug,
             document.display_type,
             document.latest_edition.state,
-            document.live? ? Whitehall.url_maker.public_document_url(edition) : nil,
+            document.live? ? edition.public_url : nil,
             edition.id,
             edition.title,
             edition.state,
-            Whitehall.url_maker.admin_edition_url(edition),
+            admin_edition_url(edition),
             *edition.authors.uniq.map(&:name),
           ]
         end
@@ -68,8 +68,8 @@ namespace :export do
         org.published_editions.each do |edition|
           csv << [
             org.display_name,
-            Whitehall.url_maker.public_document_url(edition),
-            Whitehall.url_maker.admin_edition_url(edition),
+            edition.public_url,
+            admin_edition_url(edition),
             edition.title,
             edition.display_type,
             edition.public_timestamp,
@@ -115,7 +115,7 @@ namespace :export do
     result = edition.html_attachments.map do |a|
       {
         title: a.title,
-        body: a.govspeak_content_body,
+        body: a.body,
         issued_date: a.created_at.strftime("%Y-%m-%d"),
         summary: edition.summary,
         slug: a.slug,

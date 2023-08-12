@@ -1,7 +1,14 @@
 class Admin::PersonTranslationsController < Admin::BaseController
   include TranslationControllerConcern
+  layout :get_layout
+
+  before_action :build_translation_locale, only: %i[confirm_destroy]
 
 private
+
+  def get_layout
+    "design_system"
+  end
 
   def create_redirect_path
     edit_admin_person_translation_path(@person, id: translation_locale)
@@ -34,5 +41,9 @@ private
 
   def translation_params
     params.require(:person).permit(:biography)
+  end
+
+  def build_translation_locale
+    @translation_locale = Locale.coerce(params[:id])
   end
 end

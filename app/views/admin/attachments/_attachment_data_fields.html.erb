@@ -6,7 +6,7 @@
 
   <%= render "govuk_publishing_components/components/file_upload", {
     label: {
-      text: attachment_data_fields.object.filename ? 'Replace file' : 'File',
+      text: attachment_data_fields.object.filename ? 'Replace file' : 'File (required)',
       heading_level: 2,
       heading_size: "l",
     },
@@ -16,7 +16,7 @@
     error_items: errors_for(attachment_data_fields.object.errors, :file),
   } %>
 
-  <% form.hidden_field :accessible, value: "0" %>
+  <%= form.hidden_field :accessible, value: "0" %>
 
   <%= render "govuk_publishing_components/components/checkboxes", {
     name: "attachment[accessible]",

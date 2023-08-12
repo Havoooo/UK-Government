@@ -19,75 +19,6 @@ module OrganisationHelper
     ActiveSupport::Inflector.singularize(organisation.organisation_type.name.downcase)
   end
 
-  def organisation_govuk_status_description(organisation)
-    if organisation.closed?
-      organisation_closed_govuk_status_description(organisation)
-    elsif organisation.transitioning?
-      "#{organisation.name} is in the process of joining GOV.UK. In the meantime, #{link_to(organisation.url, organisation.url)} remains the official source.".html_safe
-    elsif organisation.joining?
-      if organisation.url.present?
-        "#{organisation.name} currently has a #{link_to('separate website', organisation.url)} but will soon be incorporated into GOV.UK".html_safe
-      else
-        "#{organisation.name} will soon be incorporated into GOV.UK"
-      end
-    elsif organisation.exempt?
-      if organisation.url.present?
-        "#{organisation.name} has a #{link_to('separate website', organisation.url)}".html_safe
-      else
-        "#{organisation.name} has no website"
-      end
-    end
-  end
-
-  def organisation_closed_govuk_status_description(organisation)
-    if organisation.no_longer_exists?
-      if organisation.closed_at.present?
-        "#{organisation.name} closed in #{organisation.closed_at.to_fs(:one_month_precision)}"
-      else
-        "#{organisation.name} has closed"
-      end
-    elsif organisation.replaced? || organisation.split?
-      if organisation.closed_at.present?
-        "#{organisation.name} was replaced by #{superseding_organisations_text(organisation)} in #{organisation.closed_at.to_fs(:one_month_precision)}".html_safe
-      else
-        "#{organisation.name} was replaced by #{superseding_organisations_text(organisation)}".html_safe
-      end
-    elsif organisation.merged?
-      if organisation.closed_at.present?
-        "#{organisation.name} became part of #{superseding_organisations_text(organisation)} in #{organisation.closed_at.to_fs(:one_month_precision)}".html_safe
-      else
-        "#{organisation.name} is now part of #{superseding_organisations_text(organisation)}".html_safe
-      end
-    elsif organisation.changed_name?
-      "#{organisation.name} is now called #{superseding_organisations_text(organisation)}".html_safe
-    elsif organisation.left_gov?
-      "#{organisation.name} is now independent of the UK government"
-    elsif organisation.devolved?
-      if organisation.superseded_by_devolved_administration?
-        "#{organisation.name} is a body of the #{superseding_organisations_text(organisation)}".html_safe
-      else
-        "#{organisation.name} is now run by the #{superseding_organisations_text(organisation)}".html_safe
-      end
-    end
-  end
-
-  def superseding_organisations_text(organisation)
-    if organisation.superseding_organisations.any?
-      organisation_links = organisation.superseding_organisations.map do |org|
-        link_to(org.name, organisation_path(org))
-      end
-      organisation_links.to_sentence.html_safe
-    end
-  end
-
-  def govuk_status_meta_data_for(organisation)
-    if organisation.exempt?
-      tag.span "separate website", class: "metadata"
-    elsif organisation.joining? || organisation.transitioning?
-      tag.span "moving to GOV.UK", class: "metadata"
-    end
-  end
-
   def organisation_display_name_and_parental_relationship(organisation)
     name = ERB::Util.h(organisation_display_name(organisation))
     type_name = organisation_type_name(organisation)
@@ -125,7 +56,8 @@ module OrganisationHelper
       child_relationships_link_text = child_organisations.size.to_s
       child_relationships_link_text += child_organisations.size == 1 ? " public body" : " agencies and public bodies"
 
-      organisation_name += link_to(child_relationships_link_text, organisations_path(anchor: organisation.slug), class: "brand__color")
+      organisation_name += link_to(child_relationships_link_text, organisation.link_to_section_on_organisation_list_page, class: "brand__color")
+
       organisation_name += "."
     end
 
@@ -134,7 +66,7 @@ module OrganisationHelper
 
   def organisation_relationship_html(organisation)
     prefix = needs_definite_article?(organisation.name) ? "the " : ""
-    (prefix + link_to(organisation.name, organisation_path(organisation), class: "brand__color"))
+    (prefix + link_to(organisation.name, organisation.public_path, class: "brand__color"))
   end
 
   def needs_definite_article?(phrase)
@@ -205,5 +137,48 @@ module OrganisationHelper
   def show_corporate_information_pages?(organisation)
     organisation.live? && (!organisation.court_or_hmcts_tribunal? ||
       organisation.corporate_information_pages.published.reject { |cip| cip.slug == "about" }.any?)
+  end
+
+  def organisation_index_rows(user_organisation, organisations)
+    organisations = ([user_organisation] + organisations).compact
+
+    organisations.each_with_index.map do |organisation, index|
+      font_weight_bold = user_organisation && index.zero? ? "govuk-!-font-weight-bold" : nil
+
+      [
+        {
+          text: (if organisation.acronym.present?
+                   link_to(
+                     organisation.acronym,
+                     admin_organisation_path(organisation),
+                     class: "govuk-link #{font_weight_bold}".strip,
+                   )
+                 end) || "",
+        },
+        {
+          text: link_to(
+            organisation.name,
+            admin_organisation_path(organisation),
+            class: "govuk-link #{font_weight_bold}".strip,
+          ),
+        },
+        {
+          text: tag.p(
+            organisation.organisation_type.name,
+            class: "#{font_weight_bold} govuk-!-margin-bottom-0 govuk-!-margin-top-0".strip,
+          ),
+        },
+        {
+          text: tag.p(
+            organisation.govuk_status,
+            class: "#{font_weight_bold} govuk-!-margin-bottom-0 govuk-!-margin-top-0".strip,
+          ),
+        },
+        {
+          text: link_to("[gov.uk]", organisation.public_path, class: "govuk-link #{font_weight_bold}".strip) +
+            (link_to("[current site]", organisation.url, class: "govuk-link #{font_weight_bold}".strip) if organisation.govuk_status != "live"),
+        },
+      ]
+    end
   end
 end

@@ -13,7 +13,7 @@ class DocumentExportPresenterTest < ActiveSupport::TestCase
 
   test "includes a collection of users involved with the document" do
     creator = create(:user)
-    Edition::AuditTrail.whodunnit = creator
+    AuditTrail.whodunnit = creator
     edition = create(:publication)
     author = edition.authors.first
     remarker = create(:user)
@@ -78,7 +78,7 @@ class DocumentExportPresenterTest < ActiveSupport::TestCase
 
     expected_whitehall_admin_links = [{
       whitehall_admin_url: "/government/admin/news/2",
-      public_url: "www.test.gov.uk/government/generic-editions/some-article",
+      public_url: "https://www.test.gov.uk/government/generic-editions/some-article",
       content_id: linked_edition.content_id,
     }]
 
@@ -99,7 +99,7 @@ class DocumentExportPresenterTest < ActiveSupport::TestCase
 
     expected_whitehall_admin_links = [{
       whitehall_admin_url: "/government/admin/news/2",
-      public_url: "www.test.gov.uk/government/generic-editions/some-article",
+      public_url: "https://www.test.gov.uk/government/generic-editions/some-article",
       content_id: linked_edition.content_id,
     }]
 
@@ -286,11 +286,11 @@ class DocumentExportPresenterTest < ActiveSupport::TestCase
 
   test "includes history information" do
     user1 = create(:user)
-    Edition::AuditTrail.whodunnit = user1
+    AuditTrail.whodunnit = user1
     edition = create(:edition)
 
     user2 = create(:user)
-    Edition::AuditTrail.whodunnit = user2
+    AuditTrail.whodunnit = user2
     edition.update!(change_note: "changed")
 
     result = DocumentExportPresenter.new(edition.document).as_json
@@ -350,7 +350,7 @@ class DocumentExportPresenterTest < ActiveSupport::TestCase
 
   test "includes topical events details" do
     edition = create(:news_article)
-    edition.topical_events.create!(name: "Super important event", description: "Not that important")
+    edition.topical_events.create!(name: "Super important event", description: "Not that important", summary: "Not important")
     topical_event = edition.topical_events.last
 
     result = DocumentExportPresenter.new(edition.document).as_json

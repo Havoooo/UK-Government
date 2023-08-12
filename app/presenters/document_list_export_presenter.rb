@@ -1,4 +1,7 @@
 class DocumentListExportPresenter
+  include Rails.application.routes.url_helpers
+  include Admin::EditionRoutesHelper
+
   attr_accessor :edition
 
   def initialize(edition)
@@ -59,12 +62,10 @@ class DocumentListExportPresenter
     ]
   end
 
-  def public_url
-    Whitehall.url_maker.public_document_url(edition)
-  end
+  delegate :public_url, to: :edition
 
   def admin_url
-    Whitehall.url_maker.admin_edition_url(edition)
+    admin_edition_url(edition)
   end
 
   def first_published_on_govuk

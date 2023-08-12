@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
   include GDS::SSO::ControllerMethods
   include Slimmer::Headers
   include Slimmer::Template
-  include LocalisedUrlPathHelper
   include LegacyUrlHelper
 
   protect_from_forgery
@@ -22,7 +21,7 @@ class ApplicationController < ActionController::Base
 private
 
   def set_audit_trail_whodunnit
-    Edition::AuditTrail.whodunnit = current_user
+    AuditTrail.whodunnit = current_user
   end
 
   def skip_slimmer

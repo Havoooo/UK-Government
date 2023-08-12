@@ -7,6 +7,8 @@ module TranslationControllerConcern
     helper_method :translation_locale
   end
 
+  def edit; end
+
   def create
     redirect_to create_redirect_path
   end
@@ -16,9 +18,11 @@ module TranslationControllerConcern
       save_draft_translation if send_downstream?
       redirect_to update_redirect_path, notice: notice_message("saved")
     else
-      render action: "edit"
+      render :edit
     end
   end
+
+  def confirm_destroy; end
 
   def destroy
     translatable_item.remove_translations_for(translation_locale.code)

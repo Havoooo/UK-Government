@@ -1,9 +1,13 @@
-describe('GOVUK.Modules.GovspekEditor', function () {
+describe('GOVUK.Modules.GovspeakEditor', function () {
   var component, module
 
   beforeEach(function () {
     component = document.createElement('div')
+    component.setAttribute('data-image-ids', JSON.stringify([1, 2, 3, 4]))
+    component.setAttribute('data-attachment-ids', JSON.stringify([5, 6, 7, 8]))
+    component.setAttribute('data-alternative-format-provider-id', 11)
 
+    // Preview Button
     var previewButton = document.createElement('button')
     previewButton.classList.add('js-app-c-govspeak-editor__preview-button')
     previewButton.setAttribute('data-preview-toggle-tracking', true)
@@ -12,6 +16,7 @@ describe('GOVUK.Modules.GovspekEditor', function () {
     previewButton.setAttribute('data-content-target', '#textarea_id')
     previewButton.innerText = 'Preview'
 
+    // Textarea
     var textareaSection = document.createElement('div')
     textareaSection.classList.add('app-c-govspeak-editor__textarea')
 
@@ -20,12 +25,19 @@ describe('GOVUK.Modules.GovspekEditor', function () {
     textarea.innerText = '## Hello'
     textareaSection.appendChild(textarea)
 
+    // Preview section
     var previewSection = document.createElement('div')
     previewSection.classList.add('app-c-govspeak-editor__preview')
 
+    // Error section
+    var errorSection = document.createElement('div')
+    errorSection.classList.add('app-c-govspeak-editor__error')
+
+    // Append to component
     component.appendChild(previewButton)
     component.appendChild(textareaSection)
     component.appendChild(previewSection)
+    component.appendChild(errorSection)
 
     module = new GOVUK.Modules.GovspeakEditor(component)
     module.init()
@@ -49,6 +61,9 @@ describe('GOVUK.Modules.GovspekEditor', function () {
 
     expect(component.querySelectorAll('.app-c-govspeak-editor__preview').length).toEqual(1)
     expect(component.querySelector('.app-c-govspeak-editor__preview')).not.toHaveClass('app-c-govspeak-editor__preview--show')
+
+    expect(component.querySelectorAll('.app-c-govspeak-editor__error').length).toEqual(1)
+    expect(component.querySelector('.app-c-govspeak-editor__error')).not.toHaveClass('app-c-govspeak-editor__error--show')
   })
 
   it('shows preview section when button clicked', function () {
@@ -112,6 +127,34 @@ describe('GOVUK.Modules.GovspekEditor', function () {
     previewButton.dispatchEvent(new Event('click'))
 
     expect(previewSection.innerHTML).toEqual(html)
+  })
+
+  it('renders an error message when the govspeak service returns a 403 "forbidden" response', function () {
+    var previewButton = component.querySelector('.js-app-c-govspeak-editor__preview-button')
+    var previewSection = component.querySelector('.app-c-govspeak-editor__preview')
+    var errorSection = component.querySelector('.app-c-govspeak-editor__error')
+
+    jasmine.Ajax.stubRequest('/government/admin/preview', null, 'POST').andReturn({
+      status: 403,
+      contentType: 'text/html'
+    })
+
+    previewButton.dispatchEvent(new Event('click'))
+
+    expect(errorSection.classList).toContain('app-c-govspeak-editor__error--show')
+    expect(previewSection.classList).not.toContain('app-c-govspeak-editor__preview--show')
+  })
+
+  it('hides the error message when the user returns to the editor view', function () {
+    var previewButton = component.querySelector('.js-app-c-govspeak-editor__preview-button')
+    var errorSection = component.querySelector('.app-c-govspeak-editor__error')
+
+    previewButton.innerText = 'Back to edit'
+    errorSection.classList.add('app-c-govspeak-editor__error--show')
+
+    previewButton.dispatchEvent(new Event('click'))
+
+    expect(errorSection.classList).not.toContain('app-c-govspeak-editor__error--show')
   })
 
   it('renders govspeak correctly with changing content', function () {
@@ -186,5 +229,23 @@ describe('GOVUK.Modules.GovspekEditor', function () {
       'pressed-preview-button',
       { label: 'edit' }
     )
+  })
+
+  it('generates form data correctly', function () {
+    var formData = module.generateFormData('some text')
+
+    expect(Array.from(formData.entries())).toEqual([
+      ['body', 'some text'],
+      ['authenticity_token', 'a-csrf-token'],
+      ['alternative_format_provider_id', '11'],
+      ['image_ids[]', '1'],
+      ['image_ids[]', '2'],
+      ['image_ids[]', '3'],
+      ['image_ids[]', '4'],
+      ['attachment_ids[]', '5'],
+      ['attachment_ids[]', '6'],
+      ['attachment_ids[]', '7'],
+      ['attachment_ids[]', '8']
+    ])
   })
 })

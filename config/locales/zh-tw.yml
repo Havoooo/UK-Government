@@ -21,6 +21,15 @@ zh-tw:
         nation_inapplicabilities: 排除的國家
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: 附件
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: 附件命令文件編號
         hoc_paper_number: 下議院文件編碼
@@ -39,8 +48,22 @@ zh-tw:
       title: 附件標題
       unique_reference: 附件專用參考
       unnumbered_hoc_paper: 未編碼的下議院文件
-  announcements:
-    heading: 公告
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ zh-tw:
     caution:
       subheading: 我們發現了一些可能表明存在問題的連結問題，你在應謹慎連結。
     title: 連結損壞
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: 關閉
     closing_today: 今日關閉
@@ -126,241 +154,167 @@ zh-tw:
       written_on: 寫在：
     type:
       about:
-        one: 關於
         other: 關於
       about_our_services:
-        one: 關於我們的服務
         other: 關於我們的服務
       access_and_opening:
-        one: 訪問與開啟
         other: 訪問與開啟
       accessible_documents_policy:
-        one: 訪問文檔策略
         other: 訪問文檔策略
       alert:
-        one: 警示
         other: 警示
       announcement:
-        one: 公告
         other: 公告
       authored_article:
-        one: 授權文章
         other: 授權文章
       blog_post:
-        one: 部落格文章
         other: 部落格文章
+      call_for_evidence:
+        other:
+      call_for_evidence_outcome:
+        other:
       campaign:
-        one: 活動
         other: 活動
       careers:
-        one: 職業
         other: 職業
       case_study:
-        one: 案例分析
         other: 案例分析
+      closed_call_for_evidence:
+        other:
       closed_consultation:
-        one: 非公開協商
         other: 非公開協商
       complaints_procedure:
-        one: 投訴程序
         other: 投訴程序
       consultation:
-        one: 諮詢
         other: 諮詢
       consultation_outcome:
-        one: 協商結果
         other: 協商結果
       corporate_report:
-        one: 企業報告
         other: 企業報告
       correspondence:
-        one: 信函
         other: 信函
       decision:
-        one: 決定
         other: 決定
       detailed_guidance:
-        one: 指導
         other: 指導
       document_collection:
-        one: 收集
         other: 收集
       draft_text:
-        one: 草稿文本
         other: 草稿文本
       edition:
-        one: 版本
         other: 版本
       edition_with_appointment:
-        one: 預約版本
         other: 預約版本
       equality_and_diversity:
-        one: 平等和多元
         other: 平等和多元
       fatality_notice:
-        one: 死亡通知
         other: 死亡通知
       foi_release:
-        one: 資訊自由發布
         other: 資訊自由發布
       form:
-        one: 形式
         other: 形式
       generic_edition:
-        one: 通用版本
         other: 通用版本
       government_response:
-        one: 政府回應
         other: 政府回應
       guidance:
-        one: 指導
         other: 指導
       impact_assessment:
-        one: 影響評估
         other: 影響評估
       imported:
-        one: 進口－等待類型
         other: 進口－等待類型
       independent_report:
-        one: 獨立報告
         other: 獨立報告
       international_treaty:
-        one: 國際條約
         other: 國際條約
       manual:
-        one: 手冊
         other: 手冊
       map:
-        one: 地圖
         other: 地圖
       media_enquiries:
-        one: 媒體資料查詢
         other: 媒體資料查詢
       membership:
-        one: 會員資格
         other: 會員資格
       modern_slavery_statement:
-        one:
         other:
       national_statistics:
-        one: 國家統計
         other: 國家統計
       news_article:
-        one: 新聞文章
         other: 新聞文章
       news_story:
-        one: 新聞報導
         other: 新聞報導
       nhs_content:
-        one: 免費醫療服務系統內容
         other: 免費醫療服務系統內容
       notice:
-        one: 通知
         other: 通知
       official_statistics:
-        one: 官方統計
         other: 官方統計
+      open_call_for_evidence:
+        other:
       open_consultation:
-        one: 公開諮詢
         other: 公開諮詢
       oral_statement:
-        one: 對議會的口頭聲明
         other: 對議會的口頭聲明
       our_energy_use:
-        one: 我們的能源使用
         other: 我們的能源使用
       our_governance:
-        one: 我們的治理
         other: 我們的治理
       personal_information_charter:
-        one: 個資憲章
         other: 個資憲章
       petitions_and_campaigns:
-        one: 請願和活動
         other: 請願和活動
       policy_paper:
-        one: 政策文件
         other: 政策文件
       press_release:
-        one: 新聞稿
         other: 新聞稿
       procurement:
-        one: 宣傳材料
         other: 宣傳材料
       promotional:
-        one: 宣傳資料
         other: 宣傳資料
       publication:
-        one: 出版
         other: 出版
       publication_scheme:
-        one: 出版格式
         other: 出版格式
       recruitment:
-        one: 招募
         other: 招募
       regulation:
-        one: 法規
         other: 法規
       research:
-        one: 研究
         other: 研究
       service:
-        one: 服務
         other: 服務
       social_media_use:
-        one: 使用社群媒體
         other: 使用社群媒體
       speaking_notes:
-        one: 發言筆記
         other: 發言筆記
       speech:
-        one: 演說
         other: 演說
       staff_update:
-        one: 雇員更新
         other: 雇員更新
       standard:
-        one: 標準
         other: 標準
       statement_to_parliament:
-        one: 向議會發表聲明
         other: 向議會發表聲明
       statistical_data_set:
-        one: 統計數據組
         other: 統計數據組
       statistics:
-        one: 統計數據
         other: 統計數據
       statutory_guidance:
-        one: 法令指導
         other: 法令指導
       terms_of_reference:
-        one: 職權範疇
         other: 職權範疇
       transcript:
-        one: 副本
         other: 副本
       transparency:
-        one: 透明數據
         other: 透明數據
       welsh_language_scheme:
-        one: 威爾斯語格式
         other: 威爾斯語格式
       world_news_story:
-        one: 世界新聞報導
         other: 世界新聞報導
       written_statement:
-        one: 對議會的書面聲明
         other: 對議會的書面聲明
     updated: 更新
   document_filters:
-    description: 可以使用過濾器僅顯示符合篩選的結果
-    no_results:
-      description: 請試著擴大搜索範圍，然後再試一次。
-      title: 沒有符合文檔。
-      tna_heading: 較舊內容
-      tna_link_html: 並非 2010 年 5 月前的所有部會發佈都遷移到英國政府網站。要查找 2010 年 5 月之前的發佈，請嘗試搜索 <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">國家檔案館</a>。
     world_locations:
       all: 所有地點
       label: 世界地點
@@ -442,20 +396,6 @@ zh-tw:
   latest_feed:
     no_updates: 尚未更新
     title: 最新
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: 訪問我們的資訊
@@ -464,8 +404,7 @@ zh-tw:
       organisation_chart: 我們的組織圖
       transparency: 透明數據
     embassies:
-      find_an_embassy_lowercase: 查找英國大使館、辦事處或領事館
-      find_an_embassy_uppercase: 查找英國大使館、辦事處或領事館
+      find_an_embassy_title: 查找英國大使館、辦事處或領事館
     headings:
       corporate_information: 公司資訊
       corporate_reports: 企業報告
@@ -477,18 +416,15 @@ zh-tw:
       works_with: 共事
     type:
       courts_and_tribunals: 法庭與審裁處
-  publications:
-    heading: 出版
-    recent: 近期發佈
-    statistics:
-      link_to_published_statistics: 在 %{link} 統計部分找到已發布和即將發布的政府統計數據列表。
-      moved_notice: 統計發佈已移除。
   roles:
     unassigned: 該角色未被指派
   see_all:
     announcement: 查看我們所有公告
     authored_article: 查看我們所有授權文章
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: 查看我們所有案例分析
+    closed_call_for_evidence:
     closed_consultation: 查看我們所有未公開諮詢
     consultation: 查看我們所有諮詢
     consultation_outcome: 查看我們所有諮詢結果
@@ -511,6 +447,7 @@ zh-tw:
     news_article: 查看我們所有新聞文章
     news_story: 查看我們所有新聞報導
     notice: 查看我們所有通知
+    open_call_for_evidence:
     open_consultation: 查看我們所有公開諮詢
     oral_statement: 查看我們所有對議會的口頭聲明
     policy: 查看我們所有政策
@@ -549,24 +486,14 @@ zh-tw:
       heading:
       list_link:
     headings:
-      announcements: 我們的公告
-      documents: 文檔
-      featured:
-      mission: 我們的任務
-      news: 世界地點消息
-      organisations: 組織
-      publications: 我們的出版
       search: 按國家或地區搜索
-      statistics: 我們的數據統計
     search_description:
       international_delegation:
       world_location:
     type:
       international_delegation:
-        one: 國際代表團
         other: 國際代表團
       world_location:
-        one: 世界地點
         other: 世界地點
   world_news:
     uk_updates_in_country: 來自 %{country} 的英國政府的更新、新聞和事件

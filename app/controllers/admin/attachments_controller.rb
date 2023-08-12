@@ -1,13 +1,11 @@
 class Admin::AttachmentsController < Admin::BaseController
   before_action :limit_attachable_access, if: :attachable_is_an_edition?
   before_action :check_attachable_allows_attachment_type
-  layout :get_layout
+  layout "design_system"
 
   rescue_from Mysql2::Error, with: :handle_duplicate_key_errors_caused_by_double_create_requests
 
-  def index
-    render_design_system("index", "index_legacy", next_release: false)
-  end
+  def index; end
 
   def reorder; end
 
@@ -18,22 +16,18 @@ class Admin::AttachmentsController < Admin::BaseController
     redirect_to attachable_attachments_path(attachable), notice: "Attachments re-ordered"
   end
 
-  def new
-    render_design_system("new", "new_legacy", next_release: true)
-  end
+  def new; end
 
   def create
     if save_attachment
       attachment_updater(attachment.attachment_data)
       redirect_to attachable_attachments_path(attachable), notice: "Attachment '#{attachment.title}' uploaded"
     else
-      render_design_system("new", "new_legacy", next_release: true)
+      render :new
     end
   end
 
-  def edit
-    render_design_system("edit", "edit_legacy", next_release: true)
-  end
+  def edit; end
 
   def update
     attachment.attributes = attachment_params
@@ -45,26 +39,7 @@ class Admin::AttachmentsController < Admin::BaseController
       message = "Attachment '#{attachment.title}' updated"
       redirect_to attachable_attachments_path(attachable), notice: message
     else
-      render_design_system("edit", "edit_legacy", next_release: true)
-    end
-  end
-
-  def update_many
-    errors = {}
-    params[:attachments].each do |id, attributes|
-      attachment = attachable.attachments.find(id)
-      attachment.assign_attributes(attributes.permit(:title))
-      if attachment.save(context: :user_input)
-        attachment_updater(attachment.attachment_data)
-      else
-        errors[id] = attachment.errors.full_messages
-      end
-    end
-
-    if errors.empty?
-      render json: { result: :success }
-    else
-      render json: { result: :failure, errors: }, status: :unprocessable_entity
+      render :edit
     end
   end
 
@@ -79,7 +54,7 @@ class Admin::AttachmentsController < Admin::BaseController
 
   def attachable_attachments_path(attachable)
     case attachable
-    when Response
+    when ConsultationResponse
       [:admin, attachable.consultation, attachable.singular_routing_symbol]
     else
       [:admin, typecast_for_attachable_routing(attachable), Attachment]
@@ -88,16 +63,6 @@ class Admin::AttachmentsController < Admin::BaseController
   helper_method :attachable_attachments_path
 
 private
-
-  def get_layout
-    design_system_actions = %w[edit update new create confirm_destroy reorder]
-    design_system_actions << "index" if preview_design_system?(next_release: false)
-    if preview_design_system?(next_release: true) && design_system_actions.include?(action_name)
-      "design_system"
-    else
-      "admin"
-    end
-  end
 
   def attachment
     @attachment ||= find_attachment || build_attachment

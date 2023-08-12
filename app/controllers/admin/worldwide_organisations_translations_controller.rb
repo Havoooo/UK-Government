@@ -1,7 +1,12 @@
 class Admin::WorldwideOrganisationsTranslationsController < Admin::BaseController
   include TranslationControllerConcern
+  layout :get_layout
 
 private
+
+  def get_layout
+    "admin"
+  end
 
   def create_redirect_path
     edit_admin_worldwide_organisation_translation_path(@worldwide_organisation, id: translation_locale)
@@ -33,8 +38,6 @@ private
   end
 
   def translation_params
-    params.require(:worldwide_organisation).permit(
-      :name, :summary, :description, :services
-    )
+    params.require(:worldwide_organisation).permit(:name)
   end
 end

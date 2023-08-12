@@ -123,7 +123,7 @@ class Organisation < ApplicationRecord
     contacts.where(contact_type_id: ContactType::FOI.id)
   end
 
-  has_many :promotional_features
+  has_many :promotional_features, -> { order(:ordering) }
 
   has_many :featured_links, -> { order(:created_at) }, as: :linkable, dependent: :destroy
   accepts_nested_attributes_for :featured_links, reject_if: ->(attributes) { attributes["url"].blank? }, allow_destroy: true
@@ -194,7 +194,8 @@ class Organisation < ApplicationRecord
   before_destroy { |r| throw :abort unless r.destroyable? }
   after_save :ensure_analytics_identifier
   after_save :update_organisations_index_page
-  after_destroy :update_organisations_index_page
+  after_save :republish_how_government_works_page_to_publishing_api, :republish_ministers_index_page_to_publishing_api
+  after_destroy :update_organisations_index_page, :republish_ministers_index_page_to_publishing_api
 
   after_save do
     # If the organisation has an about us page and the chart URL changes we need
@@ -222,6 +223,14 @@ class Organisation < ApplicationRecord
       documents = Document.live.where(editions: { alternative_format_provider_id: self })
       documents.find_each { |d| Whitehall::PublishingApi.republish_document_async(d, bulk: true) }
     end
+  end
+
+  def republish_how_government_works_page_to_publishing_api
+    PresentPageToPublishingApi.new.publish(PublishingApi::HowGovernmentWorksPresenter)
+  end
+
+  def republish_ministers_index_page_to_publishing_api
+    PresentPageToPublishingApi.new.publish(PublishingApi::MinistersIndexPresenter) if ministerial_department?
   end
 
   def update_organisations_index_page
@@ -417,10 +426,6 @@ class Organisation < ApplicationRecord
     end
   end
 
-  def base_path
-    Whitehall.url_maker.organisation_path(self)
-  end
-
   def search_link
     base_path
   end
@@ -519,6 +524,42 @@ class Organisation < ApplicationRecord
       natural-england
       planning-inspectorate
     ]
+  end
+
+  def reorder_promotional_features(new_order)
+    promotional_features_orderings = promotional_features.map(&:ordering)
+
+    new_order.each do |promotional_feature_row|
+      id, ordering = promotional_feature_row
+      promotional_feature = promotional_features.find(id)
+      promotional_feature.update!(ordering: promotional_features_orderings[ordering.to_i - 1])
+    end
+  end
+
+  def base_path
+    if court_or_hmcts_tribunal?
+      "/courts-tribunals/#{slug}"
+    else
+      "/government/organisations/#{slug}"
+    end
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options)
+  end
+
+  def link_to_section_on_organisation_list_page
+    append_url_options("/government/organisations", anchor: slug)
+  end
+
+  def public_url(options = {})
+    website_root = if options[:draft]
+                     Plek.external_url_for("draft-origin")
+                   else
+                     Plek.website_root
+                   end
+
+    website_root + public_path(options)
   end
 
 private

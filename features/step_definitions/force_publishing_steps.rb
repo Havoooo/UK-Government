@@ -3,14 +3,15 @@ When(/^another editor retrospectively approves the "([^"]*)" publication$/) do |
   login_as user
   visit admin_editions_path(state: :published)
   click_link publication_title
-  click_button "Looks good"
+  click_link "Approve"
+  click_button "Approve"
 end
 
 Then(/^the "([^"]*)" publication should not be flagged as force-published any more$/) do |publication_title|
   visit admin_editions_path(state: :published)
-  publication = Publication.find_by(title: publication_title)
-  expect(page).to have_selector(record_css_selector(publication))
-  expect(page).to_not have_selector("#{record_css_selector(publication)}.force_published")
+
+  expect(find(".govuk-table")).to have_content publication_title
+  assert_selector ".govuk-table__cell", text: "Force published", count: 0
 end
 
 Then(/^the publication "([^"]*)" should have a force publish reason$/) do |publication_title|

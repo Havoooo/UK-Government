@@ -2,7 +2,7 @@ require "test_helper"
 
 class Admin::WorldLocationNewsTranslationsControllerTest < ActionController::TestCase
   setup do
-    login_as :writer
+    login_as_preview_design_system_user :writer
     @world_location_news = build(:world_location_news, mission_statement: "Teaching the people how to brew tea")
     @world_location = create(:world_location, name: "Afrolasia", world_location_news: @world_location_news)
 
@@ -22,7 +22,7 @@ class Admin::WorldLocationNewsTranslationsControllerTest < ActionController::Tes
         assert_select "option[value=es]", text: "Español (Spanish)"
       end
 
-      assert_select "input[type=submit]"
+      assert_select "button[type=submit]"
     end
   end
 
@@ -41,7 +41,7 @@ class Admin::WorldLocationNewsTranslationsControllerTest < ActionController::Tes
     world_location_news = build(:world_location_news, translated_into: [:fr])
     create(:world_location, translated_into: [:fr], world_location_news:)
     get :edit, params: { world_location_news_id: @world_location_news, id: "fr" }
-    assert_select "h1", text: /Edit ‘Français \(French\)’ translation/
+    assert_select "title", text: "Edit Français (French) translation for: Afrolasia - GOV.UK Whitehall Publisher"
   end
 
   view_test "edit presents a form to update an existing translation" do
@@ -51,30 +51,10 @@ class Admin::WorldLocationNewsTranslationsControllerTest < ActionController::Tes
     get :edit, params: { world_location_news_id: location.world_location_news, id: "fr" }
 
     translation_path = admin_world_location_news_translation_path(location, "fr")
-
     assert_select "form[action=?]", translation_path do
-      assert_select "input[type=text][name='world_location_news[world_location_attributes][name]'][value='Afrolasie']"
+      assert_select "input[name='world_location_news[world_location_attributes][name]'][value='Afrolasie']"
       assert_select "textarea[name='world_location_news[mission_statement]']", text: "Enseigner aux gens comment infuser le thé"
-      assert_select "input[type=submit][value=Save]"
-    end
-  end
-
-  view_test "edit form adds right-to-left class and dir attribute for text field and areas in right-to-left languages" do
-    world_location_news = build(:world_location_news, translated_into: { ar: { mission_statement: "تعليم الناس كيفية تحضير الشاي" } })
-    location = create(:world_location, translated_into: { ar: { name: "الناس" } }, world_location_news:)
-
-    get :edit, params: { world_location_news_id: location.world_location_news, id: "ar" }
-
-    translation_path = admin_world_location_news_translation_path(location, "ar")
-
-    assert_select "form[action=?]", translation_path do
-      assert_select "fieldset[class='right-to-left']" do
-        assert_select "input[type=text][name='world_location_news[world_location_attributes][name]'][dir='rtl'][value='الناس']"
-      end
-      assert_select "fieldset[class='right-to-left']" do
-        assert_select "textarea[name='world_location_news[mission_statement]'][dir='rtl']", text: "تعليم الناس كيفية تحضير الشاي"
-      end
-      assert_select "input[type=submit][value=Save]"
+      assert_select "button[type=submit]"
     end
   end
 
@@ -94,8 +74,9 @@ class Admin::WorldLocationNewsTranslationsControllerTest < ActionController::Tes
     get :index, params: { world_location_news_id: location }
 
     assert_select "a" do |links|
-      view_links = links.select { |link| link.text =~ /view/ }
-      assert_match(/#{Regexp.escape("https://www.test.gov.uk/world/france/news.fr")}/, view_links.first["href"])
+      view_links = links.select { |link| link.text =~ /View/ }
+      # Selects all and selects by REGEX of 'View' third index is for the view on the table.
+      assert_match(/#{Regexp.escape("https://www.test.gov.uk/world/france/news.fr")}/, view_links.third["href"])
     end
   end
 

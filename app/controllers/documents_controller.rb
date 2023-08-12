@@ -1,7 +1,6 @@
 class DocumentsController < PublicFacingController
   include CacheControlHelper
   include PermissionsChecker
-  include PublicDocumentRoutesHelper
 
   before_action :redirect_to_canonical_url
   before_action :find_document, only: [:show]
@@ -10,14 +9,6 @@ class DocumentsController < PublicFacingController
   def show; end
 
 private
-
-  def build_document_filter(filter_type = nil)
-    search_backend(filter_type).new(cleaned_document_filter_params)
-  end
-
-  def cleaned_document_filter_params
-    Whitehall::DocumentFilter::CleanedParams.new(params.except(:constraints, :format, :commit, :_))
-  end
 
   def preview?
     params[:preview]

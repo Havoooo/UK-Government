@@ -5,6 +5,7 @@ class Admin::FactCheckRequestsController < Admin::BaseController
   before_action :limit_edition_access!, only: %i[index new create]
   before_action :check_edition_availability, only: %i[show edit]
   skip_before_action :authenticate_user!, only: %i[show edit update]
+  layout "design_system"
 
   def show; end
 
@@ -31,7 +32,7 @@ class Admin::FactCheckRequestsController < Admin::BaseController
       if @fact_check_request.requestor_contactable?
         MailNotifications.fact_check_response(@fact_check_request, mailer_url_options).deliver_now
       end
-      notice = "Your feedback has been saved"
+      notice = "Thanks for submitting your response to this fact checking request. Your feedback has been saved."
       redirect_to admin_fact_check_request_path(@fact_check_request), notice:
     else
       render "edition_unavailable"

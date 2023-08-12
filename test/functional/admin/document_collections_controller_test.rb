@@ -6,7 +6,6 @@ class Admin::DocumentCollectionsControllerTest < ActionController::TestCase
   setup do
     @organisation = create(:organisation)
     login_as :writer
-    @current_user.permissions << "Preview design system"
   end
 
   should_be_an_admin_controller
@@ -24,14 +23,14 @@ class Admin::DocumentCollectionsControllerTest < ActionController::TestCase
     get :show, params: { id: collection }
 
     assert_select "h1", "collection-title"
-    assert_select ".page-header .lead", "the summary"
+    assert_select ".page-header .govuk-body-lead", "the summary"
   end
 
   view_test "GET #new renders document collection form" do
     get :new
 
     assert_select "form[action=?]", admin_document_collections_path do
-      assert_select "input[type=text][name=?]", "edition[title]"
+      assert_select "textarea[name=?]", "edition[title]"
       assert_select "textarea[name=?]", "edition[summary]"
       assert_select "textarea[name=?]", "edition[body]"
     end
@@ -73,7 +72,7 @@ class Admin::DocumentCollectionsControllerTest < ActionController::TestCase
 
     assert_select "form[action=?]", admin_document_collection_path(document_collection) do
       assert_select "input[name='edition[slug]'][value=?]", document_collection.slug
-      assert_select "input[name='edition[title]'][value=?]", document_collection.title
+      assert_select "textarea[name='edition[title]']", document_collection.title
       assert_select "textarea[name='edition[summary]']", text: document_collection.summary
       assert_select "textarea[name='edition[body]']", text: document_collection.body
     end

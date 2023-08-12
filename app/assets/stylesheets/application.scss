@@ -1,16 +1,69 @@
+$govuk-page-width: 1140px;
+
 @import "govuk_publishing_components/all_components";
 
 @import "./components/autocomplete";
+@import "./components/datetime-fields";
 @import "./components/govspeak-editor";
+@import "./components/image-cropper";
+@import "./components/inset-prompt";
 @import "./components/miller-columns";
-@import "./admin/components/govspeak-help";
 @import "./components/secondary-navigation";
+@import "./components/select-with-search";
+@import "./components/single-image-upload";
+@import "./components/summary-card-component";
 
-@import "./admin/modules/unpublish-display-conditions";
+@import "./admin/overrides";
+@import "./admin/layout";
 
-@import "./admin/views/edition-translations";
-@import "./admin/views/whats-new";
+@import "./admin/views/add-another";
+@import "./admin/views/audit-trail";
+@import "./admin/views/contacts";
+@import "./admin/views/dashboard-index";
+@import "./admin/views/document-history-tab";
 @import "./admin/views/edit-edition";
+@import "./admin/views/edit-person";
+@import "./admin/views/edition-images";
+@import "./admin/views/edition-search-results";
+@import "./admin/views/editions-edition";
+@import "./admin/views/editorial-remarks";
+@import "./admin/views/features";
+@import "./admin/views/filter";
+@import "./admin/views/govspeak-help";
+@import "./admin/views/groups-index";
+@import "./admin/views/historical-accounts-index";
+@import "./admin/views/organisations-index";
+@import "./admin/views/people";
+@import "./admin/views/roles";
+@import "./admin/views/summary";
+@import "./admin/views/take-part";
+@import "./admin/views/topical-events-index";
+@import "./admin/views/translation";
+@import "./admin/views/unpublish-withdrawal";
+@import "./admin/views/whats-new";
+
+.app-js-only {
+  display: none;
+}
+
+.js-enabled {
+  .app-no-js {
+    display: none;
+  }
+
+  .app-js-only {
+    display: block;
+  }
+
+  // The .js-enabled class gets applied immediately while the page is still loading,
+  // whereas GOV.UK JS Modules only initialise once the entire HTML document has loaded (on DOMContentLoaded).
+  // To avoid a 'flash of unstyled content', elements can use .hide-before-js-module-init to
+  // temporarily hide the element. The element's JS module can then remove it once
+  // initialised and apply the correct styling.
+  .hide-before-js-module-init {
+    display: none;
+  }
+}
 
 .legacy-whitehall {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

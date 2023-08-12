@@ -1,4 +1,7 @@
 class LinkReporterCsvService
+  include Rails.application.routes.url_helpers
+  include Admin::EditionRoutesHelper
+
   def initialize(reports_dir:, organisation: nil)
     @organisation = organisation
     @reports_dir = reports_dir
@@ -54,11 +57,11 @@ private
   end
 
   def public_url(edition)
-    Whitehall.url_maker.public_document_url(edition, host: public_host, protocol: "https")
+    edition.public_url(host: public_host, protocol: "https")
   end
 
   def admin_url(edition)
-    Whitehall.url_maker.admin_edition_url(edition, host: admin_host, protocol: "https")
+    admin_edition_url(edition, host: admin_host, protocol: "https")
   end
 
   def timestamp(edition)

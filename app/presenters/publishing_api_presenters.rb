@@ -42,10 +42,14 @@ module PublishingApiPresenters
         PublishingApi::WorldLocationNewsPresenter
       when ::WorldwideOrganisation
         PublishingApi::WorldwideOrganisationPresenter
+      when ::WorldwideOffice
+        PublishingApi::WorldwideOfficePresenter
       when ::Contact
         PublishingApi::ContactPresenter
       when OperationalField
         PublishingApi::OperationalFieldPresenter
+      when HistoricalAccount
+        PublishingApi::HistoricalAccountPresenter
       else
         raise UndefinedPresenterError, "Could not find presenter class for: #{model.inspect}"
       end
@@ -53,15 +57,19 @@ module PublishingApiPresenters
 
     def presenter_class_for_edition(edition)
       case edition
+      when CallForEvidence
+        PublishingApi::CallForEvidencePresenter
       when ::CaseStudy
         PublishingApi::CaseStudyPresenter
       when Consultation
         PublishingApi::ConsultationPresenter
       when CorporateInformationPage
-        if edition.worldwide_organisation.present?
-          FALLBACK_EDITION_PRESENTER
-        else
+        if edition.worldwide_organisation.present? && !edition.about_page?
+          PublishingApi::WorldwideCorporateInformationPagePresenter
+        elsif edition.organisation.present?
           PublishingApi::CorporateInformationPagePresenter
+        else
+          FALLBACK_EDITION_PRESENTER
         end
       when ::DetailedGuide
         PublishingApi::DetailedGuidePresenter

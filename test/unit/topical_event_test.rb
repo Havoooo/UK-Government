@@ -13,6 +13,11 @@ class TopicalEventTest < ActiveSupport::TestCase
     assert_not topical_event.valid?
   end
 
+  test "should be invalid without a summary" do
+    topical_event = build(:topical_event, summary: nil)
+    assert_not topical_event.valid?
+  end
+
   test "should be current when created" do
     topical_event = build(:topical_event)
     assert_equal "current", topical_event.state
@@ -233,5 +238,57 @@ class TopicalEventTest < ActiveSupport::TestCase
     Whitehall::PublishingApi.expects(:republish_async).with(organisation).once
 
     topical_event.save!
+  end
+
+  test "public_path returns the correct path" do
+    object = create(:topical_event, slug: "foo")
+    assert_equal "/government/topical-events/foo", object.public_path
+  end
+
+  test "public_path returns the correct path with options" do
+    object = create(:topical_event, slug: "foo")
+    assert_equal "/government/topical-events/foo?cachebust=123", object.public_path(cachebust: "123")
+  end
+
+  test "public_url returns the correct path" do
+    object = create(:topical_event, slug: "foo")
+    assert_equal "https://www.test.gov.uk/government/topical-events/foo", object.public_url
+  end
+
+  test "public_url returns the correct path with options" do
+    object = create(:topical_event, slug: "foo")
+    assert_equal "https://www.test.gov.uk/government/topical-events/foo?cachebust=123", object.public_url(cachebust: "123")
+  end
+
+  test "#featurable_offsite_links returns associated offsite links that do not belong to a topical event featuring" do
+    topical_event = build(:topical_event)
+    offsite_link1 = build(:offsite_link)
+    offsite_link2 = build(:offsite_link)
+    topical_event_featuring = build(:topical_event_featuring, offsite_link: offsite_link1)
+
+    topical_event.stubs(:offsite_links).returns([offsite_link1, offsite_link2])
+    topical_event.stubs(:topical_event_featurings).returns([topical_event_featuring])
+
+    assert_equal [offsite_link2], topical_event.featurable_offsite_links
+  end
+
+  test "#featurable_editions returns editions that do not belong to a topical event featuring" do
+    topical_event = build(:topical_event)
+    edition1 = build(:edition)
+    edition2 = build(:edition)
+    topical_event_featuring = build(:topical_event_featuring, edition: edition1)
+
+    topical_event.stubs(:editions).returns([edition1, edition2])
+    topical_event.stubs(:topical_event_featurings).returns([topical_event_featuring])
+
+    assert_equal [edition2], topical_event.featurable_editions([edition1, edition2])
+  end
+
+  test "rejects SVG logo uploads" do
+    svg_logo = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    topical_event = build(:topical_event, logo: svg_logo)
+
+    assert_not topical_event.valid?
+    assert_equal topical_event.errors.first.full_message, "Logo is not of an allowed type"
   end
 end

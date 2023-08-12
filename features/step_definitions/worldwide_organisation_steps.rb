@@ -14,18 +14,9 @@ When(/^I create a new worldwide organisation "([^"]*)" in "([^"]*)"$/) do |name,
   click_on "Save"
 end
 
-When(/^I create a new worldwide organisation "([^"]*)" in  "([^"]*)" sponsored by the "([^"]*)"$/) do |name, location, sponsoring_organisation|
-  visit new_admin_worldwide_organisation_path
-  fill_in "Name", with: name
-  fill_in "Logo formatted name", with: name
-  select location, from: "World location"
-  select sponsoring_organisation, from: "Sponsoring organisations"
-  click_on "Save"
-end
-
 Then(/^I should see the(?: updated)? worldwide organisation information on the public website$/) do
   worldwide_organisation = WorldwideOrganisation.last
-  visit worldwide_organisation_path(worldwide_organisation)
+  visit worldwide_organisation.public_path
   expect(page).to have_title(worldwide_organisation.name)
 end
 
@@ -38,27 +29,11 @@ Then(/^I should see that it is part of the "([^"]*)"$/) do |sponsoring_organisat
   expect(page).to have_selector(".sponsoring-organisation", text: sponsoring_organisation)
 end
 
-Then(/^I should see the worldwide organisation listed on the page$/) do
-  worldwide_organisation = WorldwideOrganisation.last
-  within ".meta" do
-    expect(page).to have_content(worldwide_organisation.name)
-  end
-end
-
 Then(/^I should see the worldwide location name "([^"]*)" on the worldwide organisation page$/) do |location_name|
   location = WorldLocation.find_by(name: location_name)
   worldwide_organisation = WorldwideOrganisation.last
   within record_css_selector(worldwide_organisation) do
     expect(page).to have_content(location.name)
-  end
-end
-
-Then(/^I should see the worldwide organisation "([^"]*)" on the "([^"]*)" world location page$/) do |worldwide_organisation_name, location_name|
-  location = WorldLocation.find_by(name: location_name)
-  worldwide_organisation = WorldwideOrganisation.find_by(name: worldwide_organisation_name)
-  visit world_location_path(location)
-  within record_css_selector(worldwide_organisation) do
-    expect(page).to have_content(worldwide_organisation_name)
   end
 end
 
@@ -75,7 +50,7 @@ When(/^I delete the worldwide organisation$/) do
 end
 
 Then(/^the worldwide organisation should not be visible from the public website$/) do
-  expect { visit worldwide_organisation_path(@worldwide_organisation) }
+  expect { visit @worldwide_organisation.public_path }
     .to raise_error(ActiveRecord::RecordNotFound)
 end
 
@@ -96,7 +71,7 @@ When(/^I add an "([^"]*)" office for the home page with address, phone number, a
 
   visit admin_worldwide_organisation_worldwide_offices_path(WorldwideOrganisation.last)
   click_link "Add"
-  fill_in_contact_details(title: description, feature_on_home_page: "yes")
+  legacy_fill_in_contact_details(title: description, feature_on_home_page: "yes")
   select WorldwideOfficeType.all.sample.name, from: "Office type"
 
   check service1.name
@@ -107,7 +82,7 @@ end
 
 Then(/^the "([^"]*)" office details should be shown on the public website$/) do |description|
   worldwide_org = WorldwideOrganisation.last
-  visit worldwide_organisation_path(worldwide_org)
+  visit worldwide_org.public_path
   worldwide_office = worldwide_org.offices.joins(contact: :translations).where(contact_translations: { title: description }).first
 
   within record_css_selector(worldwide_office) do
@@ -158,27 +133,18 @@ end
 Then(/^the "([^"]*)" should be shown as the main office on the public website$/) do |contact_title|
   worldwide_organisation = WorldwideOrganisation.last
   worldwide_office = WorldwideOffice.joins(contact: :translations).where(contact_translations: { title: contact_title }).first
-  visit worldwide_organisation_path(worldwide_organisation)
+  visit worldwide_organisation.public_path
   within record_css_selector(worldwide_office) do
     expect(page).to have_content(contact_title)
   end
 end
 
-Then(/^I should see his name on the worldwide organisation page$/) do
-  visit worldwide_organisation_path(WorldwideOrganisation.last)
-  person = Person.last
-
-  within record_css_selector(person) do
-    expect(page).to have_content(person.name)
-  end
-end
-
-Then(/^I should not see his name on the worldwide organisation page$/) do
-  visit worldwide_organisation_path(WorldwideOrganisation.last)
-  person = Person.last
-
-  within record_css_selector(person) do
-    expect(page).to_not have_content(person.name)
+Then(/^I should see a link on the worldwide organisation page to the access details of the "([^"]*)" office$/) do |contact_title|
+  worldwide_organisation = WorldwideOrganisation.last
+  worldwide_office = WorldwideOffice.joins(contact: :translations).where(contact_translations: { title: contact_title }).first
+  visit worldwide_organisation.public_path
+  within record_css_selector(worldwide_office) do
+    expect(page).to have_link("Access and opening times", href: worldwide_office.public_url)
   end
 end
 
@@ -190,22 +156,24 @@ When(/^I add default access information to the worldwide organisation$/) do
   click_button "Save"
 end
 
-Then(/^I should see the default access information on the public "([^"]*)" office page$/) do |office_name|
+Then(/^I should see the default access information on the edit "([^"]*)" office page$/) do |office_name|
   worldwide_organisation = WorldwideOrganisation.last
   worldwide_office = WorldwideOffice.joins(contact: :translations).where(contact_translations: { title: office_name }).first
-  visit worldwide_organisation_path(worldwide_organisation)
-  within record_css_selector(worldwide_office) do
-    click_link "Access and opening times"
-  end
+  visit edit_admin_worldwide_organisation_worldwide_office_access_and_opening_time_path(worldwide_organisation, worldwide_office)
 
-  within ".body" do
-    expect(page).to have_content("Default body information")
-  end
+  expect(page).to have_content("Default body information")
+end
+
+Then(/^I should see custom access information on the edit "([^"]*)" office page$/) do |office_name|
+  worldwide_organisation = WorldwideOrganisation.last
+  worldwide_office = WorldwideOffice.joins(contact: :translations).where(contact_translations: { title: office_name }).first
+  visit edit_admin_worldwide_organisation_worldwide_office_access_and_opening_time_path(worldwide_organisation, worldwide_office)
+
+  expect(page).to have_content("Custom body information")
 end
 
 Given(/^a worldwide organisation "([^"]*)" with default access information$/) do |name|
-  worldwide_organisation = create(:worldwide_organisation, name:)
-  create(:access_and_opening_times, accessible: worldwide_organisation, body: "Default body information")
+  create(:worldwide_organisation, name:, default_access_and_opening_times: "Default body information")
 end
 
 When(/^I edit the default access information for the worldwide organisation$/) do
@@ -236,19 +204,6 @@ When(/^I give "([^"]*)" custom access information$/) do |office_name|
   click_button "Save"
 end
 
-Then(/^I should see the custom access information on the public "([^"]*)" office page$/) do |office_name|
-  worldwide_organisation = WorldwideOrganisation.last
-  worldwide_office = WorldwideOffice.joins(contact: :translations).where(contact_translations: { title: office_name }).first
-  visit worldwide_organisation_path(worldwide_organisation)
-  within record_css_selector(worldwide_office) do
-    click_link "Access and opening times"
-  end
-
-  within ".body" do
-    expect(page).to have_content("Custom body information")
-  end
-end
-
 Then(/^I should see the updated default access information$/) do
   expect(page).to have_selector(".govspeak p", text: "Edited body information")
 end
@@ -262,7 +217,7 @@ Then(/^when viewing the worldwide organisation "([^"]*)" with the locale "([^"]*
   worldwide_organisation = WorldwideOrganisation.find_by!(name:)
   translation = table.rows_hash
 
-  visit worldwide_organisation_path(worldwide_organisation, locale:)
+  visit worldwide_organisation.public_path(locale:)
 
   expect(page).to have_selector(".worldwide-org-summary", text: translation["summary"])
   expect(page).to have_selector(".worldwide-org-description", text: translation["description"])
@@ -279,14 +234,24 @@ When(/^I edit the "([^"]*)" translation for the worldwide organisation "([^"]*)"
   edit_translation_for_worldwide_organisation(locale, name, table.rows_hash)
 end
 
-Then(/^I should be able to associate "([^"]*)" with the worldwide organisation "([^"]*)"$/) do |edition_title, world_org_title|
-  begin_editing_document edition_title
-  select world_org_title, from: "edition_worldwide_organisation_ids"
-  click_on "Save"
+Then(/^I should see a create record in the audit trail for the worldwide organisation/) do
+  visit admin_worldwide_organisation_path(WorldwideOrganisation.last)
+
+  history_component = page.find(".audit-history-component")
+
+  within history_component do
+    expect(page).to have_content("Document created")
+    expect(page).to have_content(@user.name)
+  end
 end
 
-Then(/^I should be able to associate "([^"]*)" with the topical event "([^"]*)"$/) do |edition_title, topical_event_title|
-  begin_editing_document edition_title
-  select topical_event_title, from: "edition_topical_event_ids"
-  click_on "Save"
+Then(/^I should see an update record in the audit trail for the worldwide organisation/) do
+  visit admin_worldwide_organisation_path(WorldwideOrganisation.last)
+
+  history_component = page.find(".audit-history-component", match: :first)
+
+  within history_component do
+    expect(page).to have_content("Document updated")
+    expect(page).to have_content(@user.name)
+  end
 end

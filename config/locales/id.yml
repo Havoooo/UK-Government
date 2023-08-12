@@ -21,6 +21,15 @@ id:
         nation_inapplicabilities: Bangsa dikecualikan
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: File terlampir
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Nomor kertas perintah lampiran
         hoc_paper_number: Nomor surat House of Commons
@@ -39,8 +48,22 @@ id:
       title: Judul lampiran
       unique_reference: Referensi unik lampiran
       unnumbered_hoc_paper: Surat House of Commons tidak bernomor
-  announcements:
-    heading: Pengumuman
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -70,6 +93,11 @@ id:
     caution:
       subheading: Kami menemukan masalah dengan tautan yang mungkin menandakan adanya masalah, Anda harus berhati-hati saat mengklik tautan itu
     title: Tautan terputus
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Ditutup
     closing_today: Hari ini ditutup
@@ -141,12 +169,18 @@ id:
         other: Artikel bersumber
       blog_post:
         other: Posting blog
+      call_for_evidence:
+        other:
+      call_for_evidence_outcome:
+        other:
       campaign:
         other: Kampanye
       careers:
         other: karier
       case_study:
         other: Studi kasus
+      closed_call_for_evidence:
+        other:
       closed_consultation:
         other: Konsultasi tertutup
       complaints_procedure:
@@ -215,6 +249,8 @@ id:
         other: Pemberitahuan
       official_statistics:
         other: Statistik Resmi
+      open_call_for_evidence:
+        other:
       open_consultation:
         other: Konsultasi terbuka
       oral_statement:
@@ -279,12 +315,6 @@ id:
         other: Pernyataan tertulis kepada Parlemen
     updated: diperbarui
   document_filters:
-    description: Anda dapat menggunakan filter untuk hanya menampilkan hasil yang sesuai dengan minat Anda
-    no_results:
-      description: Cobalah membuat pencarian Anda lebih lebar dan coba lagi.
-      title: Tidak ada dokumen yang cocok.
-      tna_heading: Konten lebih tua
-      tna_link_html: Tidak semua publikasi departemen sebelum Mei 2010 dimigrasikan ke GOV.UK. Untuk menemukan publikasi sebelum Mei 2010, cobalah mencari di <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Arsip Nasional</a>.
     world_locations:
       all: Semua lokasi
       label: Lokasi dunia
@@ -366,20 +396,6 @@ id:
   latest_feed:
     no_updates: Belum ada pembaruan.
     title: Terbaru
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Akses informasi kami
@@ -388,8 +404,7 @@ id:
       organisation_chart: Diagram organisasi kami
       transparency: Data transparansi
     embassies:
-      find_an_embassy_lowercase: Temukan kedubes, komisi tinggi, atau konsulat Inggris
-      find_an_embassy_uppercase: Temukan Kedubes, Komisi Tinggi, atau Konsulat Inggris
+      find_an_embassy_title:
     headings:
       corporate_information: Informasi korporat
       corporate_reports: Laporan korporat
@@ -401,18 +416,15 @@ id:
       works_with: Bekerja bersama
     type:
       courts_and_tribunals: Pengadilan dan Persidangan
-  publications:
-    heading: Publikasi
-    recent: Publikasi terbaru
-    statistics:
-      link_to_published_statistics: Temukan daftar statistik pemerintah yang sudah atau akan diterbitkan pada bagian statistik %{link}.
-      moved_notice: Publikasi statistik sudah dipindah.
   roles:
     unassigned: Belum ada yang ditetapkan untuk peran ini
   see_all:
     announcement: Lihat semua pengumuman kami
     authored_article: Lihat semua artikel bersumber kami
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Lihat semua studi kasus kami
+    closed_call_for_evidence:
     closed_consultation: Lihat semua konsultasi tertutup kami
     consultation: Lihat semua konsultasi kami
     consultation_outcome: Lihat semua hasil konsultasi kami
@@ -435,6 +447,7 @@ id:
     news_article: Lihat semua artikel berita kami
     news_story: Lihat semua cerita berita kami
     notice: Lihat semua pemberitahuan kami
+    open_call_for_evidence:
     open_consultation: Lihat semua konsultasi terbuka kami
     oral_statement: Lihat semua pernyataan lisan kami kepada Parlemen
     policy: Lihat semua kebijakan kami
@@ -473,15 +486,7 @@ id:
       heading:
       list_link:
     headings:
-      announcements: Pengumuman kami
-      documents: Dokumen
-      featured:
-      mission: Misi kami
-      news: Berita lokasi dunia
-      organisations: Organisasi
-      publications: Publikasi kami
       search: Cari menurut negara atau teritori
-      statistics: Statistik kami
     search_description:
       international_delegation:
       world_location:

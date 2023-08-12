@@ -21,6 +21,15 @@ dr:
         nation_inapplicabilities: ملل مستثنی
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: فایل ضمیمه
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: شماره اوراق فرمان ضمیمه
         hoc_paper_number: مجلس اوراق عام با شماره
@@ -39,8 +48,22 @@ dr:
       title: عنوان ضمیمه
       unique_reference: رفرنس مخصوص ضمیمه
       unnumbered_hoc_paper: مجلس اوراق بدون شماره
-  announcements:
-    heading: اعلامیه ها
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |-
@@ -73,6 +96,11 @@ dr:
     caution:
       subheading: ما برخی موضوعات را در این لنک ها پیدا نموده ایم که ممکن است نشان دهندهء مشکلاتی باشند، در ضمیمه نمودن آنها باید احتیاط نمایید.
     title: لنک هایی تخریب شده
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: بسته شد
     closing_today: امروز بسته میشود
@@ -152,6 +180,12 @@ dr:
       blog_post:
         one: پوست وبلاک
         other: پوست هایی وبلاگ
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: کمپاین
         other: کمپاین ها
@@ -161,6 +195,9 @@ dr:
       case_study:
         one: مطالعهء موردی
         other: مطالعهء موردی ها
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: مشاورهء متوقف شده
         other: مشاوره هایی متوقف شده
@@ -263,6 +300,9 @@ dr:
       official_statistics:
         one: آمار رسمی
         other: آمار رسمی
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: مشاورهء آزاد
         other: مشاوره هایی آزاد
@@ -358,14 +398,6 @@ dr:
         other: بیانیه هایی کتبی به پارلمان
     updated: آپدیت شد
   document_filters:
-    description: جهت دیدن نتایج مورد علاقهء تان از فلتر ها استفاده نمایید
-    no_results:
-      description: کوشش نمایید که جستجوی خودرا گسترده تر نمایید و دوباره کوشش نمایید
-      title: هیچ سند مرتبطی وجود ندارد
-      tna_heading: محتوای قدیمی تر
-      tna_link_html: |-
-        همه نشریات دیپارتمنت قبل از مام می سال 2010 به GOV.UK منتقل نشده اند.
-        جهت پیدا نمودن نشریه های قبل از ماه می سال 2010 جستجو نمایید<a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">آرشیف ملی</a>.
     world_locations:
       all: تمام موقعیت ها
       label: موقعیت هایی جهان
@@ -447,20 +479,6 @@ dr:
   latest_feed:
     no_updates: کدام آپدیتی تا هنوز موجود نیست
     title: جدیدترین ها
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: به اطلاعات ما دسترسی یابید
@@ -469,8 +487,7 @@ dr:
       organisation_chart: چارت سازمانی ما
       transparency: داده هایی شفافیت
     embassies:
-      find_an_embassy_lowercase: سفارت، کمیسیون عالی و یا قونسلگری بریتانیا را پیدا نمایید
-      find_an_embassy_uppercase: سفارت، کمیسیون عالی و یا قونسلگری بریتانیا را پیدا نمایید
+      find_an_embassy_title:
     headings:
       corporate_information: اطلاعات شرکت
       corporate_reports: گزارشات شرکت
@@ -482,18 +499,15 @@ dr:
       works_with: کار مینماید با
     type:
       courts_and_tribunals: محاکم و دادگاه ها
-  publications:
-    heading: نشریات
-    recent: نشریات جدید
-    statistics:
-      link_to_published_statistics: فهرستی از آمار هایی منتشر شده و آمار های آیندهء حکومت را دربخش آمار%{link} پیدا نمایید
-      moved_notice: انتشارات آمار تغییر کرده است
   roles:
     unassigned: هیچ کسی به این وظیفه گماشته نشده است
   see_all:
     announcement: تمام اعلانات ما را مشاهده نمایید
     authored_article: تمام مقالات تألیف شدهء ما را مشاهده نمایید
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: تمام مطالعات موردی مارا مشاهده نمایید
+    closed_call_for_evidence:
     closed_consultation: تمام مشاوره های تمام شدهء مارا مشاهده نمایید
     consultation: تمام مشاوره هایی ما را مشاهده نمایید
     consultation_outcome: نتایج تمام مشاوره هایی مارا مشاهده نمایید
@@ -516,6 +530,7 @@ dr:
     news_article: تمام مقلات خبری ما را مشاهده نمایید
     news_story: تمام گزارشات خبری ما را مشاهده نمایید
     notice: تمام اعلامیه هایی ما را مشاهده نمایید
+    open_call_for_evidence:
     open_consultation: تمام مشاوره هایی آزاد ما را مشاهده نمایید
     oral_statement: تمام بیانیه هایی شفاهی ما به پارلمان را مشاهده نمایید
     policy: تمام سیاست/خط مشی هایی ما را مشاهده نمایید
@@ -554,15 +569,7 @@ dr:
       heading:
       list_link:
     headings:
-      announcements: اطلاعیه هایی ما
-      documents: اسناد
-      featured:
-      mission: ماموریت ما
-      news: اخبار موقعیت های جهان
-      organisations: سازمان ها
-      publications: انتشارات ما
       search: جستجو به اساس کشور یا قلمرو
-      statistics: آمار ما
     search_description:
       international_delegation:
       world_location:

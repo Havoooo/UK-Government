@@ -35,6 +35,11 @@ class RoleAppointmentTest < ActiveSupport::TestCase
     assert_not role_appointment.valid?
   end
 
+  test "should be invalid with no started_at but with ended_at"  do
+    role_appointment = build(:role_appointment, started_at: nil, ended_at: Time.zone.parse("1999-01-01"))
+    assert_not role_appointment.valid?
+  end
+
   test "should not be current if not started" do
     role_appointment = build(:role_appointment, started_at: nil, ended_at: nil)
     assert_not role_appointment.current?
@@ -406,5 +411,108 @@ class RoleAppointmentTest < ActiveSupport::TestCase
     non_minister = create(:judge_role)
     non_minister_appointment = create(:role_appointment, role: non_minister)
     assert_not non_minister_appointment.ministerial?
+  end
+
+  test "sets the order value after creation" do
+    person = create(:person)
+    role_appointment1 = create(:role_appointment, person:)
+    role_appointment2 = create(:role_appointment, person:)
+
+    assert_equal 1, role_appointment1.reload.order
+    assert_equal 2, role_appointment2.reload.order
+  end
+
+  test "should send the prime ministers index page to publishing api when the role created is a past prime minister" do
+    role = create(:prime_minister_role)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).at_least_once
+
+    create(:historic_role_appointment, person: create(:person), role:, started_at: Date.civil(1950), ended_at: Date.civil(1960))
+  end
+
+  test "should send the prime ministers index page to publishing api when a destroyed role is a past prime minister" do
+    role = create(:prime_minister_role)
+    past_pm_appointment = create(:historic_role_appointment, person: create(:person), role:, started_at: Date.civil(1950), ended_at: Date.civil(1960))
+
+    PresentPageToPublishingApi.any_instance.expects(:publish)
+
+    past_pm_appointment.destroy!
+  end
+
+  test "should send the prime ministers index page to publishing api when the role updated to be a past prime minister" do
+    role = create(:prime_minister_role)
+    role_appointment = create(:role_appointment, person: create(:person), role:)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HistoricalAccountsIndexPresenter)
+
+    role_appointment.update!(ended_at: Time.zone.now)
+  end
+
+  test "should not send the prime ministers index page to publishing api when the role created is a current prime minister" do
+    role = create(:prime_minister_role)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HistoricalAccountsIndexPresenter).never
+
+    create(:role_appointment, person: create(:person), role:)
+  end
+
+  test "should not send the prime ministers index page to publishing api when a historical account exists" do
+    role = create(:prime_minister_role)
+    person = create(:person)
+    @historical_account = create(:historical_account,
+                                 person:,
+                                 born: "1900",
+                                 died: "1975",
+                                 interesting_facts: "They were a very interesting person",
+                                 major_acts: "Significant legislation changes",
+                                 roles: [role])
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HistoricalAccountsIndexPresenter).never
+
+    create(:historic_role_appointment, person:, role:, started_at: Date.civil(1950), ended_at: Date.civil(1960))
+  end
+
+  test "should not send the prime ministers index page to publishing api when the role created is not a prime minister" do
+    role = create(:role)
+    create(:prime_minister_role)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HistoricalAccountsIndexPresenter).never
+
+    create(:historic_role_appointment, person: create(:person), role:, started_at: Date.civil(1950), ended_at: Date.civil(1960))
+  end
+
+  test "should send the related pages to publishing api when the role created is a current prime minister" do
+    role = create(:prime_minister_role)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter)
+
+    create(:role_appointment, person: create(:person), role:)
+  end
+
+  test "should send the related pages to publishing api when someone is appointed to a ministerial role" do
+    role = create(:ministerial_role)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter)
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter)
+
+    create(:role_appointment, person: create(:person), role:)
+  end
+
+  test "should not send the related pages to publishing api when someone is appointed to a non-ministerial role" do
+    role = create(:non_ministerial_role_without_organisations)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::HowGovernmentWorksPresenter).never
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::MinistersIndexPresenter).never
+
+    create(:role_appointment, person: create(:person), role:)
   end
 end

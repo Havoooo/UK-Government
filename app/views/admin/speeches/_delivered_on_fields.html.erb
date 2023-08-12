@@ -1,7 +1,42 @@
-<%= render "govuk_publishing_components/components/fieldset", {
-  legend_text: "Delivered on (required)",
-  heading_size: "l",
-  id: "edition_delivered_on",
-} do %>
-  <%= render "datetime_fields", form: form, edition: edition, field_name: "delivered_on" %>
-<% end %>
+<div class="govuk-!-margin-bottom-8">
+  <%= render "govuk_publishing_components/components/fieldset", {
+    legend_text: edition.authored_article? ? "Written on" : "Delivered on",
+    heading_size: "l",
+    id: "edition_delivered_on",
+  } do %>
+    <%= render "components/datetime_fields", {
+        field_name: "delivered_on",
+        prefix: "edition",
+        error_items: errors_for(edition.errors, :delivered_on),
+        date_hint: "For example, 01 August 2022",
+        time_hint: "For example, 09:30 or 19:30",
+        year: {
+          value: edition.delivered_on&.year,
+          id: "edition_delivered_on_1i",
+        },
+        month: {
+          value: edition.delivered_on&.month,
+          id: "edition_delivered_on_2i",
+        },
+        day: {
+          value: edition.delivered_on&.day,
+          id: "edition_delivered_on_3i",
+        },
+        hour: {
+          value: edition.delivered_on&.hour,
+          id: "edition_delivered_on_4i",
+        },
+        minute: {
+          value: edition.delivered_on&.min,
+          id: "edition_delivered_on_5i",
+        },
+      }
+    %>
+  <% end %>
+
+  <div class="app-view-edit-edition__delivered-on-warning js-app-view-edit-edition__delivered-on-warning app-view-edit-edition__delivered-on-warning--hidden govuk-!-margin-top-6" aria-live="polite">
+    <%= render "govuk_publishing_components/components/warning_text", {
+      text: "You have set the date in the future, please ensure that this will not be published before this date."
+    } %>
+  </div>
+</div>

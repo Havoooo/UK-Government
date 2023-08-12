@@ -21,6 +21,15 @@ ms:
         nation_inapplicabilities: Negara dikecualikan
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Fail dilampirkan
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Lampiran nombor kertas perintah
         hoc_paper_number: Nombor kertas Dewan Rakyat
@@ -39,8 +48,22 @@ ms:
       title: Tajuk lampiran
       unique_reference: Rujukan unik lampiran
       unnumbered_hoc_paper: Kertas Dewan Rakyat tidak bernombor
-  announcements:
-    heading: Pengumuman
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ ms:
     caution:
       subheading: Kami menemui beberapa isu dengan pautan yang mungkin menunjukkan adanya masalah, anda harus berhati-hati semasa memaut padanya
     title: Pautan putus
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Ditutup
     closing_today: Tutup hari ini
@@ -142,12 +170,18 @@ ms:
         other: Artikel ditulis penulis
       blog_post:
         other: Siaran blog
+      call_for_evidence:
+        other:
+      call_for_evidence_outcome:
+        other:
       campaign:
         other: Kempen
       careers:
         other: kerjaya
       case_study:
         other: Kajian kes
+      closed_call_for_evidence:
+        other:
       closed_consultation:
         other: Rundingan tertutup
       complaints_procedure:
@@ -216,6 +250,8 @@ ms:
         other: Notis
       official_statistics:
         other: Statistik Rasmi
+      open_call_for_evidence:
+        other:
       open_consultation:
         other: Rundingan terbuka
       oral_statement:
@@ -280,12 +316,6 @@ ms:
         other: Kenyataan bertulis kepada Parlimen
     updated: dikemas kini
   document_filters:
-    description: Anda boleh menggunakan penapis untuk menunjukkan hasil yang hanya sepadan dengan minat anda
-    no_results:
-      description: Cuba buat carian anda lebih luas dan cuba lagi.
-      title: Tidak ada dokumen yang sepadan.
-      tna_heading: Kandungan lebih lama
-      tna_link_html: Tidak semua penerbitan jabatan dari sebelum Mei 2010 dipindahkan ke GOV.UK. Untuk mencari penerbitan sebelum Mei 2010 cuba cari <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">Arkib Negara</a>.
     world_locations:
       all: Semua lokasi
       label: Lokasi dunia
@@ -367,20 +397,6 @@ ms:
   latest_feed:
     no_updates: Belum ada kemas kini.
     title: Terkini
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Akses maklumat kami
@@ -389,8 +405,7 @@ ms:
       organisation_chart: Carta organisasi kami
       transparency: Data ketelusan
     embassies:
-      find_an_embassy_lowercase: Cari kedutaan, pesuruhjaya tinggi atau konsulat British
-      find_an_embassy_uppercase: Cari kedutaan, Pesuruhjaya Tinggi atau Konsulat British
+      find_an_embassy_title:
     headings:
       corporate_information: Maklumat korporat
       corporate_reports: Laporan korporat
@@ -402,18 +417,15 @@ ms:
       works_with: Bekerja dengan
     type:
       courts_and_tribunals: Mahkamah dan Tribunal
-  publications:
-    heading: Penerbitan
-    recent: Penerbitan terbaharu
-    statistics:
-      link_to_published_statistics: Cari senarai statistik kerajaan yang telah diterbitkan dan akan datang di bahagian statistik %{link}.
-      moved_notice: Penerbitan statistik telah bergerak.
   roles:
     unassigned: Tiada siapa yang ditugaskan untuk peranan ini
   see_all:
     announcement: Lihat semua pengumuman kami
     authored_article: Lihat semua artikel ditulis penulis kami
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Lihat semua kajian kes kami
+    closed_call_for_evidence:
     closed_consultation: Lihat semua rundingan tertutup kami
     consultation: Lihat semua rundingan kami
     consultation_outcome: Lihat semua hasil perundingan kami
@@ -436,6 +448,7 @@ ms:
     news_article: Lihat semua artikel berita kami
     news_story: Lihat semua berita kami
     notice: Lihat semua notis kami
+    open_call_for_evidence:
     open_consultation: Lihat semua rundingan terbuka kami
     oral_statement: Lihat semua kenyataan lisan kami kepada Parlimen
     policy: Lihat semua dasar kami
@@ -474,15 +487,7 @@ ms:
       heading:
       list_link:
     headings:
-      announcements: Pengumuman kami
-      documents: Dokumen
-      featured:
-      mission: Misi kami
-      news: Berita lokasi dunia
-      organisations: Organisasi
-      publications: Terbitan kami
       search: Cari mengikut negara atau wilayah
-      statistics: Statistik kami
     search_description:
       international_delegation:
       world_location:

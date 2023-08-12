@@ -13,8 +13,15 @@
   # to bust cache and view a specific edition, isn't applicable when publishing
   # to publishing-api.
   preview = controller.nil? ? nil : params[:preview]
+
+  attachment_data = {}
+  if attachment.html?
+    attachment_data = {
+      ga4_attachment_link: "",
+    }
+  end
 %>
-<%= content_tag_for(:section, attachment.becomes(Attachment), class: attachment.external? ? "hosted-externally" : "embedded") do %>
+<%= content_tag_for(:section, attachment.becomes(Attachment), class: attachment.external? ? "hosted-externally" : "embedded", data: attachment_data) do %>
   <div class="attachment-thumb">
     <% unless defined?(hide_thumbnail) && hide_thumbnail %>
       <%= link_to_unless previewable?(attachment), attachment_thumbnail(attachment), attachment.url(preview: preview), thumbnail_link_options %>
@@ -57,7 +64,7 @@
       <% end %>
     </p>
     <% if attachment.is_official_document? %>
-      <%= link_to t('attachment.headings.order_a_copy'), "#{Plek.new.website_root}/guidance/how-to-buy-printed-copies-of-official-documents",
+      <%= link_to t('attachment.headings.order_a_copy'), "#{Plek.website_root}/guidance/how-to-buy-printed-copies-of-official-documents",
             class: "govuk-link order_url", title: t('attachment.headings.order_a_copy_full') %>
     <% end %>
 

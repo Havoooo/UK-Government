@@ -21,6 +21,15 @@ sk:
         nation_inapplicabilities: Vylúčené krajiny
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Pripojený súbor
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Číslo príkazu na pripojenie papiera
         hoc_paper_number: Číslo dokumentu Dolnej snemovne
@@ -39,8 +48,22 @@ sk:
       title: Názov prílohy
       unique_reference: Jedinečný odkaz na prílohu
       unnumbered_hoc_paper: Nečíslovaný dokument Dolnej snemovne
-  announcements:
-    heading: Oznámenia
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ sk:
     caution:
       subheading: Zistili sme niekoľko problémov s odkazmi, ktoré môžu naznačovať problémy, preto by ste mali byť pri odkazovaní na ne opatrní.
     title: Nefunkčné odkazy
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Zatvorené
     closing_today: Uzatvára sa dnes
@@ -158,6 +186,14 @@ sk:
         few:
         one: Príspevok na blogu
         other: Príspevky na blogu
+      call_for_evidence:
+        few:
+        one:
+        other:
+      call_for_evidence_outcome:
+        few:
+        one:
+        other:
       campaign:
         few:
         one: Kampaň
@@ -170,6 +206,10 @@ sk:
         few:
         one: Prípadová štúdia
         other: Prípadové štúdie
+      closed_call_for_evidence:
+        few:
+        one:
+        other:
       closed_consultation:
         few:
         one: Uzavretá konzultácia
@@ -306,6 +346,10 @@ sk:
         few:
         one: Oficiálne štatistiky
         other: Oficiálne štatistiky
+      open_call_for_evidence:
+        few:
+        one:
+        other:
       open_consultation:
         few:
         one: Otvorená konzultácia
@@ -432,12 +476,6 @@ sk:
         other: Písomné vyhlásenia pre Parlament
     updated: aktualizované
   document_filters:
-    description: Pomocou filtrov môžete zobraziť len výsledky, ktoré zodpovedajú vašim záujmom
-    no_results:
-      description: Skúste rozšíriť vyhľadávanie a skúste to znova.
-      title: Neexistujú žiadne zodpovedajúce dokumenty.
-      tna_heading: Starší obsah
-      tna_link_html: Nie všetky publikácie ministerstva spred mája 2010 boli prenesené na GOV.UK. Ak chcete nájsť publikácie spred mája 2010, skúste vyhľadávanie <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link" >v Národnom archíve</a>.
     world_locations:
       all: Všetky lokality
       label: Svetové lokality
@@ -519,20 +557,6 @@ sk:
   latest_feed:
     no_updates: Zatiaľ nie sú k dispozícii žiadne aktualizácie.
     title: Najnovšie
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Prístup k našim informáciám
@@ -541,8 +565,7 @@ sk:
       organisation_chart: Naša organizačná schéma
       transparency: Údaje o transparentnosti
     embassies:
-      find_an_embassy_lowercase: Vyhľadajte britské veľvyslanectvo, vysokú komisiu alebo konzulát
-      find_an_embassy_uppercase: Vyhľadajte britské veľvyslanectvo, vysokú komisiu alebo konzulát
+      find_an_embassy_title:
     headings:
       corporate_information: Firemné informácie
       corporate_reports: Podnikové správy
@@ -554,18 +577,15 @@ sk:
       works_with: Spolupracuje s
     type:
       courts_and_tribunals: Súdy a tribunály
-  publications:
-    heading: Publikácie
-    recent: Nedávne publikácie
-    statistics:
-      link_to_published_statistics: Zoznam zverejnených a pripravovaných vládnych štatistík nájdete v sekcii %{link} štatistiky.
-      moved_notice: Štatistické publikácie sa presunuli.
   roles:
     unassigned: Táto úloha nie je nikomu pridelená
   see_all:
     announcement: Pozrite si všetky naše oznámenia
     authored_article: Pozrite si všetky naše autorské články
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Pozrite si všetky naše prípadové štúdie
+    closed_call_for_evidence:
     closed_consultation: Pozrite si všetky naše uzavreté konzultácie
     consultation: Pozrite si všetky naše konzultácie
     consultation_outcome: Pozrite si všetky výsledky našich konzultácií
@@ -588,6 +608,7 @@ sk:
     news_article: Pozrite si všetky naše novinové články
     news_story: Pozrite si všetky naše novinky
     notice: Pozrite si všetky naše oznámenia
+    open_call_for_evidence:
     open_consultation: Pozrite si všetky naše otvorené konzultácie
     oral_statement: Pozrite si všetky naše ústne vyhlásenia v Parlamente
     policy: Pozrite si všetky naše zásady
@@ -626,15 +647,7 @@ sk:
       heading:
       list_link:
     headings:
-      announcements: Naše oznámenia
-      documents: Dokumenty
-      featured:
-      mission: Naše poslanie
-      news: Naša misia
-      organisations: Organizácie
-      publications: Naše publikácie
       search: Vyhľadávanie podľa krajiny alebo územia
-      statistics: Naše štatistiky
     search_description:
       international_delegation:
       world_location:

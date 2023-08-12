@@ -13,8 +13,8 @@ class AttachmentRedirectDueToUnpublishingIntegrationTest < ActionDispatch::Integ
     let(:attachment) { build(:file_attachment, attachable:, file:) }
     let(:attachable) { edition }
     let(:asset_id) { "asset-id" }
-    let(:redirect_path) { Whitehall.url_maker.public_document_path(edition) }
-    let(:redirect_url) { Whitehall.url_maker.public_document_url(edition) }
+    let(:redirect_path) { edition.public_path }
+    let(:redirect_url) { edition.public_url }
     let(:topic_taxon) { build(:taxon_hash) }
 
     before do
@@ -259,7 +259,7 @@ class AttachmentRedirectDueToUnpublishingIntegrationTest < ActionDispatch::Integ
 
     def unpublish_document_published_in_error
       click_link "Withdraw or unpublish"
-      within "#js-published-in-error-form" do
+      within ".js-app-view-unpublish-withdraw-form__published-in-error" do
         click_button "Unpublish"
       end
       assert_text "This document has been unpublished"
@@ -267,7 +267,7 @@ class AttachmentRedirectDueToUnpublishingIntegrationTest < ActionDispatch::Integ
 
     def consolidate_document
       click_link "Withdraw or unpublish"
-      within "#js-consolidated-form" do
+      within ".js-app-view-unpublish-withdraw-form__consolidated" do
         fill_in "consolidated_alternative_url", with: "https://www.test.gov.uk/example"
         click_button "Unpublish"
       end
@@ -276,7 +276,7 @@ class AttachmentRedirectDueToUnpublishingIntegrationTest < ActionDispatch::Integ
 
     def withdraw_document
       click_link "Withdraw or unpublish"
-      within "#js-withdraw-form" do
+      within ".js-app-view-unpublish-withdraw-form__withdrawal" do
         fill_in "withdrawal_explanation", with: "testing"
         click_button "Withdraw"
       end

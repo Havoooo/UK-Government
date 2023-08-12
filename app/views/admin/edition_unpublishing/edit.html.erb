@@ -2,7 +2,8 @@
 <% content_for :page_title, "Edit #{withdrawal_or_unpublishing(@unpublishing.edition)} explanation" %>
 <% content_for :title, "Edit #{withdrawal_or_unpublishing(@unpublishing.edition)} explanation" %>
 <% content_for :title_margin_bottom, 6 %>
-<% content_for :error_summary, render('shared/error_summary', object: @unpublishing, parent_class: "edition", class_name: "#{withdrawal_or_unpublishing(@unpublishing.edition)} explanation") %>
+<% content_for :error_summary, render(Admin::ErrorSummaryComponent.new(object: @unpublishing)) %>
+<% render "admin/tracking/subtype_tracking", document_type: @unpublishing.edition.type, document: @unpublishing.edition %>
 
 <div class="govuk-grid-row">
   <section class="govuk-grid-column-two-thirds">
@@ -26,7 +27,12 @@
         data: {
           module: "paste-html-to-govspeak"
         },
-        error_items: errors_for(@unpublishing.errors, :explanation)
+        error_items: errors_for(@unpublishing.errors, :explanation),
+        data_attributes: {
+          image_ids: @unpublishing.edition.images.map { |img| img[:id] }.to_json,
+          attachment_ids: @unpublishing.edition.allows_attachments? ? @unpublishing.edition.attachments.map(&:id) : [],
+          alternative_format_provider_id: (@unpublishing.edition.alternative_format_provider_id || current_user.organisation.try(:id)),
+        }
       } %>
 
       <div class="govuk-button-group govuk-!-margin-bottom-6">
@@ -34,7 +40,7 @@
           text: "Update #{withdrawal_or_unpublishing(@unpublishing.edition)} explanation",
         } %>
 
-        <%= link_to("Cancel", [:admin, @unpublishing.edition], class: "govuk-link") %>
+        <%= link_to("Cancel", [:admin, @unpublishing.edition], class: "govuk-link govuk-link--no-visited-state") %>
       </div>
     <% end %>
   </section>

@@ -1,21 +1,18 @@
 :verbose: true
 :concurrency: 8
-<% if ENV.key?('SIDEKIQ_LOGFILE') %>
-:logfile: <%= ENV['SIDEKIQ_LOGFILE'] %>
-<% end %>
 :queues:
   - scheduled_publishing
   - default
   - publishing_api
   - asset_manager
   - asset_manager_updater
-  - email_alert_api_signup
   - bulk_republishing
   - link_checks
   - asset_migration
-:schedule:
-  check_all_organisations_links_worker:
-    cron: '0 4 * * *' # Runs at 4 a.m every day
-    class: CheckAllOrganisationsLinksWorker
-  LinkCheckerDeleteOldDataWorker:
-    cron: '30 3 * * *' # Runs at 3:30 a.m every day
+:scheduler:
+  :schedule:
+    check_all_organisations_links_worker:
+      cron: '0 4 * * *' # Runs at 4 a.m every day
+      class: CheckAllOrganisationsLinksWorker
+    LinkCheckerDeleteOldDataWorker:
+      cron: '30 3 * * *' # Runs at 3:30 a.m every day

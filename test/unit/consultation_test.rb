@@ -8,7 +8,7 @@ class ConsultationTest < ActiveSupport::TestCase
   should_not_allow_inline_attachments
   should_protect_against_xss_and_content_attacks_on :consultation, :title, :body, :summary, :change_note
 
-  %i[imported deleted].each do |state|
+  %i[deleted].each do |state|
     test "#{state} editions are valid without an opening at time" do
       edition = build(:consultation, state:, opening_at: nil)
       assert edition.valid?
@@ -372,7 +372,7 @@ class ConsultationTest < ActiveSupport::TestCase
   test "can associate consultations with topical events" do
     consultation = create(:consultation)
     assert consultation.can_be_associated_with_topical_events?
-    assert topical_event = consultation.topical_events.create!(name: "Test", description: "Test")
+    assert topical_event = consultation.topical_events.create!(name: "Test", description: "Test", summary: "Test")
     assert_equal [consultation], topical_event.consultations
   end
 

@@ -21,6 +21,15 @@ mt:
         nation_inapplicabilities: Nazzjonijiet esklużi
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: Il-fajl anness
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: Numru tal-anness tad-dokument tal-kmand
         hoc_paper_number: Numru tad-dokument tal-House of Commons
@@ -39,8 +48,22 @@ mt:
       title: Titlu tal-anness
       unique_reference: Referenza unika tal-anness
       unnumbered_hoc_paper: Dokument mhux innumerat tal-House of Commons
-  announcements:
-    heading: Avviżi
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: "Jekk tuża teknoloġija assistiva (bħal qarrej ta' skrin) u għandek bżonn verżjoni ta' dan id-dokument f'format iktar aċċessibbli, jekk jogħġbok ibgħat imejl %{email}. \nJekk jogħġbok igħidilna x'format għandek bżonn.  Ser jgħinna jekk tgħidilna x'teknoloġija assistiva qed tuża'.\n"
@@ -68,6 +91,11 @@ mt:
     caution:
       subheading: Sibna xi affarijiet fil-links li jistgħu jindikaw problemi, oqgħod attent meta tagħmel link magħhom
     title: Links maqsuma
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: Magħluq
     closing_today: Magħluq illum
@@ -163,6 +191,16 @@ mt:
         many:
         one: Blog post
         other: Blog posts
+      call_for_evidence:
+        few:
+        many:
+        one:
+        other:
+      call_for_evidence_outcome:
+        few:
+        many:
+        one:
+        other:
       campaign:
         few:
         many:
@@ -178,6 +216,11 @@ mt:
         many:
         one: Studju ta' Każ
         other: Studju ta' każijiet
+      closed_call_for_evidence:
+        few:
+        many:
+        one:
+        other:
       closed_consultation:
         few:
         many:
@@ -348,6 +391,11 @@ mt:
         many:
         one: Statistiċi uffiċjali
         other: Statistiċi uffiċjali
+      open_call_for_evidence:
+        few:
+        many:
+        one:
+        other:
       open_consultation:
         few:
         many:
@@ -505,12 +553,6 @@ mt:
         other: Dikjarazzjonijiet miktuba lill-Parlament
     updated: aġġornat
   document_filters:
-    description: Tista' tuża' l-filtri biex tara biss riżultati li jaqblu mal-interessi tiegħek
-    no_results:
-      description: Ipprova għamel it-tfittxija iktar wiegħsa u erġa' pprova.
-      title: M'hemm l-ebda dokumenti li jaqblu.
-      tna_heading: Kontenut iktar antik
-      tna_link_html: Mhux il-pubblikazzjonijiet kollha tad-dipartiment minn qabel Mejju 2010 ġew migrati lejn GOV.UK. Biex issib pubblikazzjonijiet minn qabel Mejju 2010, ipprova fittex <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">L-Arkivji Nazzjonali</a>.
     world_locations:
       all: Postijiet kollha
       label: Postijiet fid-dinja
@@ -592,20 +634,6 @@ mt:
   latest_feed:
     no_updates: Għad m'hemmx aġġornamenti.
     title: L-iktar riċenti
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: Aċċessa l-informazzjoni tagħna
@@ -614,8 +642,7 @@ mt:
       organisation_chart: Iċ-chart organizzatorja tagħna
       transparency: Data għat-trasparenza
     embassies:
-      find_an_embassy_lowercase: Sib ambaxxata Ingliża, kummissjoni għolja jew konsulat
-      find_an_embassy_uppercase: Sib ambaxxata Ingliża, kummissjoni għolja jew konsulat
+      find_an_embassy_title:
     headings:
       corporate_information: Informazzjoni korporattiva
       corporate_reports: Raporti korporattivi
@@ -627,18 +654,15 @@ mt:
       works_with: Jaħdem ma'
     type:
       courts_and_tribunals: Qorti u Tribunali
-  publications:
-    heading: Pubblikazzjonijiet
-    recent: Pubblikazzjonijiet riċenti
-    statistics:
-      link_to_published_statistics: Sib lista tal-istatistiċi tal-gvern ippubblikati u dawk li għad iridu jiġu pubblikati fis-sezzjoni %{link}tal-istatistika.
-      moved_notice: Il-pubblikazzjonijiet tal-istatistiċi imxew.
   roles:
     unassigned: Ħadd m'għandu dan ir-rwol
   see_all:
     announcement: Ara l-avviżi tagħna kollha
     authored_article: Ara l-artikli tagħna kollha li ktibna
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: Ara l-istudji dwar il-każi tagħna kollha
+    closed_call_for_evidence:
     closed_consultation: Ara l-konsultazzjonijiet magħluqa tagħna kollha
     consultation: Ara l-konsultazzjonijiet tagħna kollha
     consultation_outcome: Ara r-riżultati tal-konsultazzjoni tagħna
@@ -661,6 +685,7 @@ mt:
     news_article: Ara l-artikli bl-aħbarijiet tagħna kollha
     news_story: Ara l-istejjer bl-aħbarijiet tagħna kollha
     notice: Ara l-avviżi tagħna kollha
+    open_call_for_evidence:
     open_consultation: Ara l-konsultazzjonijiet miftuħa tagħna kollha
     oral_statement: Ara d-dikjarazzjonijiet verbali tagħna kollha lill-Parlament
     policy: Ara l-politiki tagħna kollha
@@ -699,15 +724,7 @@ mt:
       heading:
       list_link:
     headings:
-      announcements: L-avviżi tagħna
-      documents: Dokumenti
-      featured:
-      mission: Il-missjoni tagħna
-      news: Aħbarijiet dwar postijiet fid-dinja
-      organisations: Organizzazzjonijiet
-      publications: Pubblikazzjonijiet tagħna
       search: Fittex permezz tal-pajjiż jew territorju
-      statistics: L-istatistiċi tagħna
     search_description:
       international_delegation:
       world_location:

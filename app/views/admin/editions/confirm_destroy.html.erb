@@ -2,6 +2,7 @@
 <% content_for :page_title, "Delete draft" %>
 <% content_for :title, "Delete draft" %>
 <% content_for :title_margin_bottom, 6 %>
+<% render "admin/tracking/subtype_tracking", document_type: @edition.type, document: @edition %>
 
 <div class="govuk-grid-row">
   <section class="govuk-grid-column-two-thirds">
@@ -14,7 +15,7 @@
           destructive: true,
         } %>
 
-        <%= link_to("Cancel", [:admin, @edition], class: "govuk-link") %>
+        <%= link_to("Cancel", [:admin, @edition], class: "govuk-link govuk-link--no-visited-state") %>
       </div>
     <% end %>
   </section>

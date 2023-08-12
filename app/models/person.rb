@@ -3,9 +3,9 @@ class Person < ApplicationRecord
 
   mount_uploader :image, ImageUploader, mount_on: :carrierwave_image
 
-  has_many :role_appointments
+  has_many :role_appointments, -> { order(:order) }
   has_many :current_role_appointments,
-           -> { where(RoleAppointment::CURRENT_CONDITION) },
+           -> { where(RoleAppointment::CURRENT_CONDITION).order(:order) },
            class_name: "RoleAppointment"
   has_many :speeches, through: :role_appointments
   has_many :news_articles, through: :role_appointments
@@ -88,6 +88,35 @@ class Person < ApplicationRecord
     organisation = role.organisations.first.try(:name) if role
 
     [name, role_name, organisation].compact.join(" – ")
+  end
+
+  def current_or_previous_prime_minister?
+    ministerial_roles.map(&:slug).include?("prime-minister")
+  end
+
+  def base_path
+    "/government/people/#{slug}"
+  end
+
+  def public_path(options = {})
+    append_url_options(base_path, options)
+  end
+
+  def public_url(options = {})
+    Plek.website_root + public_path(options)
+  end
+
+  def previous_dates_in_office_for_role(role)
+    role_appointments.where(role:).historic.map do |appointment|
+      {
+        start_year: appointment.started_at.year,
+        end_year: appointment.ended_at.year,
+      }
+    end
+  end
+
+  def current_role_appointments_title
+    current_role_appointments.collect(&:role_name).to_sentence
   end
 
 private

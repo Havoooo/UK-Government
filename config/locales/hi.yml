@@ -21,6 +21,15 @@ hi:
         nation_inapplicabilities: बहिष्कृत राष्ट्र
       policy_group/policy_group_attachments/attachment/attachment_data:
         file: संलग्न हुई फा़इल
+      response/call_for_evidence_response_attachments/attachment:
+        command_paper_number:
+        hoc_paper_number:
+        isbn:
+        title:
+        unique_reference:
+        unnumbered_hoc_paper:
+      response/call_for_evidence_response_attachments/attachment/attachment_data:
+        file:
       response/consultation_response_attachments/attachment:
         command_paper_number: अटैचमेंट कमांड पेपर नंबर
         hoc_paper_number: हाउस ऑफ कॉमन्स पेपर नंबर
@@ -39,8 +48,22 @@ hi:
       title: अनुलग्नक शीर्षक
       unique_reference: अनुलग्नक अनूठा संदर्भ
       unnumbered_hoc_paper: संख्यारहित हाउस ऑफ कॉमन्स पेपर
-  announcements:
-    heading: घोषणाएं
+  admin:
+    whats_new:
+      guidance:
+        body_govspeak:
+        heading:
+      introduction:
+        body_govspeak:
+        heading:
+      last_updated:
+      recent_changes:
+        heading:
+        updates:
+      summary:
+      title:
+      upcoming_changes:
+        heading:
   attachment:
     accessibility:
       full_help_html: |
@@ -71,6 +94,11 @@ hi:
     caution:
       subheading: हमें लिंक में कुछ समस्याएं मिली हैं जिनसे दिक्कतों का संकेत मिल सकता है, आपको उन्हें लिंक करते समय सावधानी बरतनी चाहिए
     title: ब्रोकन लिंक
+  call_for_evidence:
+    closed:
+    closing_today:
+    closing_tomorrow:
+    days_left:
   consultation:
     closed: बंद हो गया
     closing_today: आज बंद हो रहा है
@@ -119,7 +147,7 @@ hi:
     speech:
       author_title:
         minister: मंत्री
-        speaker: लेखक 
+        speaker: लेखक
       delivered_on: 'को वितरित:'
       delivery_title:
         minister: मंत्री
@@ -150,6 +178,12 @@ hi:
       blog_post:
         one: ब्लॉग पोस्ट
         other: ब्लॉग पोस्ट
+      call_for_evidence:
+        one:
+        other:
+      call_for_evidence_outcome:
+        one:
+        other:
       campaign:
         one: अभियान
         other: अभियान
@@ -159,6 +193,9 @@ hi:
       case_study:
         one: विषय अध्ययन
         other: विषय अध्ययन
+      closed_call_for_evidence:
+        one:
+        other:
       closed_consultation:
         one: बंद कमरे में परामर्श
         other: बंद कमरे में परामर्श
@@ -261,6 +298,9 @@ hi:
       official_statistics:
         one: आधिकारिक सांख्यिकी
         other: आधिकारिक सांख्यिकी
+      open_call_for_evidence:
+        one:
+        other:
       open_consultation:
         one: खुला परामर्श
         other: खुले परामर्श
@@ -356,12 +396,6 @@ hi:
         other: संसद में लिखित बयान
     updated: अपडेट किया गया
   document_filters:
-    description: आप फिल्टरों का उपयोग सिर्फ उन नतीजों को दर्शाने के लिए कर सकते हैं, जिनमें आप की दिलचस्पी हो
-    no_results:
-      description: 'अपनी खोज़ को व्यापक बनाए और पुन: कोशिश करें।'
-      title: मेल खाने वाले दस्तावेज़ नहीं हैं।
-      tna_heading: पुराने विषय
-      tna_link_html: मई 2010 से पहले के सभी विभागीय प्रकाशन GOV.UK में स्थानांतरित नहीं किए गए थे। मई 2010 से पहले के प्रकाशन खोजने के लिए <a href="http://webarchive.nationalarchives.gov.uk/adv_search/" class="govuk-link">द नेशनल आर्काइव्स</a> में खोजने की कोशिश करें।
     world_locations:
       all: सभी स्थान
       label: वैश्विक स्थान
@@ -443,20 +477,6 @@ hi:
   latest_feed:
     no_updates: अभी तक कोई नए समाचार नहीं हैं।
     title: नवीनतम
-  mhra_email_signup:
-    context:
-    pages:
-      drug_alerts:
-        description_html:
-        title:
-      drug_safety:
-        description_html:
-        title:
-      news_and_publications:
-        description_html:
-        title:
-    summary:
-    title:
   organisation:
     corporate_information:
       access_our_info: हमारी सूचना तक पहुंचें
@@ -465,8 +485,7 @@ hi:
       organisation_chart: हमारी संस्था का चार्ट
       transparency: पारदर्शिता आंकड़े
     embassies:
-      find_an_embassy_lowercase: एक ब्रिटिश दूतावास, उच्चायोग या वाणिज्य दूतावास खोजें
-      find_an_embassy_uppercase: एक ब्रिटिश दूतावास, उच्चायोग या वाणिज्य दूतावास खोजें
+      find_an_embassy_title:
     headings:
       corporate_information: कारपोरेट सूचना
       corporate_reports: कॉरपोरेट विवरण
@@ -478,18 +497,15 @@ hi:
       works_with: इसके साथ काम करता है
     type:
       courts_and_tribunals: न्यायालय और न्यायाधिकरण
-  publications:
-    heading: प्रकाशन
-    recent: हालिया प्रकाशन
-    statistics:
-      link_to_published_statistics: "%{link} सांख्यिकी अनुभाग में प्रकाशित और आगामी सरकारी सांख्यिकियों की सूची प्राप्त करें।"
-      moved_notice: सांख्यिकी प्रकाशन मूव हो गए हैं।
   roles:
     unassigned: यह भूमिका किसी को असाइन नहीं की गई है
   see_all:
     announcement: देखें हमारे सभी घोषणाएं
     authored_article: देखें हमारे सभी मूल आलेख
+    call_for_evidence:
+    call_for_evidence_outcome:
     case_study: देखें हमारे सभी विषय अध्ययन
+    closed_call_for_evidence:
     closed_consultation: देखें हमारे सभी बंद कमरे में परामर्श
     consultation: देखें हमारे सभी परामर्श
     consultation_outcome: देखें हमारे सभी परामर्श के नतीजे
@@ -512,6 +528,7 @@ hi:
     news_article: देखें हमारे सभी समाचार लेख
     news_story: देखें हमारे सभी समाचार कथाएं
     notice: हमारी सभी नोटिस देखें
+    open_call_for_evidence:
     open_consultation: देखें हमारे सभी खुले परामर्श
     oral_statement: देखें हमारे सभी संसद में मौखिक बयान
     policy: देखें हमारे सभी नीतियां
@@ -550,15 +567,7 @@ hi:
       heading:
       list_link:
     headings:
-      announcements: हमारी घोषणाएं
-      documents: दस्तावेज़
-      featured:
-      mission: हमारा लक्ष्य
-      news: विश्व स्थानों की खबरें
-      organisations: संस्थाएं
-      publications: हमारे प्रकाशन
       search: देश या क्षेत्र से खोजें
-      statistics: हमारे आंकड़े
     search_description:
       international_delegation:
       world_location:
