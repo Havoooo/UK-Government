@@ -50,7 +50,7 @@ When(/^I add a translation for an organisation called "([^"]*)"$/) do |organisat
   click_link "Translations"
 
   select "Cymraeg (Welsh)", from: "Locale"
-  click_button "Create translation"
+  click_button using_design_system? ? "Create new translation" : "Create translation"
 
   fill_in "Name", with: "Organisation Name in another language"
   fill_in "Acronym", with: "ABC"
@@ -172,7 +172,13 @@ end
 When(/^I add a new contact "([^"]*)" with address "([^"]*)"$/) do |contact_description, address|
   click_link "Contacts"
   click_link "Add"
-  fill_in_contact_details(title: contact_description, street_address: address)
+
+  if using_design_system?
+    fill_in_contact_details(title: contact_description, street_address: address)
+  else
+    legacy_fill_in_contact_details(title: contact_description, street_address: address)
+  end
+
   click_button "Save"
 end
 

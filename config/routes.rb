@@ -60,17 +60,6 @@ Whitehall::Application.routes.draw do
   scope Whitehall.router_prefix, shallow_path: Whitehall.router_prefix do
     root to: redirect("/", prefix: ""), via: :get, as: :main_root
 
-    # Public facing routes still rendered by Whitehall
-    get "/uploads/system/uploads/attachment_data/file/:id/*file.:extension/preview" => "csv_preview#show", as: :csv_preview
-    # End of public facing routes still rendered by Whitehall
-
-    resources :organisations, only: [] do
-      # These aren't rendered but are coupled to Worldwide organisation corporate information pages
-      get "/about(.:locale)", as: "corporate_information_pages", to: "corporate_information_pages#index", constraints: { locale: valid_locales_regex }
-      get "/about/:id(.:locale)", as: "corporate_information_page", to: "corporate_information_pages#show", constraints: { locale: valid_locales_regex }
-    end
-    # End of routes no longer rendered by Whitehall
-
     constraints(AdminRequest) do
       namespace :admin do
         root to: "dashboard#index", via: :get
@@ -111,7 +100,9 @@ Whitehall::Application.routes.draw do
             post :reorder_for_home_page, on: :collection
           end
           resources :social_media_accounts
-          resources :translations, controller: "organisation_translations"
+          resources :translations, controller: "organisation_translations" do
+            get :confirm_destroy, on: :member
+          end
           resources :promotional_features do
             get :reorder, on: :collection
             get :confirm_destroy, on: :member
@@ -151,9 +142,15 @@ Whitehall::Application.routes.draw do
             put :order, on: :collection
             get :confirm_destroy, on: :member
           end
+          resources :topical_event_organisations, path: "organisations" do
+            get :reorder, on: :collection
+            put :order, on: :collection
+            get :toggle_lead, on: :member
+          end
           resources :offsite_links do
             get :confirm_destroy, on: :member
           end
+          get :confirm_destroy, on: :member
         end
 
         resources :worldwide_organisations do
@@ -267,10 +264,23 @@ Whitehall::Application.routes.draw do
         resources :news_articles, path: "news", except: [:index]
         resources :fatality_notices, path: "fatalities", except: [:index]
         resources :consultations, except: [:index] do
-          resource :outcome, controller: "responses", type: "ConsultationOutcome", except: %i[new destroy]
-          resource :public_feedback, controller: "responses", type: "ConsultationPublicFeedback", except: %i[new destroy]
+          resource :outcome, controller: "consultation_responses", type: "ConsultationOutcome", except: %i[new destroy]
+          resource :public_feedback, controller: "consultation_responses", type: "ConsultationPublicFeedback", except: %i[new destroy]
         end
-        resources :responses, only: :none do
+
+        resources :consultation_responses, only: :none do
+          resources :attachments do
+            put :order, on: :collection
+            get :confirm_destroy, on: :member
+            get :reorder, on: :collection
+          end
+        end
+
+        resources :calls_for_evidence, path: "calls-for-evidence", except: [:index] do
+          resource :outcome, controller: "call_for_evidence_responses", type: "CallForEvidenceOutcome", except: %i[new destroy]
+        end
+
+        resources :call_for_evidence_responses, only: :none do
           resources :attachments do
             put :order, on: :collection
             get :confirm_destroy, on: :member
@@ -305,7 +315,9 @@ Whitehall::Application.routes.draw do
           resources :role_appointments, only: %i[new create edit update destroy], shallow: true do
             get :confirm_destroy, on: :member
           end
-          resources :translations, controller: "role_translations"
+          resources :translations, controller: "role_translations" do
+            get :confirm_destroy, on: :member
+          end
         end
 
         resources :world_location_news, only: %i[index edit update show] do

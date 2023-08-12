@@ -123,6 +123,11 @@ class PublishingApiPresentersTest < ActiveSupport::TestCase
     assert_equal PublishingApi::ConsultationPresenter, presenter.class
   end
 
+  test ".presenter_for returns a CallForEvidencePresenter for a CallForEvidence" do
+    presenter = PublishingApiPresenters.presenter_for(build(:call_for_evidence))
+    assert_equal PublishingApi::CallForEvidencePresenter, presenter.class
+  end
+
   test ".presenter_for returns a NewsArticlePresenter for a NewsArticle" do
     presenter = PublishingApiPresenters.presenter_for(build(:news_article))
     assert_equal PublishingApi::NewsArticlePresenter, presenter.class
@@ -144,18 +149,36 @@ class PublishingApiPresentersTest < ActiveSupport::TestCase
     )
   end
 
-  test ".presenter_for returns a GenericEditionPresenter for a " \
-    "CorporateInformationPage belonging to an WorldwideOrganisation" do
+  test ".presenter_for returns a GenericEditionPresenter for an " \
+    "AboutUs CorporateInformationPage belonging to an WorldwideOrganisation" do
     presenter = PublishingApiPresenters
       .presenter_for(
         build(
           :corporate_information_page,
           worldwide_organisation: build(:worldwide_organisation),
+          organisation: nil,
+          corporate_information_page_type_id: CorporateInformationPageType::AboutUs.id,
         ),
       )
 
     assert_equal(
       PublishingApi::GenericEditionPresenter,
+      presenter.class,
+    )
+  end
+
+  test ".presenter_for returns a WorldwideCorporateInformationPagePresenter for a " \
+    "CorporateInformationPage belonging to an WorldwideOrganisation" do
+    presenter = PublishingApiPresenters
+                  .presenter_for(
+                    build(
+                      :corporate_information_page,
+                      worldwide_organisation: build(:worldwide_organisation),
+                    ),
+                  )
+
+    assert_equal(
+      PublishingApi::WorldwideCorporateInformationPagePresenter,
       presenter.class,
     )
   end

@@ -85,6 +85,7 @@ class Edition < ApplicationRecord
 
   scope :announcements,                 -> { where(type: Announcement.concrete_descendants.collect(&:name)) }
   scope :consultations,                 -> { where(type: "Consultation") }
+  scope :call_for_evidence,             -> { where(type: "CallForEvidence") }
   scope :detailed_guides,               -> { where(type: "DetailedGuide") }
   scope :statistical_publications,      -> { where("publication_type_id IN (?)", PublicationType.statistical.map(&:id)) }
   scope :non_statistical_publications,  -> { where("publication_type_id NOT IN (?)", PublicationType.statistical.map(&:id)) }
@@ -236,7 +237,7 @@ EXISTS (
   SELECT 1
   FROM link_checker_api_report_links
   WHERE link_checker_api_report_id = latest_link_checker_api_reports.id
-    AND link_checker_api_report_links.status != 'ok'
+    AND link_checker_api_report_links.status IN ('broken', 'caution')
 )",
     )
   end
@@ -356,6 +357,12 @@ EXISTS (
 
   def publicly_visible?
     PUBLICLY_VISIBLE_STATES.include?(state)
+  end
+
+  def versioning_completed?
+    return true unless change_note_required?
+
+    change_note.present? || minor_change
   end
 
   # @group Overwritable permission methods

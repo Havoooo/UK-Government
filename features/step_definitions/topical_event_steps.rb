@@ -1,3 +1,7 @@
+And(/^a topical event called "([^"]*)" exists$/) do |name|
+  @topical_event = create(:topical_event, name:)
+end
+
 Given(/^a topical event called "(.*?)" with summary "([^"]*)" and description "(.*?)"$/) do |name, summary, description|
   @topical_event = create(:topical_event, name:, summary:, description:)
   stub_topical_event_in_content_store(name)
@@ -52,9 +56,14 @@ Then(/^I should see the about page is updated$/) do
 end
 
 Then(/^I should be able to delete the topical event "([^"]*)"$/) do |name|
-  topical_event = TopicalEvent.find_by!(name:)
-  visit admin_topical_event_path(topical_event)
-  click_on "Edit"
+  if using_design_system?
+    visit admin_topical_events_path
+    click_link "Delete #{name}" if using_design_system?
+  else
+    topical_event = TopicalEvent.find_by!(name:)
+    visit admin_topical_event_path(topical_event)
+    click_on "Edit"
+  end
 
   expect { click_button "Delete" }.to change(TopicalEvent, :count).by(-1)
 end

@@ -13,6 +13,11 @@ class TopicalEventTest < ActiveSupport::TestCase
     assert_not topical_event.valid?
   end
 
+  test "should be invalid without a summary" do
+    topical_event = build(:topical_event, summary: nil)
+    assert_not topical_event.valid?
+  end
+
   test "should be current when created" do
     topical_event = build(:topical_event)
     assert_equal "current", topical_event.state
@@ -267,7 +272,7 @@ class TopicalEventTest < ActiveSupport::TestCase
     assert_equal [offsite_link2], topical_event.featurable_offsite_links
   end
 
-  test "#featurable_editions returns associated editions that do not belong to a topical event featuring" do
+  test "#featurable_editions returns editions that do not belong to a topical event featuring" do
     topical_event = build(:topical_event)
     edition1 = build(:edition)
     edition2 = build(:edition)
@@ -276,6 +281,14 @@ class TopicalEventTest < ActiveSupport::TestCase
     topical_event.stubs(:editions).returns([edition1, edition2])
     topical_event.stubs(:topical_event_featurings).returns([topical_event_featuring])
 
-    assert_equal [edition2], topical_event.featurable_editions
+    assert_equal [edition2], topical_event.featurable_editions([edition1, edition2])
+  end
+
+  test "rejects SVG logo uploads" do
+    svg_logo = File.open(Rails.root.join("test/fixtures/images/test-svg.svg"))
+    topical_event = build(:topical_event, logo: svg_logo)
+
+    assert_not topical_event.valid?
+    assert_equal topical_event.errors.first.full_message, "Logo is not of an allowed type"
   end
 end
