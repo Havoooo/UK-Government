@@ -15,7 +15,7 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
 
     assert_select "form[action=?]", admin_edition_translations_path(edition) do
       assert_select "select[name=translation_locale]"
-      assert_select "input[type=submit]"
+      assert_select "button[type=submit]"
     end
   end
 
@@ -42,7 +42,8 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
 
     get :edit, params: { edition_id: edition, id: "fr" }
 
-    assert_select "h1", text: "Edit ‘Français (French)’ translation for: english-title"
+    assert_select "h1", text: "Français (French) translation"
+    assert_select ".govuk-caption-xl", text: "english-title"
   end
 
   view_test "edit presents a form to update an existing translation" do
@@ -56,8 +57,8 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
       assert_select "textarea[name='edition[summary]']", text: "french-summary"
       assert_select "textarea[name='edition[body]']", "french-body"
 
-      assert_select "input[type=submit][value=Save]"
-      assert_select "a[href=?]", @controller.admin_edition_path(edition), text: "cancel"
+      assert_select "button[type=submit]"
+      assert_select "a[href=?]", @controller.admin_edition_path(edition), text: "Cancel"
     end
   end
 
@@ -66,9 +67,9 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
 
     get :edit, params: { edition_id: edition, id: "fr" }
 
-    assert_select "#english_title", text: "English: #{edition.title}"
-    assert_select "#english_summary", text: "English: #{edition.summary}"
-    assert_select "#english_body", text: "English: #{edition.body}"
+    assert_select ".app-view-translation__english-content", text: edition.title
+    assert_select ".app-view-translation__english-content", text: edition.summary
+    assert_select ".app-view-translation__english-content", text: edition.body
   end
 
   view_test "edit shows the govspeak helper" do
@@ -76,16 +77,16 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
 
     get :edit, params: { edition_id: edition, id: "fr" }
 
-    assert_select "#govspeak_help"
+    assert_select "#govspeak_tab"
   end
 
-  view_test "edit shows editorial remarks" do
+  view_test "edit shows history tab" do
     edition = create(:edition)
     create(:editorial_remark, edition:)
 
     get :edit, params: { edition_id: edition, id: "fr" }
 
-    assert_select "#notes"
+    assert_select "#history_tab"
   end
 
   view_test "edit when translating corporate information pages does not allow title to be edited" do
@@ -96,8 +97,7 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
     refute_select "input#edition_title"
   end
 
-  view_test "renders the govspeak help, history and fact checking tabs with the 'Preview design system' permission" do
-    @writer.permissions << "Preview design system"
+  view_test "renders the govspeak help, history and fact checking tabs" do
     edition = create(:publication)
 
     fact_checking_view_component = Admin::Editions::FactCheckingTabComponent.new(edition:)
@@ -184,7 +184,7 @@ class Admin::EditionTranslationsControllerTest < ActionController::TestCase
                     title: "",
                   } }
 
-    assert_select ".form-errors"
+    assert_select ".govuk-error-summary"
   end
 
   view_test "#update puts the translation to the publishing API" do

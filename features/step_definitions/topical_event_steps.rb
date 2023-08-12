@@ -1,3 +1,7 @@
+And(/^a topical event called "([^"]*)" exists$/) do |name|
+  @topical_event = create(:topical_event, name:)
+end
+
 Given(/^a topical event called "(.*?)" with summary "([^"]*)" and description "(.*?)"$/) do |name, summary, description|
   @topical_event = create(:topical_event, name:, summary:, description:)
   stub_topical_event_in_content_store(name)
@@ -14,7 +18,11 @@ end
 Then(/^I should see the topical event "([^"]*)" in the admin interface$/) do |topical_event_name|
   topical_event = TopicalEvent.find_by!(name: topical_event_name)
   visit admin_topical_events_path(topical_event)
-  expect(page).to have_selector(record_css_selector(topical_event))
+  if using_design_system?
+    expect(page).to have_selector(".govuk-table__cell", text: topical_event)
+  else
+    expect(page).to have_selector(record_css_selector(topical_event))
+  end
 end
 
 Given(/^I'm administering a topical event$/) do
@@ -25,7 +33,11 @@ end
 
 When(/^I add a page of information about the event$/) do
   click_link "About page"
-  click_link "Create"
+  if using_design_system?
+    click_link "Create new about page"
+  else
+    click_link "Create"
+  end
   fill_in "Name", with: "Page about the event"
   fill_in "Read more link text", with: "Read more about this event"
   fill_in "Summary", with: "Summary"
@@ -44,9 +56,14 @@ Then(/^I should see the about page is updated$/) do
 end
 
 Then(/^I should be able to delete the topical event "([^"]*)"$/) do |name|
-  topical_event = TopicalEvent.find_by!(name:)
-  visit admin_topical_event_path(topical_event)
-  click_on "Edit"
+  if using_design_system?
+    visit admin_topical_events_path
+    click_link "Delete #{name}" if using_design_system?
+  else
+    topical_event = TopicalEvent.find_by!(name:)
+    visit admin_topical_event_path(topical_event)
+    click_on "Edit"
+  end
 
   expect { click_button "Delete" }.to change(TopicalEvent, :count).by(-1)
 end

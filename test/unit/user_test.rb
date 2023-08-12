@@ -145,14 +145,14 @@ class UserTest < ActiveSupport::TestCase
     assert user.can_preview_next_release?
   end
 
-  test "cannot preview the upcoming images workflow update" do
+  test "cannot preview call for evidence by default" do
     user = build(:user)
-    assert_not user.can_preview_images_update?
+    assert_not user.can_preview_call_for_evidence?
   end
 
-  test "can preview the upcoming images workflow update" do
-    user = build(:user, permissions: [User::Permissions::PREVIEW_IMAGES_UPDATE])
-    assert user.can_preview_images_update?
+  test "can preview call for evidence if given permission" do
+    user = build(:user, permissions: [User::Permissions::PREVIEW_CALL_FOR_EVIDENCE])
+    assert user.can_preview_call_for_evidence?
   end
 
   test "can handle fatalities if our organisation is set to handle them" do

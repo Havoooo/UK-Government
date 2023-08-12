@@ -1,6 +1,6 @@
 <div class="govuk-!-margin-bottom-8">
   <%= render "govuk_publishing_components/components/fieldset", {
-    legend_text: edition.authored_article? ? "Written on (required)" : "Delivered on (required)",
+    legend_text: edition.authored_article? ? "Written on" : "Delivered on",
     heading_size: "l",
     id: "edition_delivered_on",
   } do %>
@@ -33,4 +33,10 @@
       }
     %>
   <% end %>
+
+  <div class="app-view-edit-edition__delivered-on-warning js-app-view-edit-edition__delivered-on-warning app-view-edit-edition__delivered-on-warning--hidden govuk-!-margin-top-6" aria-live="polite">
+    <%= render "govuk_publishing_components/components/warning_text", {
+      text: "You have set the date in the future, please ensure that this will not be published before this date."
+    } %>
+  </div>
 </div>

@@ -3,7 +3,6 @@ require "test_helper"
 class Admin::SpeechesControllerTest < ActionController::TestCase
   setup do
     login_as :writer
-    @current_user.permissions << "Preview design system"
   end
 
   should_be_an_admin_controller
@@ -12,7 +11,6 @@ class Admin::SpeechesControllerTest < ActionController::TestCase
   should_allow_editing_of :speech
 
   should_allow_association_between_world_locations_and :speech
-  should_allow_attached_images_for :speech
   should_prevent_modification_of_unmodifiable :speech
   should_allow_scheduled_publication_of :speech
   should_allow_access_limiting_of :speech
@@ -61,7 +59,7 @@ class Admin::SpeechesControllerTest < ActionController::TestCase
 
   test "create should create a new speech without a real person" do
     speech_type = SpeechType::Transcript
-    attributes = controller_attributes_for(:speech, speech_type:, person_override: "The Queen")
+    attributes = controller_attributes_for(:speech, speech_type:, person_override: "The Queen", speaker_radios: "no")
 
     post :create, params: { edition: attributes }
 
@@ -70,6 +68,24 @@ class Admin::SpeechesControllerTest < ActionController::TestCase
     assert_equal "The Queen", speech.person_override
     assert_equal attributes[:delivered_on], speech.delivered_on
     assert_equal attributes[:location], speech.location
+  end
+
+  view_test "create on unsuccessful save it clears the person_override field when the speaker has a profile on GOV.UK radio is selected" do
+    speech_type = SpeechType::Transcript
+    attributes = controller_attributes_for(:speech, speech_type:, person_override: "The Queen", title: nil)
+
+    post :create, params: { edition: attributes }
+
+    assert_select "#edition_person_override", ""
+  end
+
+  view_test "create on unsuccessful save it clears the role_appointment_id field when the speaker does not have a profile on GOV.UK radio is selected" do
+    speech_type = SpeechType::Transcript
+    attributes = controller_attributes_for(:speech, speech_type:, person_override: "The Queen", title: nil, speaker_radios: "no")
+
+    post :create, params: { edition: attributes }
+
+    assert_select "#edition_role_appointment_id option[selected]", count: 0
   end
 
   test "update should save modified speech attributes" do
@@ -94,12 +110,33 @@ class Admin::SpeechesControllerTest < ActionController::TestCase
     assert_equal "new-location", speech.location
   end
 
+  view_test "update on unsuccessful save it clears the person_override field when the speaker has a profile on GOV.UK radio is selected" do
+    speech = create(:speech)
+    speech_type = SpeechType::Transcript
+    attributes = controller_attributes_for(:speech, speech_type:, person_override: "The Queen", title: nil)
+
+    post :update, params: { id: speech.id, edition: attributes }
+
+    assert_select "#edition_person_override", ""
+  end
+
+  view_test "update on unsuccessful save it clears the role_appointment_id field when the speaker does not have a profile on GOV.UK radio is selected" do
+    speech = create(:speech)
+    speech_type = SpeechType::Transcript
+    attributes = controller_attributes_for(:speech, speech_type:, person_override: "The Queen", title: nil, speaker_radios: "no")
+
+    post :update, params: { id: speech.id, edition: attributes }
+
+    assert_select "#edition_role_appointment_id option[selected]", count: 0
+  end
+
 private
 
   def controller_attributes_for(edition_type, attributes = {})
     super.except(:role_appointment, :speech_type).reverse_merge(
       role_appointment_id: create(:role_appointment).id,
       speech_type_id: SpeechType::Transcript.id,
+      speaker_radios: "yes",
     )
   end
 end

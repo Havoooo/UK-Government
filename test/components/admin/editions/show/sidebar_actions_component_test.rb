@@ -22,7 +22,18 @@ class Admin::Editions::Show::SidebarActionsComponentTest < ViewComponent::TestCa
     assert_selector "li", count: 3
     assert_selector "button", text: "Create new edition"
     assert_selector "a", text: "View data about page"
-    assert_selector "a", text: "View on website (opens in new tab)"
+    assert_selector "a[href='https://www.test.gov.uk/government/generic-editions/#{edition.title}']", text: "View on website (opens in new tab)"
+  end
+
+  test "actions for published edition for non-english document" do
+    current_user = build_stubbed(:user)
+    edition = create(:non_english_published_edition)
+    render_inline(Admin::Editions::Show::SidebarActionsComponent.new(edition:, current_user:))
+
+    assert_selector "li", count: 3
+    assert_selector "button", text: "Create new edition"
+    assert_selector "a", text: "View data about page"
+    assert_selector "a[href='https://www.test.gov.uk/government/generic-editions/#{edition.document.id}.cy']", text: "View on website (opens in new tab)"
   end
 
   test "actions for submitted edition" do
@@ -51,7 +62,7 @@ class Admin::Editions::Show::SidebarActionsComponentTest < ViewComponent::TestCa
     edition = create(:superseded_edition)
     render_inline(Admin::Editions::Show::SidebarActionsComponent.new(edition:, current_user:))
 
-    assert_no_selector "app-view-edition-summary__sidebar-actions"
+    assert_no_selector "app-view-summary__sidebar-actions"
   end
 
   test "actions for scheduled edition" do
@@ -160,7 +171,7 @@ class Admin::Editions::Show::SidebarActionsComponentTest < ViewComponent::TestCa
     edition = create(:superseded_edition)
     render_inline(Admin::Editions::Show::SidebarActionsComponent.new(edition:, current_user:))
 
-    assert_no_selector "app-view-edition-summary__sidebar-actions"
+    assert_no_selector "app-view-summary__sidebar-actions"
   end
 
   test "actions for scheduled edition as managing editor" do

@@ -2,10 +2,11 @@ require "test_helper"
 
 class Admin::ContactsControllerTest < ActionController::TestCase
   setup do
-    login_as :departmental_editor
+    login_as_preview_design_system_user(:departmental_editor)
   end
 
   should_be_an_admin_controller
+  should_render_bootstrap_implementation_with_preview_next_release
 
   test "POST on :create creates contact" do
     organisation = create(:organisation)

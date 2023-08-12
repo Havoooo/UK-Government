@@ -7,6 +7,7 @@ module PublishingApi
     def initialize(operational_field, _options = {})
       @operational_field = operational_field
       @update_type = "major"
+      @renderer = Whitehall::GovspeakRenderer.new
     end
 
     delegate :content_id, to: :operational_field
@@ -15,12 +16,12 @@ module PublishingApi
       {}.tap do |content|
         content.merge!(PayloadBuilder::PolymorphicPath.for(operational_field))
         content.merge!(
-          description: operational_field.description,
+          description: @renderer.govspeak_to_html(operational_field.description),
           details: {},
           document_type: "field_of_operation",
           locale: "en",
-          publishing_app: "whitehall",
-          rendering_app: Whitehall::RenderingApp::WHITEHALL_FRONTEND,
+          publishing_app: Whitehall::PublishingApp::WHITEHALL,
+          rendering_app: Whitehall::RenderingApp::GOVERNMENT_FRONTEND,
           schema_name: "field_of_operation",
           title: operational_field.name,
           update_type:,

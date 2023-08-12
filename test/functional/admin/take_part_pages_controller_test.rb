@@ -2,7 +2,7 @@ require "test_helper"
 
 class Admin::TakePartPagesControllerTest < ActionController::TestCase
   setup do
-    login_as_preview_design_system_user(:gds_editor)
+    login_as(:gds_editor)
   end
 
   should_be_an_admin_controller
@@ -39,7 +39,6 @@ class Admin::TakePartPagesControllerTest < ActionController::TestCase
 
     post :create, params: { take_part_page: take_part_page_attrs }
 
-    puts assigns(:take_part_page).errors.full_messages
     assert assigns(:take_part_page).persisted?
     assert_equal "Wear a monocle!", assigns(:take_part_page).title
     assert_redirected_to admin_take_part_pages_path

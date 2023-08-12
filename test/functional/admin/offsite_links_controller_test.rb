@@ -9,6 +9,7 @@ class Admin::OffsiteLinksControllerTest < ActionController::TestCase
   end
 
   should_be_an_admin_controller
+  should_render_bootstrap_implementation_with_preview_next_release
 
   view_test "GET :new should render new offsite links form" do
     get :new, params: { world_location_news_id: @world_location_news.slug }
@@ -41,6 +42,13 @@ class Admin::OffsiteLinksControllerTest < ActionController::TestCase
 
     assert_equal "Updated title", @offsite_link.reload.title
     assert_response :redirect
+  end
+
+  test "GET :confirm_destroy calls correctly" do
+    get :confirm_destroy, params: { world_location_news_id: @world_location_news.slug, id: @offsite_link.id }
+
+    assert_response :success
+    assert_equal @offsite_link, assigns(:offsite_link)
   end
 
   test "DELETE :destroy removes offsite link" do

@@ -27,6 +27,7 @@ module AdminEditionControllerScheduledPublishingTestHelpers
 
       view_test "GET :show with a draft scheduled edition displays the 'Force schedule', but not the 'Force publish' button" do
         login_as :gds_editor
+        @current_user.permissions << User::Permissions::PREVIEW_CALL_FOR_EVIDENCE
         edition = create(edition_type, :draft, scheduled_publication: 1.day.from_now)
         stub_publishing_api_expanded_links_with_taxons(edition.content_id, [])
 
@@ -34,18 +35,19 @@ module AdminEditionControllerScheduledPublishingTestHelpers
 
         assert_select force_schedule_button_selector(edition), count: 1
         refute_select force_publish_button_selector(edition)
-        assert_select ".app-view-edition-summary__scheduled-notice", "Scheduled publication proposed for #{I18n.localize edition.scheduled_publication, format: :long}."
+        assert_select ".app-view-summary__scheduled-notice", "Scheduled publication proposed for #{I18n.localize edition.scheduled_publication, format: :long}."
       end
 
       view_test "should display the 'Schedule' button for a submitted scheduled edition when viewing as an editor" do
         login_as :gds_editor
+        @current_user.permissions << User::Permissions::PREVIEW_CALL_FOR_EVIDENCE
         edition = create(edition_type, :submitted, scheduled_publication: 1.day.from_now)
         stub_publishing_api_expanded_links_with_taxons(edition.content_id, [])
 
         get :show, params: { id: edition }
 
         assert_select schedule_button_selector(edition), count: 1
-        assert_select ".app-view-edition-summary__scheduled-notice", /Scheduled publication proposed for/
+        assert_select ".app-view-summary__scheduled-notice", /Scheduled publication proposed for/
       end
 
       view_test "should not display the 'Schedule' button if not schedulable" do
@@ -72,7 +74,7 @@ module AdminEditionControllerScheduledPublishingTestHelpers
         stub_publishing_api_expanded_links_with_taxons(edition.content_id, [])
 
         get :show, params: { id: edition }
-        assert_select ".app-view-edition-summary__scheduled-notice .app-c-inset-prompt__body", "Scheduled for publication on #{I18n.localize edition.scheduled_publication, format: :long}."
+        assert_select ".app-view-summary__scheduled-notice .app-c-inset-prompt__body", "Scheduled for publication on #{I18n.localize edition.scheduled_publication, format: :long}."
       end
 
       view_test "should not indicate publishing schedule if published" do
@@ -80,7 +82,7 @@ module AdminEditionControllerScheduledPublishingTestHelpers
         stub_publishing_api_expanded_links_with_taxons(edition.content_id, [])
 
         get :show, params: { id: edition }
-        assert_select ".app-view-edition-summary__scheduled-notice", count: 0
+        assert_select ".app-view-summary__scheduled-notice", count: 0
       end
 
       test "create should not set scheduled_publication if scheduled_publication_active is not checked" do
@@ -115,13 +117,13 @@ module AdminEditionControllerScheduledPublishingTestHelpers
       end
 
       view_test "edit displays scheduled_publication date and time fields" do
-        edition = create(edition_type, scheduled_publication: Time.zone.parse("2060-06-03 10:30"))
+        edition = create(edition_type, scheduled_publication: Time.zone.parse("#{Time.zone.today.year + 1}-06-03 10:30"))
 
         get :edit, params: { id: edition }
 
         assert_select "form#edit_edition" do
           assert_select "input[type=checkbox][name='scheduled_publication_active'][checked='checked']"
-          assert_select "select[name='edition[scheduled_publication(1i)]'] option[value='2060'][selected='selected']"
+          assert_select "select[name='edition[scheduled_publication(1i)]'] option[value='#{Time.zone.today.year + 1}'][selected='selected']"
           assert_select "select[name='edition[scheduled_publication(2i)]'] option[value='6'][selected='selected']"
           assert_select "select[name='edition[scheduled_publication(3i)]'] option[value='3'][selected='selected']"
           assert_select "select[name='edition[scheduled_publication(4i)]'] option[value='10'][selected='selected']"

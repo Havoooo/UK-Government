@@ -3,14 +3,13 @@ require "delegate"
 module GovspeakHelper
   include ::Govspeak::ContactsExtractorHelpers
   include Rails.application.routes.url_helpers
-  include LocalisedUrlPathHelper
 
   BARCHART_REGEXP = /{barchart(.*?)}/
   SORTABLE_REGEXP = /{sortable}/
   FRACTION_REGEXP = /\[Fraction:(?<numerator>[0-9a-zA-Z]+)\/(?<denominator>[0-9a-zA-Z]+)\]/
 
-  def govspeak_to_html(govspeak, images = [], options = {})
-    wrapped_in_govspeak_div(bare_govspeak_to_html(govspeak, images, options))
+  def govspeak_to_html(govspeak, options = {})
+    wrapped_in_govspeak_div(bare_govspeak_to_html(govspeak, [], options))
   end
 
   def govspeak_edition_to_html(edition)
@@ -24,10 +23,38 @@ module GovspeakHelper
   end
 
   def bare_govspeak_edition_to_html(edition)
-    images = edition.respond_to?(:images) ? edition.images : []
+    model_images = edition.respond_to?(:images) ? edition.images : []
+    images = prepare_images model_images
+
     allowed_elements = edition.allows_inline_attachments? ? %w[details] : []
     partially_processed_govspeak = edition_body_with_attachments_and_alt_format_information(edition)
     bare_govspeak_to_html(partially_processed_govspeak, images, allowed_elements:)
+  end
+
+  def govspeak_html_attachment_to_html(html_attachment)
+    attachable = html_attachment.attachable
+    model_images = attachable.respond_to?(:images) ? attachable.images : []
+    images = prepare_images model_images
+
+    heading_numbering = html_attachment.manually_numbered_headings? ? :manual : :auto
+    options = { heading_numbering:, contact_heading_tag: "h4" }
+
+    wrapped_in_govspeak_div(bare_govspeak_to_html(html_attachment.body, images, options))
+  end
+
+  def prepare_images(images)
+    images.map do |image|
+      {
+        id: image.image_data.carrierwave_image,
+        image_data_id: image.image_data_id,
+        edition_id: image.edition_id,
+        alt_text: image.alt_text,
+        url: image.url,
+        caption: image.caption,
+        created_at: image.created_at,
+        updated_at: image.updated_at,
+      }
+    end
   end
 
   def bare_govspeak_with_attachments_to_html(body, attachments = [], alternative_format_contact_email = nil)

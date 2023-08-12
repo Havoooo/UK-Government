@@ -3,6 +3,7 @@ module Admin
     EDITION_TYPE_LOOKUP = Whitehall.edition_classes.index_by(&:to_s)
 
     MAX_EXPORT_SIZE = 8000
+    GOVUK_DESIGN_SYSTEM_PER_PAGE = 15
 
     attr_reader :options
 
@@ -24,10 +25,11 @@ module Admin
         permitted_only(requested_editions),
         total_count: requested_editions.total_count,
       ).page(options[:page])
+      .per(options.fetch(:per_page) { default_page_size })
     end
 
     def each_edition_for_csv(locale = nil)
-      editions_with_translations(locale).find_each do |edition|
+      editions_with_translations(locale).find_each(batch_size: 100) do |edition|
         yield edition if Whitehall::Authority::Enforcer.new(@current_user, edition).can?(:see)
       end
     end

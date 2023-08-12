@@ -2,13 +2,14 @@ require "test_helper"
 
 class Admin::PersonTranslationsControllerTest < ActionController::TestCase
   setup do
-    login_as_preview_design_system_user :writer
+    login_as :writer
     @person = create(:person, biography: "She was born. She lived. She died.")
 
     Locale.stubs(:non_english).returns([Locale.new(:fr), Locale.new(:es)])
   end
 
   should_be_an_admin_controller
+  should_render_bootstrap_implementation_with_preview_next_release
 
   view_test "index shows a form to create missing translations" do
     get :index, params: { person_id: @person }
@@ -75,9 +76,11 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
     get :index, params: { person_id: person }
 
     edit_translation_path = edit_admin_person_translation_path(person, "fr")
-    view_person_path = person.public_path(locale: "fr")
-    assert_select "a[href=?]", edit_translation_path, text: "Edit Français"
-    assert_select "a[href=?]", Plek.website_root + view_person_path, text: "(view)"
+    view_person_path = person.public_url(locale: :fr)
+    confirm_destroy_url = confirm_destroy_admin_person_translation_path(person, :fr)
+    assert_select "a[href=?]", edit_translation_path, text: "Edit Français (French)"
+    assert_select "a[href=?]", view_person_path, text: "View Français (French)"
+    assert_select "a[href=?]", confirm_destroy_url, text: "Delete Français (French)"
   end
 
   view_test "index does not list the english translation" do
@@ -85,22 +88,6 @@ class Admin::PersonTranslationsControllerTest < ActionController::TestCase
 
     edit_translation_path = edit_admin_person_translation_path(@person, "en")
     assert_select "a[href=?]", edit_translation_path, text: "en", count: 0
-  end
-
-  view_test "index displays delete button for a translation" do
-    person = create(
-      :person,
-      biography: "She was born. She lived. She died.",
-      translated_into: {
-        fr: {
-          biography: "Elle est née. Elle a vécu. Elle est morte.",
-        },
-      },
-    )
-
-    get :index, params: { person_id: person }
-
-    assert_select ".gem-link--destructive", text: "Delete Français", href: confirm_destroy_admin_person_translation_path(@person, :fr)
   end
 
   test "create redirects to edit for the chosen language" do

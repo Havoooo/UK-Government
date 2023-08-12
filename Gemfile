@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "7.0.4.3"
+gem "rails", "7.0.5.1"
 
 gem "activemodel-serializers-xml"
 gem "addressable"
@@ -12,7 +12,6 @@ gem "carrierwave-i18n"
 gem "chronic"
 gem "dalli"
 gem "diffy"
-gem "faraday"
 gem "fog-aws"
 gem "friendly_id"
 gem "fuzzy_match"

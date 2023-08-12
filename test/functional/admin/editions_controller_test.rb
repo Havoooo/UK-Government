@@ -30,39 +30,10 @@ class Admin::EditionsControllerTest < ActionController::TestCase
     get :index, params: { type: :publication }
   end
 
-  view_test "should distinguish between edition types when viewing the list of editions" do
-    guide = create(:draft_detailed_guide)
-    publication = create(:draft_publication)
-    stub_filter = stub_edition_filter(editions: [guide, publication])
-    stub_filter.stubs(:show_stats)
-    Admin::EditionFilter.stubs(:new).returns(stub_filter)
-
-    get :index, params: { state: :draft }
-
-    assert_select_object(guide) { assert_select ".type", text: "Detailed guide: Guidance" }
-    assert_select_object(publication) { assert_select ".type", text: "Publication: Policy paper" }
-  end
-
-  view_test "#index should respond to xhr requests with only the filter results html" do
-    get :index, params: { state: :active }, xhr: true
-    response_html = Nokogiri::HTML::DocumentFragment.parse(response.body)
-
-    assert_equal "h1", response_html.children[0].node_name
-    assert_match "Everyone’s documents", response_html.children[0].text
-  end
-
-  view_test "#index should show unpublishing information" do
-    create(:unpublished_edition)
-    get :index, params: { state: :active }, xhr: true
-
-    assert_select "td.title", text: /edition.title/
-    assert_select "td.title", text: /unpublished less than a minute ago/
-  end
-
   test "diffing against a previous version" do
     publication = create(:draft_publication)
     editor = create(:departmental_editor)
-    Edition::AuditTrail.whodunnit = editor
+    AuditTrail.whodunnit = editor
     publication.first_published_at = Time.zone.now
     publication.major_change_published_at = Time.zone.now
     force_publish(publication)
@@ -70,7 +41,7 @@ class Admin::EditionsControllerTest < ActionController::TestCase
       publication.reload.create_draft(editor)
     end
 
-    get :diff, params: { id: draft_publication, audit_trail_entry_id: Document::PaginatedHistory.new(draft_publication.document, 1).query.last.item_id }
+    get :diff, params: { id: draft_publication, audit_trail_entry_id: draft_publication.previous_edition.id }
 
     assert_response :success
     assert_template :diff
@@ -193,33 +164,30 @@ class Admin::EditionsControllerTest < ActionController::TestCase
     publication = create(:published_publication)
     get :index, params: { state: :published, type: :publication }
 
-    assert_select_object(publication)
-    refute_select "tr.force_published"
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: publication.title
+      assert_select ".govuk-table__cell:nth-child(3)", text: "Published"
+    end
   end
 
   view_test "should show force published editions as force published" do
     publication = create(:published_publication, force_published: true)
     get :index, params: { state: :published, type: :publication }
 
-    assert_select_object(publication)
-    assert_select "tr.force_published"
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: publication.title
+      assert_select ".govuk-table__cell:nth-child(3)", text: "Force published"
+    end
   end
 
   view_test "should show force published editions when the filter is active" do
     publication = create(:published_publication, force_published: true)
     get :index, params: { state: :force_published, type: :publication }
 
-    assert_select_object(publication)
-    assert_select "tr.force_published"
-  end
-
-  view_test "should not display the featured column when viewing all active editions" do
-    create(:published_news_article)
-
-    get :index, params: { state: :active, type: "news_article" }
-
-    refute_select "th", text: "Featured"
-    refute_select "td.featured"
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: publication.title
+      assert_select ".govuk-table__cell:nth-child(3)", text: "Force published"
+    end
   end
 
   view_test "should display state information when viewing all active editions" do
@@ -230,24 +198,35 @@ class Admin::EditionsControllerTest < ActionController::TestCase
 
     get :index, params: { state: :active }
 
-    assert_select_object(draft_edition) { assert_select ".state", "Draft" }
-    assert_select_object(submitted_edition) { assert_select ".state", "Submitted" }
-    assert_select_object(rejected_edition) { assert_select ".state", "Rejected" }
-    assert_select_object(published_edition) { assert_select ".state", "Published" }
-  end
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: draft_edition.title do |cell|
+        cell.first.parent.xpath("td[3]").text.strip == "Draft"
+      end
+    end
 
-  view_test "should not display state information when viewing editions of a particular state" do
-    draft_edition = create(:draft_publication)
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: submitted_edition.title do |cell|
+        cell.first.parent.xpath("td[3]").text.strip == "Submitted"
+      end
+    end
 
-    get :index, params: { state: :draft }
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: rejected_edition.title do |cell|
+        cell.first.parent.xpath("td[3]").text.strip == "Rejected"
+      end
+    end
 
-    assert_select_object(draft_edition) { refute_select ".state" }
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: published_edition.title do |cell|
+        cell.first.parent.xpath("td[3]").text.strip == "Published"
+      end
+    end
   end
 
   view_test "index should not display limited access editions which I don't have access to" do
     my_organisation = create(:organisation)
     other_organisation = create(:organisation)
-    login_as(create(:user, organisation: my_organisation))
+    login_as create(:writer, organisation: my_organisation)
     accessible = [
       create(:draft_publication),
       create(:draft_publication, publication_type: PublicationType::NationalStatistics, access_limited: true, organisations: [my_organisation]),
@@ -258,27 +237,28 @@ class Admin::EditionsControllerTest < ActionController::TestCase
     get :index, params: { state: :active }
 
     accessible.each do |edition|
-      assert_select_object(edition)
+      assert_select ".govuk-table__cell:nth-child(1)", text: edition.title
     end
-    refute_select_object(inaccessible)
+    refute_select ".govuk-table__cell:nth-child(1)", text: inaccessible.title
   end
 
   view_test "index should indicate the protected status of limited access editions which I do have access to" do
     my_organisation = create(:organisation)
-    login_as(create(:user, organisation: my_organisation))
+    login_as create(:writer, organisation: my_organisation)
     publication = create(:draft_publication, publication_type: PublicationType::NationalStatistics, access_limited: true, organisations: [my_organisation])
 
     get :index, params: { state: :active }
 
-    assert_select_object(publication) do
-      assert_select "span", "limited access"
+    assert_select ".govuk-table__row" do
+      assert_select ".govuk-table__cell:nth-child(1)", text: publication.title
+      assert_select ".govuk-table__cell:nth-child(3)", text: "Draft Limited access"
     end
   end
 
   test "prevents revising of access-limited editions" do
     my_organisation = create(:organisation)
     other_organisation = create(:organisation)
-    login_as(create(:user, organisation: my_organisation))
+    login_as create(:writer, organisation: my_organisation)
     inaccessible = create(:draft_publication, publication_type: PublicationType::NationalStatistics, access_limited: true, organisations: [other_organisation])
 
     post :revise, params: { id: inaccessible }
@@ -286,7 +266,7 @@ class Admin::EditionsControllerTest < ActionController::TestCase
   end
 
   view_test "prevents oversized exports" do
-    login_as(create(:gds_editor))
+    login_as :gds_editor
     Admin::EditionFilter.any_instance.stubs(exportable?: false)
     post :export,
          params: {

@@ -1,6 +1,6 @@
 class Admin::TakePartPagesController < Admin::BaseController
   before_action :enforce_permissions!
-  layout :get_layout
+  layout "design_system"
 
   def enforce_permissions!
     enforce_permission!(:administer, :get_involved_section)
@@ -36,10 +36,18 @@ class Admin::TakePartPagesController < Admin::BaseController
     end
   end
 
+  def confirm_destroy
+    @take_part_page = TakePartPage.friendly.find(params[:id])
+  end
+
   def destroy
     @take_part_page = TakePartPage.friendly.find(params[:id])
     @take_part_page.destroy!
     redirect_to [:admin, TakePartPage], notice: %(Take part page "#{@take_part_page.title}" deleted!)
+  end
+
+  def update_order
+    @take_part_pages = TakePartPage.in_order
   end
 
   def reorder
@@ -49,17 +57,6 @@ class Admin::TakePartPagesController < Admin::BaseController
   end
 
 private
-
-  def get_layout
-    design_system_actions = []
-    design_system_actions += %w[] if preview_design_system?(next_release: false)
-
-    if design_system_actions.include?(action_name)
-      "design_system"
-    else
-      "admin"
-    end
-  end
 
   def take_part_page_params
     params.require(:take_part_page).permit(

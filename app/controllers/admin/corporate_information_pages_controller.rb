@@ -9,7 +9,7 @@ class Admin::CorporateInformationPagesController < Admin::EditionsController
     @paginator = @organisation.corporate_information_pages.where("state != ?", "superseded").order("corporate_information_page_type_id").page(params["page"].to_i || 1).per(100)
     @filter = FakeEditionFilter.new @paginator, "Corporate information pages", false, true
 
-    render_design_system(:index, :legacy_index, next_release: false)
+    render_design_system(:index, :legacy_index)
   end
 
   def destroy
@@ -28,10 +28,13 @@ class Admin::CorporateInformationPagesController < Admin::EditionsController
 private
 
   def get_layout
-    if action_name == "index" && preview_design_system?(next_release: false)
+    design_system_actions = %w[confirm_destroy show edit update new create]
+    design_system_actions += %w[index] if preview_design_system?(next_release: false)
+
+    if design_system_actions.include?(action_name)
       "design_system"
     else
-      super
+      "admin"
     end
   end
 

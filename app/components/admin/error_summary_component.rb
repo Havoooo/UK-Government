@@ -5,29 +5,19 @@ class Admin::ErrorSummaryComponent < ViewComponent::Base
 
   attr_reader :object
 
-  def initialize(object:, parent_class: nil, verb: nil, noun: nil)
+  def initialize(object:, parent_class: nil)
     @object = object
     @parent_class = parent_class
-    @verb = verb
-    @noun = noun
   end
 
   def render?
-    object.errors.present?
+    errors.present?
   end
 
 private
 
   def title
-    "To #{verb} the #{noun} please fix the following issues:"
-  end
-
-  def verb
-    @verb ||= "save"
-  end
-
-  def noun
-    @noun ||= humanized_class_name
+    "There is a problem"
   end
 
   def humanized_class_name
@@ -35,7 +25,7 @@ private
   end
 
   def error_items
-    object.errors.map do |error|
+    errors.map do |error|
       error_item = {
         text: error.full_message,
         data_attributes: track_analytics_data("form-error", analytics_action, error.full_message),
@@ -52,5 +42,13 @@ private
 
   def parent_class
     @parent_class ||= object.class.to_s.underscore
+  end
+
+  def errors
+    @errors ||= if [ActiveModel::Errors, Array].include?(object.class)
+                  object
+                else
+                  object.errors
+                end
   end
 end

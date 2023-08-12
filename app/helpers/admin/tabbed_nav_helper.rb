@@ -1,21 +1,24 @@
 module Admin::TabbedNavHelper
   include Admin::EditionsHelper
 
-  def secondary_navigation_tabs_items(user, model, current_path)
+  def secondary_navigation_tabs_items(model, current_path)
     if model.is_a?(Edition)
-      edition_nav_items(user, model, current_path)
+      edition_nav_items(model, current_path)
     elsif model.respond_to? :consultation
-      edition_nav_items(user, model.consultation, current_path)
+      edition_nav_items(model.consultation, current_path)
+    elsif model.respond_to? :call_for_evidence
+      edition_nav_items(model.call_for_evidence, current_path)
     else
       send("#{model.class.model_name.param_key}_nav_items", model, current_path)
     end
   end
 
-  def edition_nav_items(user, edition, current_path)
+  def edition_nav_items(edition, current_path)
     nav_items = []
     nav_items << standard_edition_nav_items(edition, current_path)
-    nav_items << images_nav_items(edition, current_path) if user.can_preview_images_update?
+    nav_items << images_nav_items(edition, current_path)
     nav_items << consultation_nav_items(edition, current_path) if edition.persisted? && edition.is_a?(Consultation)
+    nav_items << call_for_evidence_nav_items(edition, current_path) if edition.persisted? && edition.is_a?(CallForEvidence)
     nav_items << document_collection_nav_items(edition, current_path) if edition.persisted? && edition.is_a?(DocumentCollection)
     nav_items.flatten
   end
@@ -49,6 +52,16 @@ module Admin::TabbedNavHelper
     ]
   end
 
+  def call_for_evidence_nav_items(edition, current_path)
+    [
+      {
+        label: "Outcome",
+        href: admin_call_for_evidence_outcome_path(edition),
+        current: current_path == admin_call_for_evidence_outcome_path(edition),
+      },
+    ]
+  end
+
   def consultation_nav_items(edition, current_path)
     [
       {
@@ -77,7 +90,7 @@ module Admin::TabbedNavHelper
       {
         label: "Group",
         href: edit_admin_policy_group_path(group),
-        current: current_path == edit_admin_policy_group_path(group),
+        current: current_path == edit_admin_policy_group_path(group) || current_path == admin_policy_group_path(group),
       },
       {
         label: sanitize("Attachments #{tag.span(group.attachments.count, class: 'govuk-tag govuk-tag--grey') if group.attachments.count.positive?}"),

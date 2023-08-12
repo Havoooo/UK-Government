@@ -22,7 +22,7 @@ module Admin::EditionActionsHelper
 
   def custom_track_dimensions(edition, edition_taxons)
     {
-      1 => public_document_path(edition),
+      1 => edition.public_path,
       2 => edition.type.underscore,
       3 => root_taxon_paths(edition_taxons),
       4 => edition.document.content_id,
@@ -105,12 +105,13 @@ module Admin::EditionActionsHelper
   # If adding new models also update filter_options_for_edition
   def document_creation_dropdown
     tag.ul(
-      class: "masthead-menu list-unstyled js-hidden js-navbar-toggle__menu",
+      class: "masthead-menu list-unstyled js-hidden js-navbar-toggle__menu hide-before-js-module-init",
       id: "new-document-menu",
       role: "menu",
       "aria-labelledby" => "new-document-label",
     ) do
       edition_types = [
+        CallForEvidence,
         Consultation,
         Publication,
         NewsArticle,
@@ -142,16 +143,76 @@ module Admin::EditionActionsHelper
     options_for_select([["All types", ""]]) + edition_type_options_for_select(user, selected) + edition_sub_type_options_for_select(selected)
   end
 
+  def filter_edition_type_opt_groups(user, selected)
+    [
+      [
+        "",
+        [
+          {
+            text: "All types",
+            value: "",
+            selected: selected.blank?,
+          },
+        ],
+      ],
+      [
+        "Types",
+        type_options_container(user).map do |text, value|
+          {
+            text:,
+            value:,
+            selected: selected == value,
+          }
+        end,
+      ],
+      [
+        "Publication sub-types",
+        PublicationType.ordered_by_prevalence.map do |sub_type|
+          value = "publication_#{sub_type.id}"
+          {
+            text: sub_type.plural_name,
+            value:,
+            selected: selected == value,
+          }
+        end,
+      ],
+      [
+        "News article sub-types",
+        NewsArticleType.all.map do |sub_type|
+          value = "news_article_#{sub_type.id}"
+          {
+            text: sub_type.plural_name,
+            value:,
+            selected: selected == value,
+          }
+        end,
+      ],
+      [
+        "Speech sub-types",
+        SpeechType.all.map do |sub_type|
+          value = "speech_#{sub_type.id}"
+          {
+            text: sub_type.plural_name,
+            value:,
+            selected: selected == value,
+          }
+        end,
+      ],
+    ]
+  end
+
 private
 
   def edition_type_options_for_select(user, selected)
-    type_options_container = Whitehall.edition_classes.map do |edition_type|
+    options_for_select(type_options_container(user), selected)
+  end
+
+  def type_options_container(user)
+    Whitehall.edition_classes.map do |edition_type|
       unless edition_type == FatalityNotice && !user.can_handle_fatalities?
         [edition_type.model_name.human.pluralize, edition_type.model_name.singular]
       end
     end
-
-    options_for_select(type_options_container, selected)
   end
 
   def edition_sub_type_options_for_select(selected)

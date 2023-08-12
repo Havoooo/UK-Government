@@ -1,8 +1,8 @@
 class Admin::PromotionalFeaturesController < Admin::BaseController
   before_action :load_organisation
-  before_action :load_promotional_feature, only: %i[show edit update destroy]
+  before_action :load_promotional_feature, only: %i[show edit update destroy confirm_destroy]
   before_action :clean_image_or_youtube_video_url_param, only: %i[create]
-  layout :get_layout
+  layout "design_system"
 
   def index
     @promotional_features = @organisation.promotional_features
@@ -16,10 +16,12 @@ class Admin::PromotionalFeaturesController < Admin::BaseController
 
   def create
     @promotional_feature = @organisation.promotional_features.build(promotional_feature_params)
+
     if @promotional_feature.save
       Whitehall::PublishingApi.republish_async(@organisation)
       redirect_to [:admin, @organisation, @promotional_feature], notice: "Promotional feature created"
     else
+      @promotional_feature.promotional_feature_items.first.links.build if @promotional_feature.promotional_feature_items.first.links.blank?
       render :new
     end
   end
@@ -33,9 +35,11 @@ class Admin::PromotionalFeaturesController < Admin::BaseController
       Whitehall::PublishingApi.republish_async(@organisation)
       redirect_to [:admin, @organisation, @promotional_feature], notice: "Promotional feature updated"
     else
-      render :edit
+      render action: :edit
     end
   end
+
+  def confirm_destroy; end
 
   def destroy
     @promotional_feature.destroy!
@@ -58,15 +62,6 @@ class Admin::PromotionalFeaturesController < Admin::BaseController
   end
 
 private
-
-  def get_layout
-    case action_name
-    when "reorder", "update_order"
-      "design_system"
-    else
-      "admin"
-    end
-  end
 
   def load_organisation
     @organisation = Organisation.allowed_promotional.find(params[:organisation_id])

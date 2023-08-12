@@ -9,7 +9,7 @@
 <%= render 'govuk_publishing_components/components/layout_for_admin',
   product_name: "Whitehall Publisher",
   environment: environment,
-  browser_title: yield(:page_title).presence || yield(:title) do %>
+  browser_title: ("Error: " unless yield(:error_summary).blank?).to_s + sanitize((yield(:page_title).presence || yield(:title))) do %>
 
   <!-- This element exists to initialise the JS module that configures custom Analytics behaviour -->
   <div data-module="app-analytics"></div>
@@ -23,9 +23,9 @@
   </div>
 
   <div class="govuk-width-container">
-    <% if t('admin.whats_new.show_banner') %>
-      <%= render "shared/whats_new_banner" %>
-    <% end %>
+    <%= render "shared/phase_banner", {
+        show_feedback_banner: t('admin.feedback.show_banner'),
+      } %>
 
     <%= yield(:back_link) %>
     <%= yield(:breadcrumbs) %>
@@ -47,15 +47,17 @@
         </div>
       <% end %>
 
+      <% column_width = yield(:page_full_width).present? ? "full" : "two-thirds" %>
+
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-<%= column_width %>">
           <%= yield(:error_summary) %>
         </div>
       </div>
 
       <% if yield(:error_summary).blank? %>
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-column-<%= column_width %>">
             <%= yield(:banner) %>
           </div>
         </div>
@@ -63,7 +65,7 @@
 
       <% if yield(:title).present? %>
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-column-<%= column_width %>">
             <%= render "govuk_publishing_components/components/title", {
               context: yield(:context),
               title: yield(:title),
@@ -71,9 +73,12 @@
               margin_bottom: yield(:title_margin_bottom).present? ? yield(:title_margin_bottom).to_i : nil,
             } %>
           </div>
-          <div class="govuk-grid-column-one-third app-grid-column--align-right">
-            <%= yield(:title_side) %>
-          </div>
+
+          <% if yield(:page_full_width).blank? %>
+            <div class="govuk-grid-column-one-third app-grid-column--align-right">
+              <%= yield(:title_side) %>
+            </div>
+          <% end %>
         </div>
       <% end %>
       <%= yield %>

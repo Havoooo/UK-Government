@@ -27,11 +27,6 @@ class RoutingTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should redirect from old tour page to mainstream tour page in case the URL has escaped into the wild" do
-    get "/government/tour"
-    assert_redirected_to "/tour"
-  end
-
   test "admin URLs are reachable when accessed via the admin host in production" do
     admin_host = "whitehall-admin.production.alphagov.co.uk"
     Whitehall.stubs(:admin_host).returns(admin_host)
@@ -52,36 +47,6 @@ class RoutingTest < ActionDispatch::IntegrationTest
     assert_raise(ActionController::RoutingError) do
       get "/government/admin"
     end
-  end
-
-  test "redirects organisation groups index URL to organisation page" do
-    organisation = create(:organisation)
-    get "/government/organisations/#{organisation.to_param}/groups"
-    assert_redirected_to organisation.public_path
-  end
-
-  test "redirects organisation groups show URL to organisation page" do
-    organisation = create(:organisation)
-    get "/government/organisations/#{organisation.to_param}/groups/some-group"
-    assert_redirected_to organisation.public_path
-  end
-
-  test "redirects organisation chiefs-of-staff URL to organisation page" do
-    organisation = create(:organisation)
-    get "/government/organisations/#{organisation.to_param}/chiefs-of-staff"
-    assert_redirected_to organisation.public_path
-  end
-
-  test "redirects organisation consultations URL to organisation page" do
-    organisation = create(:organisation)
-    get "/government/organisations/#{organisation.to_param}/consultations"
-    assert_redirected_to organisation.public_path
-  end
-
-  test "redirects organisation series URL to publications page" do
-    organisation = create(:organisation)
-    get "/government/organisations/#{organisation.to_param}/series"
-    assert_redirected_to "/government/publications"
   end
 
   test "routing to editions#show will redirect to correct edition type" do

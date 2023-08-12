@@ -45,8 +45,6 @@ Whitehall::Application.routes.draw do
 
   # Routes rendered by Whitehall to the public under the /world scope
   scope "/world" do
-    resources :embassies, path: "/embassies", only: [:index]
-
     get "(.:locale)", as: "world_locations", to: "world_locations#index", constraints: { locale: valid_locales_regex }
 
     get "/organisations/:id(.:locale)", as: "worldwide_organisation", to: "worldwide_organisations#show", constraints: { locale: valid_locales_regex }
@@ -55,51 +53,12 @@ Whitehall::Application.routes.draw do
       get "/:organisation_id/office" => redirect("/world/organisations/%{organisation_id}", prefix: "")
       get "/:organisation_id/about(.:locale)", as: "about", constraints: { locale: valid_locales_regex }, to: rack_404
       get "/about/:id(.:locale)", as: "corporate_information_page", to: "corporate_information_pages#show", constraints: { locale: valid_locales_regex }
-      get "/office/:id(.:locale)", as: "worldwide_office", to: "worldwide_offices#show", constraints: { locale: valid_locales_regex }
     end
   end
 
   # Routes rendered by Whitehall to the public under the /government scope (specified in lib/whitehall.rb under the `router_prefix` method)
   scope Whitehall.router_prefix, shallow_path: Whitehall.router_prefix do
     root to: redirect("/", prefix: ""), via: :get, as: :main_root
-
-    # Redirects rendered by Whitehall
-    get "/collections" => redirect("/publications")
-    get "/fatalities" => redirect("/announcements"), as: "fatality_notices"
-    get "/news" => redirect("/announcements"), as: "news_articles"
-    get "/organisations/:organisation_id/chiefs-of-staff" => redirect("/organisations/%{organisation_id}")
-    get "/organisations/:organisation_id/consultations" => redirect("/organisations/%{organisation_id}")
-    get "/organisations/:organisation_id/groups" => redirect("/organisations/%{organisation_id}")
-    get "/organisations/:organisation_id/groups/:id" => redirect("/organisations/%{organisation_id}")
-    get "/organisations/:organsation_id/series(.:locale)" => redirect("/publications"), constraints: { locale: valid_locales_regex }
-    get "/organisations/:organsation_id/series/:slug(.:locale)" => redirect("/collections/%{slug}"), constraints: { locale: valid_locales_regex }
-    get "/speeches" => redirect("/announcements")
-    get "/tour" => redirect("/tour", prefix: "")
-    # End of redirects rendered by Whitehall
-
-    # Public facing routes still rendered by Whitehall
-    resources :fatality_notices, path: "fatalities", only: [:show]
-    get "/ministers(.:locale)", as: "ministerial_roles", to: "ministerial_roles#index", constraints: { locale: valid_locales_regex }
-    resources :operational_fields, path: "fields-of-operation", only: %i[index show]
-    get "/uploads/system/uploads/attachment_data/file/:id/*file.:extension/preview" => "csv_preview#show", as: :csv_preview
-
-    get "/consultations", as: "consultations", to: "consultations#index" # used only for a redirect
-    get "/statistics/announcements", as: "statistics_announcements", to: "statistics_announcements#index" # used only for a redirect
-    # End of public facing routes still rendered by Whitehall
-
-    # Routes no longer rendered by Whitehall, but retained to maintain the route helpers
-    get "/latest", as: "latest", to: rack_404
-    get "/organisations", as: "organisations", to: rack_404
-    get "/statistical-data-sets/:id", as: "statistical_data_set", to: rack_404
-    get "/statistics/announcements/:id", as: "statistics_announcement", to: rack_404
-    get "/statistics(.:locale)", as: "statistics", to: "statistics#index", constraints: { locale: valid_locales_regex }
-
-    resources :organisations, only: [] do
-      # These aren't rendered but are coupled to Worldwide organisation corporate information pages
-      get "/about(.:locale)", as: "corporate_information_pages", to: "corporate_information_pages#index", constraints: { locale: valid_locales_regex }
-      get "/about/:id(.:locale)", as: "corporate_information_page", to: "corporate_information_pages#show", constraints: { locale: valid_locales_regex }
-    end
-    # End of routes no longer rendered by Whitehall
 
     constraints(AdminRequest) do
       namespace :admin do
@@ -141,18 +100,25 @@ Whitehall::Application.routes.draw do
             post :reorder_for_home_page, on: :collection
           end
           resources :social_media_accounts
-          resources :translations, controller: "organisation_translations"
+          resources :translations, controller: "organisation_translations" do
+            get :confirm_destroy, on: :member
+          end
           resources :promotional_features do
             get :reorder, on: :collection
+            get :confirm_destroy, on: :member
             patch :update_order, on: :collection
-            resources :promotional_feature_items, as: :items, path: "items", except: [:index]
+            resources :promotional_feature_items, as: :items, path: "items", except: [:index] do
+              get :confirm_destroy, on: :member
+            end
           end
           member do
             get "/features(.:locale)", as: "features", to: "organisations#features", constraints: { locale: valid_locales_regex }
             get :people
           end
           resources :financial_reports, except: [:show]
-          resources :offsite_links
+          resources :offsite_links do
+            get :confirm_destroy, on: :member
+          end
         end
         resources :corporate_information_pages, only: [] do
           resources :attachments, except: [:show] do
@@ -160,6 +126,7 @@ Whitehall::Application.routes.draw do
           end
         end
         resources :policy_groups, path: "groups", except: [:show] do
+          get :confirm_destroy, on: :member
           resources :attachments do
             put :order, on: :collection
             get :confirm_destroy, on: :member
@@ -171,9 +138,19 @@ Whitehall::Application.routes.draw do
         resources :topical_events, path: "topical-events" do
           resource :topical_event_about_pages, path: "about"
           resources :topical_event_featurings, path: "featurings" do
+            get :reorder, on: :collection
             put :order, on: :collection
+            get :confirm_destroy, on: :member
           end
-          resources :offsite_links
+          resources :topical_event_organisations, path: "organisations" do
+            get :reorder, on: :collection
+            put :order, on: :collection
+            get :toggle_lead, on: :member
+          end
+          resources :offsite_links do
+            get :confirm_destroy, on: :member
+          end
+          get :confirm_destroy, on: :member
         end
 
         resources :worldwide_organisations do
@@ -235,7 +212,7 @@ Whitehall::Application.routes.draw do
             get :audit_trail, to: "edition_audit_trail#index"
             get :document_history, to: "edition_document_history#index"
             patch :update_bypass_id
-            get :history, to: "editions#history"
+            patch :update_image_display_option
             get :confirm_destroy
           end
           resources :link_check_reports
@@ -250,7 +227,6 @@ Whitehall::Application.routes.draw do
           resources :attachments, except: [:show] do
             put :order, on: :collection
             get :reorder, on: :collection
-            put :update_many, on: :collection, constraints: { format: "json" }
             get :confirm_destroy, on: :member
           end
           resources :bulk_uploads, except: %i[show edit update] do
@@ -269,12 +245,16 @@ Whitehall::Application.routes.draw do
         resources :statistics_announcements, except: [:destroy] do
           member do
             get :cancel
-            get :cancel_reason
             post :publish_cancellation
+            get :cancel_reason
+            patch :update_cancel_reason
           end
           resource :tags, only: %i[edit update], controller: :statistics_announcement_tags
           resources :statistics_announcement_date_changes, as: "changes", path: "changes"
           resource :statistics_announcement_unpublishings, as: "unpublish", path: "unpublish", only: %i[new create]
+          resources :statistics_announcement_publications, as: "publication", path: "publication", only: %i[index] do
+            get "connect"
+          end
         end
 
         resources :suggestions, only: [:index]
@@ -284,10 +264,23 @@ Whitehall::Application.routes.draw do
         resources :news_articles, path: "news", except: [:index]
         resources :fatality_notices, path: "fatalities", except: [:index]
         resources :consultations, except: [:index] do
-          resource :outcome, controller: "responses", type: "ConsultationOutcome", except: %i[new destroy]
-          resource :public_feedback, controller: "responses", type: "ConsultationPublicFeedback", except: %i[new destroy]
+          resource :outcome, controller: "consultation_responses", type: "ConsultationOutcome", except: %i[new destroy]
+          resource :public_feedback, controller: "consultation_responses", type: "ConsultationPublicFeedback", except: %i[new destroy]
         end
-        resources :responses, only: :none do
+
+        resources :consultation_responses, only: :none do
+          resources :attachments do
+            put :order, on: :collection
+            get :confirm_destroy, on: :member
+            get :reorder, on: :collection
+          end
+        end
+
+        resources :calls_for_evidence, path: "calls-for-evidence", except: [:index] do
+          resource :outcome, controller: "call_for_evidence_responses", type: "CallForEvidenceOutcome", except: %i[new destroy]
+        end
+
+        resources :call_for_evidence_responses, only: :none do
           resources :attachments do
             put :order, on: :collection
             get :confirm_destroy, on: :member
@@ -310,25 +303,41 @@ Whitehall::Application.routes.draw do
           get :confirm_destroy, on: :member
         end
 
-        resource :cabinet_ministers, only: %i[show update]
+        resource :cabinet_ministers, only: %i[show update] do
+          get :reorder_cabinet_minister_roles, on: :member
+          get :reorder_also_attends_cabinet_roles, on: :member
+          get :reorder_whip_roles, on: :member
+          get :reorder_ministerial_organisations, on: :member
+        end
+
         resources :roles, except: [:show] do
           get :confirm_destroy, on: :member
-          resources :role_appointments, only: %i[new create edit update destroy], shallow: true
-          resources :translations, controller: "role_translations"
+          resources :role_appointments, only: %i[new create edit update destroy], shallow: true do
+            get :confirm_destroy, on: :member
+          end
+          resources :translations, controller: "role_translations" do
+            get :confirm_destroy, on: :member
+          end
         end
 
         resources :world_location_news, only: %i[index edit update show] do
           member do
             get "/features(.:locale)", as: "features", to: "world_location_news#features", constraints: { locale: valid_locales_regex }
           end
-          resources :translations, controller: "world_location_news_translations"
-          resources :offsite_links
+          resources :translations, controller: "world_location_news_translations" do
+            get :confirm_destroy, on: :member
+          end
+          resources :offsite_links do
+            get :confirm_destroy, on: :member
+          end
         end
 
         resources :feature_lists, only: [:show] do
-          post :reorder, on: :member
+          get :reorder, on: :member
+          post :update_order, on: :member
 
           resources :features, only: %i[new create] do
+            get :confirm_unfeature, on: :member
             post :unfeature, on: :member
           end
         end
@@ -350,6 +359,8 @@ Whitehall::Application.routes.draw do
           root to: "get_involved#index", as: :get_involved, via: :get
           resources :take_part_pages, except: [:show] do
             post :reorder, on: :collection
+            get :confirm_destroy, on: :member
+            get :update_order, on: :collection
           end
         end
 

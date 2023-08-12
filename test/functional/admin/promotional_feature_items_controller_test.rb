@@ -42,6 +42,13 @@ class Admin::PromotionalFeatureItemsControllerTest < ActionController::TestCase
     assert_equal "Feature item added.", flash[:notice]
   end
 
+  test "POST :create re-renders new and builds link if none are present when the feature item does not save" do
+    post :create, params: { organisation_id: @organisation, promotional_feature_id: @promotional_feature, promotional_feature_item: { summary: "" } }
+
+    assert_template :new
+    assert_equal 1, assigns(:promotional_feature_item).links.size
+  end
+
   test "GET :edit loads the item and its links renders the template" do
     promotional_feature_item = create(:promotional_feature_item, promotional_feature: @promotional_feature)
     link = create(:promotional_feature_link, promotional_feature_item:)
@@ -111,12 +118,13 @@ class Admin::PromotionalFeatureItemsControllerTest < ActionController::TestCase
                   } }
   end
 
-  test "PUT :update re-renders edit if the feature item does not save" do
+  test "PUT :update re-renders edit and builds link if none are present when the feature item does not save" do
     promotional_feature_item = create(:promotional_feature_item, promotional_feature: @promotional_feature, summary: "Old summary")
     put :update, params: { organisation_id: @organisation, promotional_feature_id: @promotional_feature, id: promotional_feature_item, promotional_feature_item: { summary: "" } }
 
     assert_template :edit
     assert_equal "Old summary", promotional_feature_item.reload.summary
+    assert_equal 1, assigns(:promotional_feature_item).links.size
   end
 
   test "DELETE :destroy deletes the promotional item and republishes the organisation to the PublishingApi" do
@@ -130,5 +138,13 @@ class Admin::PromotionalFeatureItemsControllerTest < ActionController::TestCase
     assert_redirected_to admin_organisation_promotional_feature_url(@organisation, @promotional_feature)
     assert_not PromotionalFeatureItem.exists?(promotional_feature_item.id)
     assert_equal "Feature item deleted.", flash[:notice]
+  end
+
+  test "GET :confirm_destroy calls correctly" do
+    promotional_feature_item = create(:promotional_feature_item, promotional_feature: @promotional_feature)
+    get :confirm_destroy, params: { organisation_id: @organisation, promotional_feature_id: @promotional_feature, id: promotional_feature_item }
+
+    assert_response :success
+    assert_equal promotional_feature_item, assigns(:promotional_feature_item)
   end
 end

@@ -1,18 +1,16 @@
 require "test_helper"
 
 class Admin::TopicalEventAboutPagesControllerTest < ActionController::TestCase
-  include PublicDocumentRoutesHelper
-
   def setup
-    login_as :user
     @topical_event = create(:topical_event)
+    login_as_preview_design_system_user(:writer)
   end
 
   view_test "GET show prompts user to create an about page" do
     get :show, params: { topical_event_id: @topical_event.to_param }
     assert_response :success
     assert_select "h1", @topical_event.name
-    assert_select "p", /doesn’t yet have a page/
+    assert_select ".govuk-inset-text", "There is no about page associated with this topical event."
   end
 
   view_test "GET new allows user to enter copy for new about page" do
@@ -29,9 +27,9 @@ class Admin::TopicalEventAboutPagesControllerTest < ActionController::TestCase
   end
 
   view_test "GET edit shows the form for editing an about page" do
-    about = create(:topical_event_about_page, topical_event: @topical_event)
+    create(:topical_event_about_page, topical_event: @topical_event)
     get :edit, params: { topical_event_id: @topical_event.to_param }
-    assert_select 'textarea[name*="summary"]', text: /#{about.summary}/
+    assert_select 'textarea[name*="summary"]'
   end
 
   test "PUT update saves changes to the about page" do

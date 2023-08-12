@@ -30,7 +30,7 @@ class PublishingApi::WorldLocationNewsPresenterTest < ActiveSupport::TestCase
     expected = {
       title: "Aardistan and the Uk",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       redirects: [],
       description: "Updates, news and events from the UK government in Aardistan",
       details: {
@@ -158,7 +158,7 @@ class PublishingApi::WorldLocationNewsPresenterTest < ActiveSupport::TestCase
   test "it includes contact details for international delegation" do
     world_location_news = build(:world_location_news)
     world_location = create(:international_delegation, :with_worldwide_organisations, world_location_news:)
-    create(:worldwide_office, worldwide_organisation: world_location.worldwide_organisations.first)
+    create(:worldwide_office, worldwide_organisation: world_location.worldwide_organisations.first.reload)
 
     presented_links = present(world_location_news).links
 

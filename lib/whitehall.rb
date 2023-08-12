@@ -3,7 +3,6 @@ module Whitehall
   autoload :RandomKey, "whitehall/random_key"
   autoload :FormBuilder, "whitehall/form_builder"
   autoload :Uploader, "whitehall/uploader"
-  autoload :UrlMaker, "whitehall/url_maker"
   autoload :ExtraQuoteRemover, "whitehall/extra_quote_remover"
   autoload :GovspeakRenderer, "whitehall/govspeak_renderer"
 
@@ -157,6 +156,7 @@ module Whitehall
   def self.edition_classes
     [
       CaseStudy,
+      CallForEvidence,
       Consultation,
       CorporateInformationPage,
       DetailedGuide,
@@ -170,7 +170,7 @@ module Whitehall
   end
 
   def self.edition_route_path_segments
-    %w[news speeches policies publications consultations priority detailed-guides case-studies statistical-data-sets fatalities collections supporting-pages]
+    %w[news speeches policies publications consultations priority detailed-guides case-studies statistical-data-sets fatalities collections supporting-pages calls-for-evidence]
   end
 
   def self.analytics_format(format)
@@ -183,10 +183,6 @@ module Whitehall
 
   def self.rummager_work_queue_name
     "rummager-delayed-indexing"
-  end
-
-  def self.url_maker
-    @url_maker ||= Whitehall::UrlMaker.new(host: Whitehall.public_host, protocol: Whitehall.public_protocol)
   end
 
   def self.atom_feed_maker

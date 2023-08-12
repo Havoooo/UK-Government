@@ -14,7 +14,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       Timecop.freeze do
         params = {
           format: "special_route",
-          publishing_app: "whitehall",
+          publishing_app: Whitehall::PublishingApp::WHITEHALL,
           rendering_app: Whitehall::RenderingApp::WHITEHALL_FRONTEND,
           update_type: "major",
           type: "prefix",
@@ -26,7 +26,7 @@ class PublishingApiRake < ActiveSupport::TestCase
             .any_instance.expects(:publish).with(params.merge(route))
         end
 
-        task.invoke
+        capture_io { task.invoke }
       end
     end
   end
@@ -50,11 +50,11 @@ class PublishingApiRake < ActiveSupport::TestCase
                 destination: route[:destination],
               },
             ],
-            publishing_app: "whitehall",
+            publishing_app: Whitehall::PublishingApp::WHITEHALL,
             public_updated_at: Time.zone.now.iso8601,
             update_type: "major",
           }
-          task.invoke
+          capture_io { task.invoke }
           assert_publishing_api_put_content(route[:content_id], params)
           assert_publishing_api_publish(route[:content_id])
         end
@@ -69,7 +69,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "republishes document by slug" do
         document = create(:document)
         PublishingApiDocumentRepublishingWorker.any_instance.expects(:perform).with(document.id)
-        task.invoke(document.slug)
+        capture_io { task.invoke(document.slug) }
       end
     end
 
@@ -79,7 +79,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "Republishes organisation by slug" do
         record = create(:organisation)
         Organisation.any_instance.expects(:publish_to_publishing_api)
-        task.invoke(record.slug)
+        capture_io { task.invoke(record.slug) }
       end
     end
 
@@ -89,7 +89,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "Republishes person by slug" do
         record = create(:person)
         Person.any_instance.expects(:publish_to_publishing_api)
-        task.invoke(record.slug)
+        capture_io { task.invoke(record.slug) }
       end
     end
 
@@ -99,7 +99,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "Republishes role by slug" do
         record = create(:role)
         Role.any_instance.expects(:publish_to_publishing_api)
-        task.invoke(record.slug)
+        capture_io { task.invoke(record.slug) }
       end
     end
   end
@@ -115,7 +115,7 @@ class PublishingApiRake < ActiveSupport::TestCase
         Whitehall::PublishingApi.expects(:patch_links).with(
           organisation, bulk_publishing: true
         ).once
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -125,7 +125,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "patches links for published editions" do
         edition = create(:edition, :published)
         PublishingApiLinksWorker.expects(:perform_async).with(edition.id)
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -135,7 +135,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "sends withdrawn item links to Publishing API" do
         edition = create(:edition, :withdrawn)
         PublishingApiLinksWorker.expects(:perform_async).with(edition.id)
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -145,7 +145,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "sends draft item links to Publishing API" do
         edition = create(:edition)
         PublishingApiLinksWorker.expects(:perform_async).with(edition.id)
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -155,7 +155,7 @@ class PublishingApiRake < ActiveSupport::TestCase
       test "sends item links to Publishing API from document type" do
         edition = create(:published_publication)
         PublishingApiLinksWorker.expects(:perform_async).with(edition.id)
-        task.invoke("Publication")
+        capture_io { task.invoke("Publication") }
       end
     end
   end
@@ -176,7 +176,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true,
         )
 
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -216,7 +216,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true, # Publishing API will queue as low priority
         )
 
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -231,7 +231,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           edition.document_id,
           true,
         )
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -246,7 +246,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           edition.document_id,
           true,
         )
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -261,7 +261,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           edition.document_id,
           true,
         )
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -276,7 +276,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           edition.document_id,
           true,
         )
-        task.invoke
+        capture_io { task.invoke }
       end
     end
 
@@ -304,7 +304,7 @@ class PublishingApiRake < ActiveSupport::TestCase
               document.document_id,
               true,
             )
-            task.invoke(document_type)
+            capture_io { task.invoke(document_type) }
           end
         end
       end
@@ -329,7 +329,7 @@ class PublishingApiRake < ActiveSupport::TestCase
             document = create(document_type.underscore.to_sym) # rubocop:disable Rails/SaveBang
 
             Whitehall::PublishingApi.expects(:bulk_republish_async).with(document)
-            task.invoke(document_type)
+            capture_io { task.invoke(document_type) }
           end
         end
       end
@@ -337,8 +337,37 @@ class PublishingApiRake < ActiveSupport::TestCase
       describe "for non-existent document types" do
         test "it returns an error" do
           document_type = "SomeDocumentTypeThatDoesntExist"
-          assert_raises(SystemExit, /Unknown document type #{document_type}/) { task.invoke(document_type) }
+          assert_raises(SystemExit, /Unknown document type #{document_type}/) do
+            capture_io { task.invoke(document_type) }
+          end
         end
+      end
+    end
+
+    describe "#worldwide_corporate_information_pages" do
+      let(:task) { Rake::Task["publishing_api:bulk_republish:worldwide_corporate_information_pages"] }
+
+      test "republishes published worldwide corporate information pages (including about pages)" do
+        create(
+          :published_worldwide_organisation_corporate_information_page,
+          corporate_information_page_type_id: CorporateInformationPageType::AboutUs.id,
+        )
+
+        create(
+          :published_worldwide_organisation_corporate_information_page,
+          corporate_information_page_type_id: CorporateInformationPageType::ComplaintsProcedure.id,
+        )
+
+        create(:corporate_information_page, :draft, worldwide_organisation: create(:worldwide_organisation), organisation: nil)
+
+        create(
+          :published_corporate_information_page,
+          corporate_information_page_type_id: CorporateInformationPageType::ComplaintsProcedure.id,
+        )
+
+        PublishingApiDocumentRepublishingWorker.expects(:perform_async_in_queue).twice
+
+        capture_io { task.invoke }
       end
     end
 
@@ -355,7 +384,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true,
         )
 
-        task.invoke(org.slug)
+        capture_io { task.invoke(org.slug) }
       end
 
       test "Ignores documents owned by other organisations" do
@@ -368,7 +397,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true,
         ).never
 
-        task.invoke(org.slug)
+        capture_io { task.invoke(org.slug) }
       end
     end
 
@@ -384,7 +413,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true,
         )
 
-        task.invoke([edition.content_id])
+        capture_io { task.invoke([edition.content_id]) }
       end
     end
 
@@ -403,7 +432,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true,
         )
 
-        task.invoke(filename)
+        capture_io { task.invoke(filename) }
 
         File.delete("lib/tasks/#{filename}.csv")
       end
@@ -428,7 +457,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           true,
         )
 
-        task.invoke
+        capture_io { task.invoke }
       end
     end
   end
@@ -451,7 +480,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           },
         )
 
-        task.invoke(content_id, path, locale)
+        capture_io { task.invoke(content_id, path, locale) }
 
         assert_requested request
       end
@@ -472,7 +501,7 @@ class PublishingApiRake < ActiveSupport::TestCase
           dry_run: false,
         )
 
-        task.invoke(content_id, path)
+        capture_io { task.invoke(content_id, path) }
       end
     end
   end

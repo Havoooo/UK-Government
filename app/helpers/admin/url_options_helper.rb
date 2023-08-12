@@ -22,6 +22,22 @@ module Admin::UrlOptionsHelper
 
   def view_on_website_link_for(model, options = {})
     url_options = options.delete(:url) || {}
-    link_to "View on website", show_url_with_public_and_cachebusted_options(model, url_options), options
+    link_text = options.delete(:link_text) || "View on website"
+
+    link_to link_text, show_url_with_public_and_cachebusted_options(model,
+                                                                    url_options), options
+  end
+
+  def auth_bypass_options(edition)
+    {
+      token: edition.auth_bypass_token,
+      utm_source: :share,
+      utm_medium: :preview,
+      utm_campaign: :govuk_publishing,
+    }
+  end
+
+  def show_url_with_auth_bypass_options(edition, options = {})
+    edition.public_url(auth_bypass_options(edition).merge(options))
   end
 end

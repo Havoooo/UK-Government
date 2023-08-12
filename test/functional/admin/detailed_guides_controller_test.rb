@@ -5,7 +5,6 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
 
   setup do
     login_as create(:writer, organisation: create(:organisation))
-    @current_user.permissions << "Preview design system"
     create(:government)
     stub_request(
       :get,
@@ -20,7 +19,6 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
   should_allow_editing_of :detailed_guide
 
   should_allow_organisations_for :detailed_guide
-  should_allow_attached_images_for :detailed_guide
   should_prevent_modification_of_unmodifiable :detailed_guide
   should_allow_association_with_related_mainstream_content :detailed_guide
   should_allow_alternative_format_provider_for :detailed_guide
@@ -72,7 +70,7 @@ class Admin::DetailedGuidesControllerTest < ActionController::TestCase
 
     get :show, params: { id: detailed_guide.id }
 
-    assert_select ".app-view-edition-summary__section-user-needs" do |_section|
+    assert_select ".app-view-summary__section-user-needs" do |_section|
       assert_select ".govuk-table__row" do
         assert_select ".govuk-table__cell", text: "As a x,\n I need to y,\n So that z"
         assert_select ".govuk-link[href*='#{content_id_a}']"

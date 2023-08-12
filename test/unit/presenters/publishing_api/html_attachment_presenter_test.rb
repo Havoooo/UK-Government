@@ -12,11 +12,13 @@ class PublishingApi::HtmlAttachmentPresenterTest < ActiveSupport::TestCase
       :with_html_attachment,
       :published,
       political: true,
+      images: [build(:image)],
     )
 
     edition.stubs(:government).returns(government)
 
-    html_attachment = HtmlAttachment.last
+    html_attachment = edition.html_attachments.first
+    html_attachment.govspeak_content.update!(body: "[Image: minister-of-funk.960x640.jpg]")
 
     expected_hash = {
       base_path: "/government/publications/#{edition.document.slug}/#{html_attachment.slug}",
@@ -26,7 +28,7 @@ class PublishingApi::HtmlAttachmentPresenterTest < ActiveSupport::TestCase
       document_type: "html_publication",
       locale: "en",
       public_updated_at: html_attachment.updated_at,
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "government-frontend",
       routes: [
         { path: html_attachment.url, type: "exact" },
@@ -35,7 +37,7 @@ class PublishingApi::HtmlAttachmentPresenterTest < ActiveSupport::TestCase
       update_type: "major",
       details: {
         body: Whitehall::GovspeakRenderer.new
-          .govspeak_to_html(html_attachment.govspeak_content.body),
+          .govspeak_html_attachment_to_html(html_attachment),
         public_timestamp: edition.public_timestamp,
         first_published_version: html_attachment.attachable.first_published_version?,
         political: true,

@@ -15,6 +15,8 @@ Given(/^I am (?:a|an) (writer|editor|admin|GDS editor|GDS admin|importer|managin
           when "managing editor"
             create(:managing_editor)
           end
+  @user.permissions << User::Permissions::PREVIEW_CALL_FOR_EVIDENCE
+  @user.save!
   login_as @user
 end
 
@@ -36,14 +38,6 @@ end
 Given(/^I have the "(.*?)" permission$/) do |perm|
   @user.permissions << perm
   @user.save!
-end
-
-Given(/^I am a visitor$/) do
-  User.stubs(:first).returns(nil)
-end
-
-When(/^I log out$/) do
-  log_out
 end
 
 Around("@use_real_sso") do |_scenario, block|

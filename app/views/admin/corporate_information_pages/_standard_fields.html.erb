@@ -3,13 +3,14 @@
   <%= form.hidden_field :lock_version %>
 
   <% unless form.object.persisted? %>
-    <%= render "govuk_publishing_components/components/select", {
+    <%= render "components/select-with-search", {
       id: "edition_corporate_information_page_type_id",
       name: "edition[corporate_information_page_type_id]",
       label: "Type",
-      heading_size: "s",
+      heading_size: "l",
       error_message: errors_for_input(edition.errors, :corporate_information_page_type_id),
-      options: ([nil] + corporate_information_page_types(@organisation)).map do |type, value|
+      include_blank: true,
+      options: corporate_information_page_types(@organisation).map do |type, value|
         {
           text: type,
           value: value,
@@ -18,23 +19,25 @@
     } %>
   <% end %>
 
-  <%= render "govuk_publishing_components/components/textarea", {
-    label: {
-      text: "Summary",
-       bold: true
+  <%= render "govuk_publishing_components/components/character_count", {
+    textarea: {
+      label: {
+        text: "Summary",
+        heading_size: "l",
+      },
+      name: "edition[summary]",
+      value: edition.summary,
+      rows: 4,
+      error_items: errors_for(form.object.errors, :summary),
     },
-    name: "edition[summary]",
     id: "edition_summary",
-    value: edition.summary,
-    rows: 4,
-    hint: "Summary text should be 160 characters or fewer.",
-    error_items: errors_for(form.object.errors, :summary),
+    maxlength: 160
   } %>
 
   <%= render "components/govspeak-editor", {
     label: {
       text: "Body (required)",
-        bold: true
+      heading_size: "l",
     },
     name: "edition[body]",
     id: "edition_body",
@@ -52,23 +55,19 @@
 </div>
 
 <% if form.object.allows_image_attachments? %>
-  <% if current_user.can_preview_images_update? %>
-    <%= render "govuk_publishing_components/components/heading", {
-          text: "Images",
-          heading_level: 3,
-          font_size: "l",
-          margin_bottom: 3
-      } %>
-      <p class="govuk-body">
-        <% if edition.new_record? %>
-          To add images you must save the document first. After saving, use the 
-          new tabs at the top of the page to upload, edit and delete images and 
-          attachments.
-        <% else %>
-          Use the tabs at the top of the page to upload, edit and delete images.
-        <% end %>
-      </p>
-  <% else %>
-    <%= render "image_fields", form: form, edition: form.object %>
-  <% end %>
+  <%= render "govuk_publishing_components/components/heading", {
+        text: "Images",
+        heading_level: 3,
+        font_size: "l",
+        margin_bottom: 3
+    } %>
+  <p class="govuk-body">
+    <% if edition.new_record? %>
+      To add images you must save the document first. After saving, use the
+      tabs at the top of the page to upload, edit and delete images and
+      attachments.
+    <% else %>
+      Use the tabs at the top of the page to upload, edit and delete images.
+    <% end %>
+  </p>
 <% end %>

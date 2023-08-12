@@ -1,11 +1,15 @@
 class Admin::TopicalEventFeaturingsController < Admin::BaseController
   before_action :load_topical_event
+  before_action :load_topical_event_featuring, only: %i[confirm_destroy destroy]
+  layout :get_layout
 
   def index
     filter_params = params.slice(:page, :type, :author, :organisation, :title)
                           .permit!
                           .to_h
                           .merge(state: "published", topical_event: @topical_event.to_param)
+
+    filter_params = filter_params.merge(per_page: Admin::EditionFilter::GOVUK_DESIGN_SYSTEM_PER_PAGE) if preview_design_system?(next_release: false)
 
     @filter = Admin::EditionFilter.new(Edition, current_user, filter_params)
     @tagged_editions = editions_to_show
@@ -14,9 +18,9 @@ class Admin::TopicalEventFeaturingsController < Admin::BaseController
     @featurable_offsite_links = @topical_event.offsite_links
 
     if request.xhr?
-      render partial: "admin/topical_event_featurings/featured_documents"
+      render partial: "admin/topical_event_featurings/legacy_featured_documents"
     else
-      render :index
+      render_design_system(:index, :legacy_index)
     end
   end
 
@@ -25,6 +29,8 @@ class Admin::TopicalEventFeaturingsController < Admin::BaseController
     featured_offsite_link = OffsiteLink.find(params[:offsite_link_id]) if params[:offsite_link_id].present?
     @topical_event_featuring = @topical_event.topical_event_featurings.build(edition: featured_edition, offsite_link: featured_offsite_link)
     @topical_event_featuring.build_image
+
+    render_design_system(:new, :legacy_new)
   end
 
   def create
@@ -37,9 +43,11 @@ class Admin::TopicalEventFeaturingsController < Admin::BaseController
                        end
       redirect_to polymorphic_path([:admin, @topical_event, :topical_event_featurings])
     else
-      render :new
+      render_design_system(:new, :legacy_new)
     end
   end
+
+  def reorder; end
 
   def order
     params[:ordering].each do |topical_event_featuring_id, ordering|
@@ -51,9 +59,9 @@ class Admin::TopicalEventFeaturingsController < Admin::BaseController
     redirect_to polymorphic_path([:admin, @topical_event, :topical_event_featurings]), notice: "Featured items re-ordered"
   end
 
-  def destroy
-    @topical_event_featuring = @topical_event.topical_event_featurings.find(params[:id])
+  def confirm_destroy; end
 
+  def destroy
     if featuring_a_document?
       edition = @topical_event_featuring.edition
       @topical_event_featuring.destroy!
@@ -73,8 +81,20 @@ class Admin::TopicalEventFeaturingsController < Admin::BaseController
 
 private
 
+  def get_layout
+    if preview_design_system?(next_release: true)
+      "design_system"
+    else
+      "admin"
+    end
+  end
+
   def load_topical_event
     @topical_event = TopicalEvent.find(params[:topical_event_id] || params[:topic_id])
+  end
+
+  def load_topical_event_featuring
+    @topical_event_featuring = @topical_event.topical_event_featurings.find(params[:id])
   end
 
   def editions_to_show
@@ -85,6 +105,7 @@ private
                               .with_translations
                               .order("editions.created_at DESC")
                               .page(params[:page])
+                              .per((Admin::EditionFilter::GOVUK_DESIGN_SYSTEM_PER_PAGE if preview_design_system?(next_release: false)))
     end
   end
 

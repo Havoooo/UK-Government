@@ -4,10 +4,6 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
   include Rails.application.routes.url_helpers
   include Admin::EditionRoutesHelper
 
-  setup do
-    @current_user = build(:gds_editor)
-  end
-
   test "#secondary_navigation_tabs_items for persisted consultations with no attachments" do
     consultation = build_stubbed(:consultation)
 
@@ -23,6 +19,11 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
         current: false,
       },
       {
+        label: "Images ",
+        href: admin_edition_images_path(consultation),
+        current: false,
+      },
+      {
         label: "Public feedback",
         href: admin_consultation_public_feedback_path(consultation),
         current: true,
@@ -34,7 +35,7 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       },
     ]
 
-    assert_equal expected_output, secondary_navigation_tabs_items(@current_user, consultation, admin_consultation_public_feedback_path(consultation))
+    assert_equal expected_output, secondary_navigation_tabs_items(consultation, admin_consultation_public_feedback_path(consultation))
   end
 
   test "#secondary_navigation_tabs_items for persisted consultations with attachments" do
@@ -53,6 +54,11 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
         current: false,
       },
       {
+        label: "Images ",
+        href: admin_edition_images_path(consultation),
+        current: false,
+      },
+      {
         label: "Public feedback",
         href: admin_consultation_public_feedback_path(consultation),
         current: false,
@@ -64,7 +70,42 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       },
     ]
 
-    assert_equal expected_output, secondary_navigation_tabs_items(@current_user, consultation, admin_consultation_outcome_path(consultation))
+    assert_equal expected_output, secondary_navigation_tabs_items(consultation, admin_consultation_outcome_path(consultation))
+  end
+
+  test "#secondary_navigation_tabs_items for persisted consultations with images" do
+    consultation = build_stubbed(:consultation)
+    consultation.stubs(:images).returns([build_stubbed(:image)])
+
+    expected_output = [
+      {
+        label: "Document",
+        href: edit_admin_edition_path(consultation),
+        current: false,
+      },
+      {
+        label: "Attachments ",
+        href: admin_edition_attachments_path(consultation),
+        current: false,
+      },
+      {
+        label: "Images <span class=\"govuk-tag govuk-tag--grey\">1</span>",
+        href: admin_edition_images_path(consultation),
+        current: false,
+      },
+      {
+        label: "Public feedback",
+        href: admin_consultation_public_feedback_path(consultation),
+        current: false,
+      },
+      {
+        label: "Final outcome",
+        href: admin_consultation_outcome_path(consultation),
+        current: true,
+      },
+    ]
+
+    assert_equal expected_output, secondary_navigation_tabs_items(consultation, admin_consultation_outcome_path(consultation))
   end
 
   test "#secondary_navigation_tabs_items for persisted document collections" do
@@ -83,7 +124,7 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       },
     ]
 
-    assert_equal expected_output, secondary_navigation_tabs_items(@current_user, document_collection, admin_document_collection_groups_path(document_collection))
+    assert_equal expected_output, secondary_navigation_tabs_items(document_collection, admin_document_collection_groups_path(document_collection))
   end
 
   test "#secondary_navigation_tabs_items for persisted editions which do not allow attachments" do
@@ -96,14 +137,40 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
           href: edit_admin_edition_path(edition),
           current: true,
         },
+        {
+          label: "Images ",
+          href: admin_edition_images_path(edition),
+          current: false,
+        },
       ]
 
-      assert_equal expected_output, secondary_navigation_tabs_items(@current_user, edition, edit_admin_edition_path(edition))
+      assert_equal expected_output, secondary_navigation_tabs_items(edition, edit_admin_edition_path(edition))
     end
   end
 
-  test "#secondary_navigation_tabs_items for other persisted edition types with no attachments" do
-    %i[corporate_information_page detailed_guide news_article publication].each do |type|
+  test "#secondary_navigation_tabs_items for persisted editions which do not allow images" do
+    %i[corporate_information_page].each do |type|
+      edition = build_stubbed(type)
+
+      expected_output = [
+        {
+          label: "Document",
+          href: edit_admin_edition_path(edition),
+          current: true,
+        },
+        {
+          label: "Attachments ",
+          href: admin_edition_attachments_path(edition),
+          current: false,
+        },
+      ]
+
+      assert_equal expected_output, secondary_navigation_tabs_items(edition, edit_admin_edition_path(edition))
+    end
+  end
+
+  test "#secondary_navigation_tabs_items for other persisted edition types with no attachments or images" do
+    %i[detailed_guide news_article publication].each do |type|
       if type == :corporate_information_page
         organisation = build_stubbed(:organisation)
         edition = build_stubbed(type, organisation:)
@@ -122,14 +189,19 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
           href: admin_edition_attachments_path(edition),
           current: false,
         },
+        {
+          label: "Images ",
+          href: admin_edition_images_path(edition),
+          current: false,
+        },
       ]
 
-      assert_equal expected_output, secondary_navigation_tabs_items(@current_user, edition, tab_url_for_edition(edition))
+      assert_equal expected_output, secondary_navigation_tabs_items(edition, tab_url_for_edition(edition))
     end
   end
 
-  test "#secondary_navigation_tabs_items for other persisted edition types with attachments" do
-    %i[corporate_information_page detailed_guide news_article publication].each do |type|
+  test "#secondary_navigation_tabs_items for other persisted edition types with attachments and images" do
+    %i[detailed_guide news_article publication].each do |type|
       if type == :corporate_information_page
         organisation = build_stubbed(:organisation)
         edition = build_stubbed(type, organisation:)
@@ -138,6 +210,7 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       end
 
       edition.stubs(:attachments).returns([build_stubbed(:file_attachment), build_stubbed(:file_attachment)])
+      edition.stubs(:images).returns([build_stubbed(:image)])
 
       expected_output = [
         {
@@ -150,9 +223,14 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
           href: admin_edition_attachments_path(edition),
           current: false,
         },
+        {
+          label: "Images <span class=\"govuk-tag govuk-tag--grey\">1</span>",
+          href: admin_edition_images_path(edition),
+          current: false,
+        },
       ]
 
-      assert_equal expected_output, secondary_navigation_tabs_items(@current_user, edition, tab_url_for_edition(edition))
+      assert_equal expected_output, secondary_navigation_tabs_items(edition, tab_url_for_edition(edition))
     end
   end
 
@@ -173,7 +251,7 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
         },
       ]
 
-      assert_equal expected_output, secondary_navigation_tabs_items(@current_user, edition, tab_url_for_edition(edition))
+      assert_equal expected_output, secondary_navigation_tabs_items(edition, tab_url_for_edition(edition))
     end
   end
 
@@ -193,7 +271,7 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       },
     ]
 
-    assert_equal expected_output, secondary_navigation_tabs_items(@current_user, policy_group, edit_admin_policy_group_path(policy_group))
+    assert_equal expected_output, secondary_navigation_tabs_items(policy_group, edit_admin_policy_group_path(policy_group))
   end
 
   test "#secondary_navigation_tabs_items for policy groups with attachments" do
@@ -213,7 +291,7 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       },
     ]
 
-    assert_equal expected_output, secondary_navigation_tabs_items(@current_user, policy_group, admin_policy_group_attachments_path(policy_group))
+    assert_equal expected_output, secondary_navigation_tabs_items(policy_group, admin_policy_group_attachments_path(policy_group))
   end
 
   test "#secondary_navigation_tabs_items for people" do
@@ -237,6 +315,6 @@ class Admin::TabbedNavHelperTest < ActionView::TestCase
       },
     ]
 
-    assert_equal expected_output, secondary_navigation_tabs_items(@current_user, person, admin_person_historical_accounts_path(person))
+    assert_equal expected_output, secondary_navigation_tabs_items(person, admin_person_historical_accounts_path(person))
   end
 end

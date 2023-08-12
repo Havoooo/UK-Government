@@ -2,10 +2,11 @@ require "test_helper"
 
 class Admin::PeopleControllerTest < ActionController::TestCase
   setup do
-    login_as_preview_design_system_user :writer
+    login_as :writer
   end
 
   should_be_an_admin_controller
+  should_render_bootstrap_implementation_with_preview_next_release
 
   view_test "new shows form for creating a person" do
     get :new
@@ -61,6 +62,44 @@ class Admin::PeopleControllerTest < ActionController::TestCase
     assert_equal person, assigns(:person)
     assert_response :success
     assert_template :show
+  end
+
+  view_test "GET on :show displays the users infomration in a summary list component and renders delete and edit link" do
+    person = create(
+      :person,
+      forename: "Rishi",
+      surname: "Sunak",
+      privy_counsellor: true,
+      title: "Mr",
+      letters: "OBE",
+      biography: "He is the PM.",
+    )
+
+    get :show, params: { id: person }
+
+    assert_select ".govuk-summary-list__row:nth-child(1) .govuk-summary-list__key", text: "Rt Hon"
+    assert_select ".govuk-summary-list__row:nth-child(1) .govuk-summary-list__value", text: "Yes"
+    assert_select ".govuk-summary-list__row:nth-child(2) .govuk-summary-list__key", text: "Title"
+    assert_select ".govuk-summary-list__row:nth-child(2) .govuk-summary-list__value", text: "Mr"
+    assert_select ".govuk-summary-list__row:nth-child(3) .govuk-summary-list__key", text: "Forename"
+    assert_select ".govuk-summary-list__row:nth-child(3) .govuk-summary-list__value", text: "Rishi"
+    assert_select ".govuk-summary-list__row:nth-child(4) .govuk-summary-list__key", text: "Surname"
+    assert_select ".govuk-summary-list__row:nth-child(4) .govuk-summary-list__value", text: "Sunak"
+    assert_select ".govuk-summary-list__row:nth-child(5) .govuk-summary-list__key", text: "Letters"
+    assert_select ".govuk-summary-list__row:nth-child(5) .govuk-summary-list__value", text: "OBE"
+    assert_select ".govuk-summary-list__row:nth-child(6) .govuk-summary-list__key", text: "Biography"
+    assert_select ".govuk-summary-list__row:nth-child(6) .govuk-summary-list__value", text: "He is the PM."
+    assert_select ".govuk-summary-list__actions-list a[href='#{edit_admin_person_path(person)}']", text: /Edit details/
+    assert_select ".govuk-summary-list__actions-list a[href='#{confirm_destroy_admin_person_path(person)}']", text: "Delete Details"
+  end
+
+  view_test "GET on :show renders an inset text component when user cannot be deleted" do
+    person = create(:pm)
+
+    get :show, params: { id: person }
+
+    assert_select ".gem-c-inset-text", text: "Note: This person cannot be deleted as they are currently assigned to a role"
+    assert_select ".govuk-summary-list__actions-list a[href='#{confirm_destroy_admin_person_path(person)}']", text: "Delete Details", count: 0
   end
 
   view_test "editing shows form for editing a person" do
@@ -155,7 +194,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
   test "GET on :edit denied if not a vip-editor" do
     pm = create(:pm)
 
-    login_as_preview_design_system_user :writer
+    login_as :writer
     get :edit, params: { id: pm.slug }
     assert_response :forbidden
   end
@@ -163,7 +202,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
   test "PUT on :update denied if not a vip-editor" do
     pm = create(:pm)
 
-    login_as_preview_design_system_user :writer
+    login_as :writer
     put :update, params: { id: pm.slug }
     assert_response :forbidden
   end
@@ -171,7 +210,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
   test "DELETE on :destroy denied if not a vip-editor" do
     pm = create(:pm)
 
-    login_as_preview_design_system_user :writer
+    login_as :writer
     delete :destroy, params: { id: pm.slug }
     assert_response :forbidden
   end
@@ -180,7 +219,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
     test "GET on :edit allowed if a #{permission}" do
       pm = create(:pm)
 
-      login_as_preview_design_system_user :vip_editor
+      login_as :vip_editor
       get :edit, params: { id: pm.slug }
       assert_response :success
     end
@@ -188,7 +227,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
     test "PUT on :update allowed if a #{permission}" do
       pm = create(:pm)
 
-      login_as_preview_design_system_user :vip_editor
+      login_as :vip_editor
       put :update, params: { id: pm.slug, person: { title: "", forename: "Aronnax", surname: "", letters: "" } }
 
       assert_redirected_to admin_person_url(pm)
@@ -203,7 +242,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
     role_appointment4 = create(:role_appointment, person:)
     role_appointment5 = create(:role_appointment, person:)
 
-    login_as_preview_design_system_user :gds_admin
+    login_as :gds_admin
     get :reorder_role_appointments, params: { id: person.id }
 
     assert_equal [role_appointment1, role_appointment2, role_appointment4, role_appointment5], assigns(:role_appointments)
@@ -225,7 +264,7 @@ class Admin::PeopleControllerTest < ActionController::TestCase
     role_appointment4 = create(:role_appointment, person:)
     role_appointment5 = create(:role_appointment, person:)
 
-    login_as_preview_design_system_user :gds_admin
+    login_as :gds_admin
 
     Whitehall::PublishingApi.expects(:republish_async).with(role_appointment1.organisations.first)
     Whitehall::PublishingApi.expects(:republish_async).with(role_appointment2.organisations.first)

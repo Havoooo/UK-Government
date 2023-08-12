@@ -1,8 +1,3 @@
-Given(/^I visit the role page for "(.*?)"$/) do |name|
-  role = Role.find_by(name:)
-  visit polymorphic_path(role)
-end
-
 Given(/^an ambassador role named "([^"]*)" in the "([^"]*)" worldwide organisation$/) do |role_name, worldwide_organisation_name|
   worldwide_organisation = WorldwideOrganisation.find_by!(name: worldwide_organisation_name)
   create(:ambassador_role, name: role_name, worldwide_organisations: [worldwide_organisation])
@@ -25,7 +20,7 @@ When(/^I add a new "([^"]*)" role named "([^"]*)" to the "([^"]*)"$/) do |role_t
   @role_name = role_name
 
   visit admin_roles_path
-  click_on using_design_system? ? "Create new role" : "Create role"
+  click_on "Create new role"
   fill_in "Role title", with: role_name
   select role_type, from: "Role type"
   select organisation_name, from: "Organisations"
@@ -34,7 +29,7 @@ end
 
 When(/^I add a new "([^"]*)" role named "([^"]*)" to the "([^"]*)" worldwide organisation$/) do |role_type, role_name, worldwide_organisation_name|
   visit admin_roles_path
-  click_on using_design_system? ? "Create new role" : "Create role"
+  click_on "Create new role"
   fill_in "Role title", with: role_name
   select role_type, from: "Role type"
   select worldwide_organisation_name, from: "Worldwide organisations"
@@ -52,7 +47,7 @@ When(/^I add a new "([^"]*)" translation to the role "([^"]*)" with:$/) do |loca
   end
 
   select locale.native_and_english_language_name, from: "Locale"
-  click_on "Create translation"
+  click_on "Create new translation"
   fill_in "Name", with: translation["name"]
   fill_in "Responsibilities", with: translation["responsibilities"]
   click_on "Save"
@@ -61,8 +56,8 @@ end
 When(/^I appoint "(.*?)" as the "(.*?)"$/) do |person_name, role_name|
   visit admin_roles_path
 
-  click_on using_design_system? ? "Edit#{role_name}" : role_name
-  click_on "New appointment"
+  click_on "Edit #{role_name}"
+  click_on "Create new appointment"
   select person_name, from: "Person"
   click_on "Save"
 end
@@ -79,10 +74,12 @@ end
 
 Then(/^I should be able to appoint "([^"]*)" to the new role$/) do |person_name|
   role = Role.last
-  click_on using_design_system? ? "Edit#{role.name}" : role.name
-  click_on "New appointment"
+  click_on "Edit #{role.name}"
+  click_on "Create new appointment"
   select person_name, from: "Person"
-  select_date 1.day.ago.to_s, from: "Started at"
+  within "#role_appointment_started_at" do
+    fill_in_date_fields(1.day.ago.to_s)
+  end
   click_on "Save"
 end
 
@@ -99,7 +96,7 @@ end
 
 Then(/^I should see the role translation "([^"]*)" with:$/) do |locale, table|
   fields = table.rows_hash
-  click_link locale
+  click_link "Edit #{locale}"
   expect(page).to have_selector("input[id=role_name][value='#{fields['name']}']")
   expect(page).to have_selector("#role_responsibilities", text: fields["responsibility"])
 end

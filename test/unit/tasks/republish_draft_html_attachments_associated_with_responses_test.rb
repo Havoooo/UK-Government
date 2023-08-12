@@ -1,7 +1,7 @@
 require "test_helper"
 require "rake"
 
-class RepublishDraftHtmlAttachmentsWithAssoicatedResponsesRake < ActiveSupport::TestCase
+class RepublishDraftHtmlAttachmentsWithAssociatedResponsesRake < ActiveSupport::TestCase
   test "it republishes documents with an associated draft response which has an html attachment" do
     draft_consultation_with_outcome = create(:draft_consultation)
     draft_outcome = create(:consultation_outcome, consultation: draft_consultation_with_outcome)
@@ -43,6 +43,8 @@ class RepublishDraftHtmlAttachmentsWithAssoicatedResponsesRake < ActiveSupport::
       true,
     ).never
 
-    Rake.application.invoke_task "republish_draft_html_attachments_associated_with_responses"
+    capture_io do
+      Rake.application.invoke_task "republish_draft_html_attachments_associated_with_responses"
+    end
   end
 end

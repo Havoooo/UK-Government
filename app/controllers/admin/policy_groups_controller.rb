@@ -1,5 +1,7 @@
 class Admin::PolicyGroupsController < Admin::BaseController
-  before_action :enforce_permissions!, only: [:destroy]
+  before_action :enforce_permissions!, only: %i[confirm_destroy destroy]
+  before_action :load_group, only: %i[edit update confirm_destroy destroy]
+  layout "design_system"
 
   def index
     @policy_groups = PolicyGroup.order(:name)
@@ -14,31 +16,33 @@ class Admin::PolicyGroupsController < Admin::BaseController
     if @policy_group.save
       redirect_to admin_policy_groups_path, notice: %("#{@policy_group.name}" created.)
     else
-      render action: "new"
+      render :new
     end
   end
 
-  def edit
-    @policy_group = PolicyGroup.friendly.find(params[:id])
-  end
+  def edit; end
 
   def update
-    @policy_group = PolicyGroup.friendly.find(params[:id])
     if @policy_group.update(policy_group_params)
       redirect_to admin_policy_groups_path, notice: %("#{@policy_group.name}" saved.)
     else
-      render action: "edit"
+      render :edit
     end
   end
 
+  def confirm_destroy; end
+
   def destroy
-    policy_group = PolicyGroup.friendly.find(params[:id])
-    name = policy_group.name
-    policy_group.destroy!
+    name = @policy_group.name
+    @policy_group.destroy!
     redirect_to admin_policy_groups_path, notice: %("#{name}" deleted.)
   end
 
 private
+
+  def load_group
+    @policy_group = PolicyGroup.friendly.find(params[:id])
+  end
 
   def enforce_permissions!
     enforce_permission!(:delete, PolicyGroup)

@@ -1,9 +1,11 @@
 class Admin::RoleAppointmentsController < Admin::BaseController
-  before_action :load_role_appointment, only: %i[edit update destroy]
+  before_action :load_role_appointment, only: %i[edit update destroy confirm_destroy]
+  layout "design_system"
 
   def new
     role = Role.find(params[:role_id])
     @role_appointment = role.role_appointments.build(started_at: Time.zone.today)
+    @current_appointment = params[:make_current]
   end
 
   def create
@@ -12,7 +14,7 @@ class Admin::RoleAppointmentsController < Admin::BaseController
     if @role_appointment.save
       redirect_to edit_admin_role_path(role), notice: "Appointment created"
     else
-      params[:make_current] = params[:role_appointment][:make_current]
+      @current_appointment = params[:role_appointment][:make_current]
       render :new
     end
   end
@@ -26,6 +28,8 @@ class Admin::RoleAppointmentsController < Admin::BaseController
       render :edit
     end
   end
+
+  def confirm_destroy; end
 
   def destroy
     if @role_appointment.destroyable?

@@ -58,9 +58,9 @@ class AssetAccessOptionsIntegrationTest < ActionDispatch::IntegrationTest
 
         visit admin_case_study_path(edition)
         click_link "Edit draft"
-        choose "Use a custom image"
-        attach_file "File", path_to_attachment("minister-of-funk.960x640.jpg")
-        click_button "Save"
+        click_link "Images"
+        attach_file "image[image_data][file]", path_to_attachment("minister-of-funk.960x640.jpg")
+        click_button "Upload"
       end
 
       # Note that there is no access limiting applied to non attachments. This is existing behaviour that probably needs changing.
@@ -207,9 +207,9 @@ class AssetAccessOptionsIntegrationTest < ActionDispatch::IntegrationTest
       it "sends a consultation form to asset manager with the consultation's auth_bypass_id" do
         visit admin_consultation_path(edition)
         click_link "Edit draft"
-        id_of_form_uploader = "edition_consultation_participation_attributes_consultation_response_form_attributes_consultation_response_form_data_attributes_file"
-        fill_in "edition_consultation_participation_attributes_consultation_response_form_attributes_title", with: "Consultation response form"
-        attach_file id_of_form_uploader, path_to_attachment("simple.pdf")
+        name_of_form_uploader = "edition[consultation_participation_attributes][consultation_response_form_attributes][consultation_response_form_data_attributes][file]"
+        fill_in "edition[consultation_participation_attributes][consultation_response_form_attributes][title]", with: "Consultation response form"
+        attach_file name_of_form_uploader, path_to_attachment("simple.pdf")
         click_button "Save"
 
         # Note that there is no access limiting applied to non attachments. This is existing behaviour that probably needs changing.

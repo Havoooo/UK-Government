@@ -1,6 +1,8 @@
 class Admin::StatisticsAnnouncementDateChangesController < Admin::BaseController
+  before_action :set_release_date_params
   before_action :find_statistics_announcement
   before_action :redirect_to_announcement_if_cancelled
+  layout "design_system"
 
   def new
     @statistics_announcement_date_change = build_date_change
@@ -34,5 +36,16 @@ private
   def date_change_params
     params.require(:statistics_announcement_date_change)
            .permit(:release_date, :confirmed, :precision, :change_note)
+  end
+
+  def set_release_date_params(attributes = params[:statistics_announcement_date_change])
+    return if attributes.blank?
+
+    if attributes[:precision] == "exact_confirmed"
+      attributes[:precision] = StatisticsAnnouncementDate::PRECISION[:exact]
+      attributes[:confirmed] = true
+    elsif attributes[:confirmed].blank?
+      attributes[:confirmed] = false
+    end
   end
 end

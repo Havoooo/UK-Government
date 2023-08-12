@@ -27,7 +27,7 @@ Feature: Administering Organisations
     When I add the offsite link "Offsite Thing" of type "Alert" to the organisation "Ministry of Pop"
     Then I should see the edit offsite link "Offsite Thing" on the "Ministry of Pop" organisation page
 
-  @javascript
+  @javascript @bootstrap-only
   Scenario: Filtering items to feature on an organisation page
     Given an organisation and some documents exist
     When I go to the organisation feature page
@@ -37,12 +37,6 @@ Feature: Administering Organisations
     And I set the alternative format contact email of "Ministry of Pop" to "alternative.format@ministry-of-pop.gov.uk"
     And a published publication "Charleston styles today" with a PDF attachment and alternative format provider "Ministry of Pop"
     Then the alternative format contact email is "alternative.format@ministry-of-pop.gov.uk"
-
-  Scenario: Organisation pages links to transparency data publications
-    Given the organisation "Cabinet Office" exists
-    Then I cannot see links to Transparency data on the "Cabinet Office" about page
-    When I associate a Transparency data publication to the "Cabinet Office"
-    Then I can see a link to "Transparency data" on the "Cabinet Office" about page
 
   Scenario: deleting an organisation with no children or roles
     Given I am an editor in the organisation "Department of Fun"

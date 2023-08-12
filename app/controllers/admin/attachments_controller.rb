@@ -43,25 +43,6 @@ class Admin::AttachmentsController < Admin::BaseController
     end
   end
 
-  def update_many
-    errors = {}
-    params[:attachments].each do |id, attributes|
-      attachment = attachable.attachments.find(id)
-      attachment.assign_attributes(attributes.permit(:title))
-      if attachment.save(context: :user_input)
-        attachment_updater(attachment.attachment_data)
-      else
-        errors[id] = attachment.errors.full_messages
-      end
-    end
-
-    if errors.empty?
-      render json: { result: :success }
-    else
-      render json: { result: :failure, errors: }, status: :unprocessable_entity
-    end
-  end
-
   def confirm_destroy; end
 
   def destroy
@@ -73,7 +54,7 @@ class Admin::AttachmentsController < Admin::BaseController
 
   def attachable_attachments_path(attachable)
     case attachable
-    when Response
+    when ConsultationResponse
       [:admin, attachable.consultation, attachable.singular_routing_symbol]
     else
       [:admin, typecast_for_attachable_routing(attachable), Attachment]

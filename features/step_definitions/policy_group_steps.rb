@@ -4,14 +4,13 @@ end
 
 When(/^I delete the policy group "([^"]*)"$/) do |group_name|
   visit admin_policy_groups_path
-  group = PolicyGroup.where(name: group_name).first
-  within(record_css_selector(group)) do
-    click_button "Delete"
-  end
+
+  click_link "Delete #{group_name}"
+  click_button "Delete"
 end
 
 Then(/^I should not see the policy group "([^"]*)"$/) do |group_name|
-  within(".policy_groups") do
+  within(".govuk-table") do
     expect(page).to_not have_content(group_name)
   end
 end

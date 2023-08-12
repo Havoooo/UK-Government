@@ -30,7 +30,6 @@
 @import "govspeak-help";
 @import "organisation";
 @import "topical-events";
-@import "person";
 @import "sidebar";
 @import "lists";
 @import "get-involved";
@@ -49,19 +48,14 @@
 @import "helpers/navigation-controls";
 @import "helpers/jquery-ui-overrides";
 @import "helpers/statistics-announcements";
-@import "helpers/words-to-avoid-highlighter";
 @import "helpers/bootstrap/button-dropdown";
 @import "helpers/player-container";
 
 // VIEWS
 // Controller specific styles. Usually named after the controller whos views
 // they relate to
-@import "views/dashboard";
-@import "views/edition-form";
-@import "views/editions-index";
 @import "views/edition-edit-help";
 @import "views/edition-tags-edit";
 @import "views/document-collection-groups";
 @import "views/organisation";
-@import "views/editions/confirm-unpublish";
 @import "views/editions/filter-options";

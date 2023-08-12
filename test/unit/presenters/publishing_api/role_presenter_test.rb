@@ -20,7 +20,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
       schema_name: "role",
       document_type: "ministerial_role",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: role.updated_at,
       routes: [
@@ -47,7 +47,6 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     }
     expected_links = {
       ordered_parent_organisations: [organisation.content_id],
-      ministerial: %w[324e4708-2285-40a0-b3aa-cb13af14ec5f],
     }
 
     presented_item = present(role)
@@ -77,7 +76,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
       schema_name: "role",
       document_type: "ministerial_role",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: role.updated_at,
       routes: [
@@ -107,7 +106,6 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
     }
     expected_links = {
       ordered_parent_organisations: [organisation.content_id],
-      ministerial: %w[324e4708-2285-40a0-b3aa-cb13af14ec5f],
     }
 
     presented_item = present(role)
@@ -131,7 +129,7 @@ class PublishingApi::RolePresenterTest < ActionView::TestCase
       schema_name: "role",
       document_type: "board_member_role",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       public_updated_at: role.updated_at,
       routes: [],

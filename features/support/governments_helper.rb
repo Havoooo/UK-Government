@@ -2,13 +2,17 @@ module GovernmentsHelper
   def create_government(name:, start_date: nil, end_date: nil)
     visit admin_governments_path
 
-    button_text = using_design_system? ? "Create new government" : "Create a government"
-
-    click_on button_text
+    click_on "Create new government"
 
     fill_in "Name", with: name
-    fill_in "Start date", with: start_date if start_date
-    fill_in "End date", with: end_date if end_date
+
+    within "#government_start_date" do
+      fill_in_date_fields(start_date) if start_date
+    end
+
+    within "#government_end_date" do
+      fill_in_date_fields(end_date) if end_date
+    end
 
     click_on "Save"
   end
@@ -18,8 +22,12 @@ module GovernmentsHelper
 
     click_on name
 
-    attributes.each do |attribute, value|
-      fill_in attribute.to_s.humanize, with: value
+    within "#government_start_date" do
+      fill_in_date_fields(attributes[:start_date]) if attributes[:start_date]
+    end
+
+    within "#government_end_date" do
+      fill_in_date_fields(attributes[:end_date]) if attributes[:end_date]
     end
 
     click_on "Save"
@@ -46,12 +54,11 @@ module GovernmentsHelper
 
   def close_government(name:)
     visit admin_governments_path
-
     click_on name
 
     click_on "Prepare to close this government"
 
-    click_on using_design_system? ? "Close this government" : "Yes, close this government"
+    click_on "Close this government"
   end
 
   def count_active_ministerial_role_appointments

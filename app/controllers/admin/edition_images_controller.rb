@@ -1,6 +1,5 @@
 class Admin::EditionImagesController < Admin::BaseController
   before_action :find_edition
-  before_action :redirect_unless_user_can_preview_images_update
   before_action :enforce_permissions!
   layout "design_system"
 
@@ -26,10 +25,16 @@ class Admin::EditionImagesController < Admin::BaseController
     @new_image = @edition.images.build
     @new_image.build_image_data(image_params["image_data"])
 
+    @new_image.image_data.validate_on_image = @new_image
+
     if @new_image.save
-      redirect_to edit_admin_edition_image_path(@edition, @new_image.id), notice: "#{@new_image.image_data.carrierwave_image} successfully uploaded"
+      redirect_to edit_admin_edition_image_path(@edition, @new_image.id), notice: "#{@new_image.filename} successfully uploaded"
+    elsif new_image_needs_cropping?
+      @data_url = image_data_url
+      render :crop
     else
-      # Removes @new_image from the edition, otherwise the index page will attempt to render it and error
+      @new_image.errors.delete(:"image_data.file", :too_large)
+      # Remove @new_image from @edition.images array, otherwise the view will render it in the 'Uploaded images' list
       @edition.images.delete(@new_image)
       render :index
     end
@@ -38,6 +43,16 @@ class Admin::EditionImagesController < Admin::BaseController
   def edit; end
 
 private
+
+  def new_image_needs_cropping?
+    @new_image.errors.of_kind?(:"image_data.file", :too_large) && @new_image.errors.size == 1
+  end
+
+  def image_data_url
+    file = @new_image.image_data.file
+    image_data = Base64.strict_encode64(file.read)
+    "data:#{file.content_type};base64,#{image_data}"
+  end
 
   def image
     @image ||= find_image
@@ -51,10 +66,6 @@ private
   def find_edition
     edition = Edition.find(params[:edition_id])
     @edition = LocalisedModel.new(edition, edition.primary_locale)
-  end
-
-  def redirect_unless_user_can_preview_images_update
-    redirect_to edit_admin_edition_path(@edition) unless current_user.can_preview_images_update?
   end
 
   def enforce_permissions!

@@ -12,22 +12,13 @@ Whitehall is deployed in two modes:
 
 ## Live examples (public facing frontend)
 
-### CSV Previews
+### Static Content
 
-- CSV Preview pages: [https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/560889/LEMPRD_201610180000-CSV-GOVUK.csv/preview](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/560889/LEMPRD_201610180000-CSV-GOVUK.csv/preview)
-
-### Fields of Operation
-
-- Field of Operation pages: [https://www.gov.uk/government/fields-of-operation/iraq](https://www.gov.uk/government/fields-of-operation/iraq)
-
-### Government Information
-
-- Current ministers list: [https://www.gov.uk/government/ministers](https://www.gov.uk/government/ministers)
+- Virus checking placeholder: [https://www.gov.uk/government/placeholder](https://www.gov.uk/government/placeholder)
 
 ### World Information
 
 - Help and services around the world: [https://www.gov.uk/world](https://www.gov.uk/world)
-- World Embassies list: [https://www.gov.uk/world/embassies](https://www.gov.uk/world/embassies)
 - Worldwide Organisation pages: [https://www.gov.uk/world/organisations/british-embassy-paris](https://www.gov.uk/world/organisations/british-embassy-paris)
 
 ## Running the Application
@@ -50,16 +41,18 @@ You can use the [GOV.UK Docker environment](https://github.com/alphagov/govuk-do
 
 ### Running the test suite
 
+These commands assume you have the [GOV.UK Docker environment](https://github.com/alphagov/govuk-docker) running and its binaries in your PATH.
+
 ```
 # run all the test suites
-bundle exec rake
+govuk-docker-run bundle exec rake
 ```
 
 Javascript unit tests can also be run separately:
 
 ```
 # run all the JavaScript tests
-bundle exec rake jasmine
+govuk-docker-run bundle exec rake jasmine
 ```
 
 ### Further documentation

@@ -5,7 +5,6 @@ class Admin::ConsultationsControllerTest < ActionController::TestCase
 
   setup do
     login_as :writer
-    @current_user.permissions << "Preview design system"
     ConsultationResponseForm.any_instance.stubs(:consultation_participation).returns(stub(consultation: stub(auth_bypass_id: "auth bypass id")))
   end
 
@@ -15,7 +14,6 @@ class Admin::ConsultationsControllerTest < ActionController::TestCase
   should_allow_editing_of :consultation
 
   should_allow_organisations_for :consultation
-  should_allow_attached_images_for :consultation
   should_prevent_modification_of_unmodifiable :consultation
   should_allow_alternative_format_provider_for :consultation
   should_allow_scheduled_publication_of :consultation
@@ -146,7 +144,7 @@ class Admin::ConsultationsControllerTest < ActionController::TestCase
     stub_publishing_api_expanded_links_with_taxons(french_consultation.content_id, [])
 
     get :show, params: { id: french_consultation }
-    assert_select ".app-view-edition-summary__section a", text: "Preview on website  (opens in new tab)", href: preview_document_url(french_consultation)
+    assert_select ".app-view-summary__section a", text: "Preview on website  (opens in new tab)", href: french_consultation.public_url(draft: true, locale: "fr")
   end
 
   view_test "edit displays consultation fields" do

@@ -11,17 +11,27 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
 
   SelectWithSearch.prototype.init = function () {
     if (!this.select) return
-
     var placeholderOption = this.select.querySelector('option[value=""]:first-child')
-    if (placeholderOption) {
+
+    if (placeholderOption && placeholderOption.textContent === '') {
       placeholderOption.textContent = 'Select one'
     }
 
     this.choices = new window.Choices(this.select, {
-      allowHTML: false,
+      allowHTML: true,
       searchPlaceholderValue: 'Search in list',
-      shouldSort: false // show options and groups in the order they were given
+      shouldSort: false, // show options and groups in the order they were given
+      itemSelectText: '',
+      searchResultLimit: 100,
+      labelId: this.select.id + '_label',
+      // https://fusejs.io/api/options.html
+      fuseOptions: {
+        ignoreLocation: true, // matches any part of the string
+        threshold: 0 // only matches when characters are sequential
+      }
     })
+
+    this.module.choices = this.choices
 
     if (this.enableTracking) {
       this.module.addEventListener('change', this.trackChange.bind(this))

@@ -1,9 +1,9 @@
 class Admin::StatisticsAnnouncementsController < Admin::BaseController
-  before_action :find_statistics_announcement, only: %i[show edit update cancel publish_cancellation cancel_reason]
+  before_action :set_release_date_params, only: %i[create]
+  before_action :find_statistics_announcement, only: %i[show edit update cancel publish_cancellation cancel_reason update_cancel_reason]
   before_action :redirect_to_show_if_cancelled, only: %i[cancel publish_cancellation]
   helper_method :unlinked_announcements_count, :show_unlinked_announcements_warning?
-
-  def cancel_reason; end
+  layout "design_system"
 
   def index
     @filter = Admin::StatisticsAnnouncementFilter.new(filter_params)
@@ -32,7 +32,7 @@ class Admin::StatisticsAnnouncementsController < Admin::BaseController
   def edit; end
 
   def update
-    @statistics_announcement.attributes = statistics_announcement_params
+    @statistics_announcement.assign_attributes(statistics_announcement_params)
     if @statistics_announcement.save
       redirect_to [:admin, @statistics_announcement], notice: "Announcement updated successfully"
     else
@@ -47,6 +47,17 @@ class Admin::StatisticsAnnouncementsController < Admin::BaseController
       redirect_to [:admin, @statistics_announcement], notice: "Announcement has been cancelled"
     else
       render :cancel
+    end
+  end
+
+  def cancel_reason; end
+
+  def update_cancel_reason
+    @statistics_announcement.assign_attributes(cancellation_params)
+    if @statistics_announcement.save
+      redirect_to [:admin, @statistics_announcement], notice: "Announcement updated successfully"
+    else
+      render :cancel_reason
     end
   end
 
@@ -68,6 +79,17 @@ private
     current_user.statistics_announcements.new(attributes)
   end
 
+  def set_release_date_params(attributes = params[:statistics_announcement][:current_release_date_attributes])
+    return if attributes.blank?
+
+    if attributes[:precision] == "exact_confirmed"
+      attributes[:precision] = StatisticsAnnouncementDate::PRECISION[:exact]
+      attributes[:confirmed] = true
+    elsif attributes[:confirmed].blank?
+      attributes[:confirmed] = false
+    end
+  end
+
   def statistics_announcement_params
     params
       .require(:statistics_announcement)
@@ -83,6 +105,14 @@ private
       )
   end
 
+  def cancellation_params
+    params
+      .require(:statistics_announcement)
+      .permit(
+        :cancellation_reason,
+      )
+  end
+
   def filter_params
     params.slice(:title, :page, :per_page, :organisation_id, :dates, :unlinked_only)
           .permit!
@@ -95,6 +125,7 @@ private
       organisation_id: current_user.organisation.try(:id),
       dates: "future",
       user_id: current_user.id,
+      per_page: 15,
     }
   end
 

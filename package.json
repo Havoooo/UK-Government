@@ -37,16 +37,21 @@
   "dependencies": {
     "accessible-autocomplete": "alphagov/accessible-autocomplete-multiselect",
     "choices.js": "^10.2.0",
-    "jquery": "3.6.4",
+    "cropperjs": "^1.5.13",
+    "jquery": "3.7.0",
     "miller-columns-element": "^2.0.0",
     "paste-html-to-govspeak": "^0.3.0"
   },
   "devDependencies": {
-    "jasmine-browser-runner": "^1.2.0",
-    "jasmine-core": "^4.6.0",
-    "postcss": "^8.4.21",
+    "jasmine-browser-runner": "^2.0.0",
+    "jasmine-core": "^5.0.1",
+    "postcss": "^8.4.24",
     "standardx": "^7.0.0",
     "stylelint": "^14.16.1",
-    "stylelint-config-gds": "^0.2.0"
+    "stylelint-config-gds": "^0.3.0"
+  },
+  "resolutions": {
+    "stylelint/strip-ansi": "6.0.1",
+    "stylelint/string-width": "4.2.3"
   }
 }

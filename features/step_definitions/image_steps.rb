@@ -3,12 +3,21 @@ Given("a draft document with images exists") do
   @edition = create(:draft_publication, body: "!!2", images:)
 end
 
+Given("a draft case study with images exists") do
+  images = [build(:image), build(:image)]
+  @edition = create(:draft_case_study, body: "!!2", images:)
+end
+
 When("I visit the images tab of the document with images") do
   visit admin_edition_images_path(@edition)
 end
 
+When(/^I visit the images tab of the document "([^"]*)"$/) do |title|
+  visit admin_edition_images_path(Edition.find_by(title:))
+end
+
 Then(/^I should see a list with (\d+) image/) do |count|
-  expect(page).to have_selector(".app-view-edition-images__details", count:)
+  expect(page).to have_selector(".app-view-edition-images__image", count:)
 end
 
 When(/^I select an image for the (?:detailed guide|publication)$/) do
@@ -21,21 +30,16 @@ When(/^I select an image for the (?:detailed guide|publication)$/) do
   end
 end
 
-Then(/^the page should not have an images tab$/) do
-  expect(page).to_not have_link("li.app-c-secondary-navigation__list-item a", text: "Images")
-end
-
-Then(/^I can navigate to the images tab$/) do
-  find("li.app-c-secondary-navigation__list-item a", text: "Images").click
-  expect(page).to have_content("Upload an image")
-end
-
 When("I click to delete an image") do
   first("a", text: "Delete image").click
 end
 
 When("I click to edit the details of an image") do
   first("a", text: "Edit details").click
+end
+
+When("I click to hide the lead image") do
+  find("button", text: "Hide lead image").click
 end
 
 When("I confirm the deletion") do
@@ -59,8 +63,8 @@ Then "I should see the updated image details" do
   expect(page).to have_content("Test caption")
 end
 
-And(/^I navigate to the images tab$/) do
-  find("li.app-c-secondary-navigation__list-item a", text: "Images").click
+Then "I should see a button to show the lead image" do
+  expect(page).to have_content("Show lead image")
 end
 
 And(/^I upload a (\d+)x(\d+) image$/) do |width, height|
@@ -69,12 +73,18 @@ And(/^I upload a (\d+)x(\d+) image$/) do |width, height|
       attach_file jpg_image
     elsif width == 64 && height == 96
       attach_file Rails.root.join("test/fixtures/horrible-image.64x96.jpg")
+    elsif width == 960 && height == 960
+      attach_file Rails.root.join("test/fixtures/images/960x960_jpeg.jpg")
     end
   end
   click_on "Upload"
 end
 
-And(/^I click the "Save and continue" button on the preview page$/) do
+Then(/^I am redirected to a page for image cropping$/) do
+  expect(page).to have_content("Crop image")
+end
+
+And(/^I click the "Save and continue" button on the crop page$/) do
   click_on "Save and continue"
 end
 
@@ -82,10 +92,10 @@ And(/^I click upload without attaching a file$/) do
   click_on "Upload"
 end
 
-Then(/^the publication "(.*?)" should have (\d+) image attachments?$/) do |title, expected_number_of_images|
-  expect(expected_number_of_images.to_i).to eq(Edition.find_by(title:).images.count)
-end
-
 Then(/^I should get the error message "(.*?)"$/) do |error_message|
   expect(page).to have_content(error_message)
+end
+
+Then(/^I should get (\d+) error message$/) do |count|
+  expect(page).to have_selector(".gem-c-error-summary__list-item", count:)
 end

@@ -19,7 +19,8 @@ class WorldwideOrganisation < ApplicationRecord
 
   has_many :editions, through: :edition_worldwide_organisations
 
-  has_one :access_and_opening_times, as: :accessible, dependent: :destroy
+  alias_attribute :access_and_opening_times, :default_access_and_opening_times
+
   belongs_to :default_news_image, class_name: "DefaultNewsOrganisationImageData", foreign_key: :default_news_organisation_image_data_id
 
   accepts_nested_attributes_for :default_news_image, reject_if: :all_blank
@@ -39,6 +40,8 @@ class WorldwideOrganisation < ApplicationRecord
 
   include PublishesToPublishingApi
 
+  include AuditTrail
+
   extend FriendlyId
   friendly_id
 
@@ -55,6 +58,8 @@ class WorldwideOrganisation < ApplicationRecord
       documents.each { |d| Whitehall::PublishingApi.republish_document_async(d) }
     end
   end
+
+  after_commit :republish_embassies_index_page_to_publishing_api, :republish_worldwide_offices
 
   # I'm trying to use a domain centric design rather than a persistence
   # centric design, so I do not want to expose a has_many :home_page_lists
@@ -103,6 +108,10 @@ class WorldwideOrganisation < ApplicationRecord
     main_office == office
   end
 
+  def embassy_offices
+    offices.select(&:embassy_office?)
+  end
+
   def primary_role
     roles.occupied.find_by(type: PRIMARY_ROLES.map(&:name))
   end
@@ -125,5 +134,15 @@ class WorldwideOrganisation < ApplicationRecord
 
   def public_url(options = {})
     Plek.website_root + public_path(options)
+  end
+
+  def republish_embassies_index_page_to_publishing_api
+    PresentPageToPublishingApi.new.publish(PublishingApi::EmbassiesIndexPresenter)
+  end
+
+  def republish_worldwide_offices
+    return if offices.blank?
+
+    offices.each { |office| Whitehall::PublishingApi.republish_async(office) }
   end
 end

@@ -1,14 +1,68 @@
-<% page_title "Featured items on " + @world_location_news.name %>
+<% content_for :page_title, @world_location_news.name %>
+<% content_for :title, @world_location_news.name %>
+<% content_for :context, "Features (#{@locale.native_language_name})" %>
+<% content_for :title_margin_bottom, 4 %>
 
-<%= content_tag_for(:div, @world_location_news) do %>
-  <div class="world-location-header">
-    <h1>
-      <span class="name"><%= @world_location_news.name %></span>
-    </h1>
-    <p><%= link_to "View on website", @world_location_news.public_url({locale: params[:locale]}.merge(cachebust_url_options)) %></p>
-  </div>
-  <section class="world-location-details">
-    <%= tab_navigation_for(@world_location_news) %>
-    <%= render partial: 'admin/feature_lists/feature_list', locals: {feature_list: @feature_list, filter_by: [:title, :type, :world_location], maximum_featured_documents: @world_location_news.class::FEATURED_DOCUMENTS_DISPLAY_LIMIT} %>
-  </section>
-<% end %>
+<p class="govuk-body">
+  <%= link_to "View on website", @world_location_news.public_url({locale: params[:locale]}.merge(cachebust_url_options)), class: "govuk-link", target: "_blank" %>
+</p>
+
+<div class="govuk-!-margin-bottom-8">
+  <%= render "components/secondary_navigation", {
+    aria_label: "World location news navigation tabs",
+    items: secondary_navigation_tabs_items(@world_location_news, request.path)
+  } %>
+</div>
+
+<%= render "govuk_publishing_components/components/tabs", {
+  tabs: [
+    {
+      id: "currently_featured_tab",
+      label: "Currently featured",
+      tab_data_attributes: {
+        module: "gem-track-click",
+        "track-category": "tab",
+        "track-action": "world-location-news-features-tab",
+        "track-label": "Currently featured"
+      },
+      content: render(Admin::CurrentlyFeaturedTabComponent.new(
+        features: @feature_list.features.current,
+        maximum_featured_documents: @world_location_news.class::FEATURED_DOCUMENTS_DISPLAY_LIMIT
+      ))
+    },
+    {
+      id: "documents_tab",
+      label: "Documents",
+      tab_data_attributes: {
+        module: "gem-track-click",
+        "track-category": "tab",
+        "track-action": "world-location-news-features-tab",
+        "track-label": "Documents"
+      },
+      content: render("admin/shared/featurable_editions",
+        filter: @filter,
+        paginator: @filter.editions(@feature_list.locale),
+        featurable_editions: featurable_editions_for_feature_list(@filter.editions(@feature_list.locale), @feature_list),
+        filter_by: [:title, :type, :world_location],
+        anchor: "#documents_tab",
+        filter_action: polymorphic_url([:features, :admin, @feature_list.featurable]),
+        feature_path: [:new, :admin, @feature_list, :feature],
+      ),
+    },
+    {
+      id: "non_govuk_government_links_tab",
+      label: "Non-GOV.UK government links",
+      tab_data_attributes: {
+        module: "gem-track-click",
+        "track-category": "tab",
+        "track-action": "world-location-news-features-tab",
+        "track-label": "Non-GOV.UK government links"
+      },
+      content: render("admin/feature_lists/featureable_offsite_links",
+        model: @world_location_news,
+        featurable_offsite_links: featurable_offsite_links_for_feature_list(@featurable_offsite_links, @feature_list),
+        featuring_path: [:new, :admin, @feature_list, :feature],
+      ),
+    }
+  ]
+} %>

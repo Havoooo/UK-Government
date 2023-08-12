@@ -58,13 +58,6 @@ class WorldwideOrganisationTest < ActiveSupport::TestCase
     assert_equal 0, worldwide_organisation.worldwide_organisation_roles.count
   end
 
-  test "destroys associated office access information" do
-    worldwide_organisation = create(:worldwide_organisation)
-    office_access_info = create(:access_and_opening_times, accessible: worldwide_organisation)
-    worldwide_organisation.destroy!
-    assert_not AccessAndOpeningTimes.exists?(office_access_info.id)
-  end
-
   test "destroys associated corporate information page documents and editions" do
     worldwide_organisation = create(:worldwide_organisation)
     create(:corporate_information_page, worldwide_organisation:, organisation: nil)
@@ -341,5 +334,44 @@ class WorldwideOrganisationTest < ActiveSupport::TestCase
     world_organisation.update!(
       default_news_image: create(:default_news_organisation_image_data),
     )
+  end
+
+  test "republishes embassies index page on creation of worldwide organisation" do
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::EmbassiesIndexPresenter)
+
+    create(:worldwide_organisation)
+  end
+
+  test "republishes embassies index page on update of worldwide organisation" do
+    organisation = create(:worldwide_organisation)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::EmbassiesIndexPresenter)
+
+    organisation.update!(name: "new-name")
+  end
+
+  test "republishes embassies index page on deletion of worldwide organisation" do
+    organisation = create(:worldwide_organisation)
+
+    PresentPageToPublishingApi.any_instance.expects(:publish).with(PublishingApi::EmbassiesIndexPresenter)
+
+    organisation.destroy!
+  end
+
+  test "republishes related offices on change" do
+    organisation = create(:worldwide_organisation, :with_office)
+    organisation.reload
+
+    Whitehall::PublishingApi.expects(:republish_async).with(organisation.offices.first).once
+
+    organisation.update!(default_access_and_opening_times: "new access and opening times")
+  end
+
+  test "does not try to republish offices when there are none" do
+    organisation = create(:worldwide_organisation)
+
+    Whitehall::PublishingApi.expects(:republish_async).never
+
+    organisation.update!(default_access_and_opening_times: "new access and opening times")
   end
 end

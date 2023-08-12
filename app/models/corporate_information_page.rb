@@ -2,7 +2,7 @@ class CorporateInformationPage < Edition
   include ::Attachable
   include Searchable
 
-  after_commit :republish_organisation_to_publishing_api
+  after_commit :republish_owning_organisation_to_publishing_api
   after_commit :republish_about_page_to_publishing_api, unless: :about_page?
   after_save :reindex_organisation_in_search_index, if: :about_page?
 
@@ -31,8 +31,8 @@ class CorporateInformationPage < Edition
   scope :with_organisation_govuk_status, ->(status) { joins(:organisation).where(organisations: { govuk_status: status }) }
   scope :accessible_documents_policy, -> { where(corporate_information_page_type_id: CorporateInformationPageType::AccessibleDocumentsPolicy.id) }
 
-  def republish_organisation_to_publishing_api
-    Whitehall::PublishingApi.republish_async(owning_organisation) if owning_organisation.is_a?(Organisation)
+  def republish_owning_organisation_to_publishing_api
+    Whitehall::PublishingApi.republish_async(owning_organisation) if owning_organisation.present?
   end
 
   def republish_about_page_to_publishing_api
@@ -155,11 +155,7 @@ class CorporateInformationPage < Edition
   end
 
   def rendering_app
-    if worldwide_organisation.present?
-      Whitehall::RenderingApp::WHITEHALL_FRONTEND
-    else
-      Whitehall::RenderingApp::GOVERNMENT_FRONTEND
-    end
+    Whitehall::RenderingApp::GOVERNMENT_FRONTEND
   end
 
   def previously_published
@@ -175,13 +171,11 @@ class CorporateInformationPage < Edition
   end
 
   def base_path
-    if worldwide_organisation.present?
-      url = edition_worldwide_organisation.worldwide_organisation.base_path.to_s + "/about/#{slug}"
-      url.gsub("/about/about", "")
-    elsif organisation.present?
-      url = edition_organisation.organisation.base_path.to_s + "/about/#{slug}"
-      url.gsub("/about/about", "/about")
-    end
+    return if owning_organisation.blank?
+
+    url = owning_organisation.base_path + "/about/#{slug}"
+    url.gsub!("/about/about", "/about") if organisation.present?
+    url
   end
 
 private

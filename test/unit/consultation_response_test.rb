@@ -1,0 +1,174 @@
+require "test_helper"
+
+class ConsultationResponseTest < ActiveSupport::TestCase
+  test "responses without a summary are only valid if they have attachments" do
+    response = build(:consultation_outcome, summary: nil)
+    assert_not response.valid?
+
+    response.attachments << build(:file_attachment)
+    assert response.valid?, response.errors.full_messages.inspect
+  end
+
+  test "should return the alternative_format_contact_email of the consultation" do
+    consultation = build(:consultation)
+    consultation.stubs(alternative_format_contact_email: "alternative format contact email")
+    response = build(:consultation_outcome, consultation:)
+
+    assert_equal consultation.alternative_format_contact_email, response.alternative_format_contact_email
+  end
+
+  test "is publicly visible if its consultation is publicly visible" do
+    consultation = build(:consultation)
+    consultation.stubs(:publicly_visible?).returns(true)
+    response = build(:consultation_outcome, consultation:)
+
+    assert response.publicly_visible?
+  end
+
+  test "is not publicly visible if its consultation is not publicly visible" do
+    consultation = build(:consultation)
+    consultation.stubs(:publicly_visible?).returns(false)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_not response.publicly_visible?
+  end
+
+  test "is not publicly visible if its consultation is nil" do
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_not response.publicly_visible?
+  end
+
+  test "is unpublished if its consultation is unpublished" do
+    consultation = build(:consultation)
+    consultation.stubs(:unpublished?).returns(true)
+    response = build(:consultation_outcome, consultation:)
+
+    assert response.unpublished?
+  end
+
+  test "is not unpublished if its consultation is not unpublished" do
+    consultation = build(:consultation)
+    consultation.stubs(:unpublished?).returns(false)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_not response.unpublished?
+  end
+
+  test "is not unpublished if its consultation is nil" do
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_not response.unpublished?
+  end
+
+  test "returns unpublished edition from its consultation" do
+    consultation = build(:consultation)
+    consultation.stubs(:unpublished_edition).returns(consultation)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_equal consultation, response.unpublished_edition
+  end
+
+  test "returns no unpublished edition if its consultation is nil" do
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_nil response.unpublished_edition
+  end
+
+  test "is accessible to user if consultation is accessible to user" do
+    user = build(:user)
+    consultation = build(:consultation)
+    consultation.stubs(:accessible_to?).with(user).returns(true)
+    response = build(:consultation_outcome, consultation:)
+
+    assert response.accessible_to?(user)
+  end
+
+  test "is not accessible to user if consultation is not accessible to user" do
+    user = build(:user)
+    consultation = build(:consultation)
+    consultation.stubs(:accessible_to?).with(user).returns(false)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_not response.accessible_to?(user)
+  end
+
+  test "is not accessible to user if consultation is nil" do
+    user = build(:user)
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_not response.accessible_to?(user)
+  end
+
+  test "is access limited if its consultation is access limited" do
+    consultation = build(:consultation)
+    consultation.stubs(:access_limited?).returns(true)
+    response = build(:consultation_outcome, consultation:)
+
+    assert response.access_limited?
+  end
+
+  test "is not access limited if its consultation is not access limited" do
+    consultation = build(:consultation)
+    consultation.stubs(:access_limited?).returns(false)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_not response.access_limited?
+  end
+
+  test "is not access limited if its consultation is nil" do
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_not response.access_limited?
+  end
+
+  test "returns consultation as its access limited object" do
+    consultation = build(:consultation)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_equal consultation, response.access_limited_object
+  end
+
+  test "returns its consultation content_id" do
+    consultation = create(:consultation)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_equal consultation.content_id, response.content_id
+  end
+
+  test "returns no access limited object if its consultation is nil" do
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_nil response.access_limited_object
+  end
+
+  test "returns consultation organisations as its organisations" do
+    organisations = create_list(:organisation, 2)
+    consultation = create(:consultation, organisations:)
+    response = build(:consultation_outcome, consultation:)
+
+    assert_equal organisations, response.organisations
+  end
+
+  test "returns no organisations if consultation is nil" do
+    response = build(:consultation_outcome, consultation: nil)
+
+    assert_equal [], response.organisations
+  end
+
+  test "allows HTML attachments" do
+    outcome = build(:consultation_outcome)
+    assert outcome.allows_html_attachments?
+
+    public_feedback = build(:consultation_public_feedback)
+    assert public_feedback.allows_html_attachments?
+  end
+
+  test "sets path_name based on model name" do
+    outcome = build(:consultation_outcome)
+    assert_equal outcome.path_name, "consultation_outcome"
+
+    public_feedback = build(:consultation_public_feedback)
+    assert_equal public_feedback.path_name, "consultation_public_feedback"
+  end
+end

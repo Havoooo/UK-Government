@@ -12,7 +12,7 @@ When(/^I add a "([^"]*)" corporate information page to the worldwide organisatio
   worldwide_organisation = WorldwideOrganisation.last
   visit admin_worldwide_organisation_path(worldwide_organisation)
   click_link "Corporate information pages"
-  click_link "New corporate information page"
+  click_link using_design_system? ? "Create new corporate information page" : "New corporate information page"
   fill_in "Body", with: "This is a new #{page_type} page"
   select page_type, from: "Type"
   click_button "Save"
@@ -44,18 +44,10 @@ When(/^I translate the "([^"]*)" corporate information page for the worldwide or
   click_link corp_page
   click_link "Add translation"
 
-  if using_design_system?
-    select "Français", from: "Choose language"
-    click_button "Next"
-    fill_in "Translated summary", with: "Le summary"
-    fill_in "Translated body (required)", with: "Le body"
-  else
-    select "Français", from: "Locale"
-    click_button "Add translation"
-    fill_in "Summary", with: "Le summary"
-    fill_in "Body", with: "Le body"
-  end
-
+  select "Français", from: "Choose language"
+  click_button "Next"
+  fill_in "Translated summary", with: "Le summary"
+  fill_in "Translated body (required)", with: "Le body"
   click_on "Save"
 end
 

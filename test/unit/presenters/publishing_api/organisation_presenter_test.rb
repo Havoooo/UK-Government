@@ -47,10 +47,10 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
       schema_name: "organisation",
       document_type: "organisation",
       locale: "en",
-      publishing_app: "whitehall",
+      publishing_app: Whitehall::PublishingApp::WHITEHALL,
       rendering_app: "collections",
       routes: [
-        { path: public_path, type: "exact" },
+        { path: public_path, type: "prefix" },
         { path: public_atom_path, type: "exact" },
       ],
       redirects: [],
@@ -181,6 +181,19 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     assert_equal(govspeak_to_html(""), presented_item.content[:details][:body])
   end
 
+  test "presents an organisation with children" do
+    child_organisation = create(:organisation, name: "Department for Stuff")
+    organisation = create(
+      :organisation,
+      name: "Organisation of Things",
+      child_organisations: [child_organisation],
+    )
+
+    presented_item = present(organisation)
+
+    assert_includes presented_item.content.dig(:details, :body), "/government/organisations#organisation-of-things"
+  end
+
   test "presents an eligible organisation with promotional features" do
     promotional_feature1 = create(:promotional_feature)
     promotional_feature_item1 = create(:promotional_feature_item, promotional_feature: promotional_feature1)
@@ -273,7 +286,7 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
     assert_equal("<div class=\"govspeak\"><p>Habeus loudius noisus</p>\n</div>", presented_item.content[:details][:body])
   end
 
-  test "renders courts and tribunals using Collections" do
+  test "renders courts and tribunals with 'exact' route using Collections" do
     organisation = create(
       :court,
       name: "Court at mid-wicket",
@@ -344,7 +357,7 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
       assert_equal organisation.base_path, presented_item.content[:base_path]
 
       assert_equal [
-        { path: organisation.base_path, type: "exact" },
+        { path: organisation.base_path, type: "prefix" },
         { path: "#{organisation.base_path}.atom", type: "exact" },
       ], presented_item.content[:routes]
     end
@@ -355,7 +368,7 @@ class PublishingApi::OrganisationPresenterTest < ActionView::TestCase
       assert_equal "#{organisation.base_path}.cy", presented_item.content[:base_path]
 
       assert_equal [
-        { path: "#{organisation.base_path}.cy", type: "exact" },
+        { path: "#{organisation.base_path}.cy", type: "prefix" },
         { path: "#{organisation.base_path}.cy.atom", type: "exact" },
       ], presented_item.content[:routes]
     end

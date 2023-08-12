@@ -7,9 +7,7 @@ module TranslationControllerConcern
     helper_method :translation_locale
   end
 
-  def edit
-    render :legacy_edit if get_layout == "admin" && translatable_item.is_a?(Person)
-  end
+  def edit; end
 
   def create
     redirect_to create_redirect_path
@@ -19,8 +17,6 @@ module TranslationControllerConcern
     if translatable_item.update(translation_params)
       save_draft_translation if send_downstream?
       redirect_to update_redirect_path, notice: notice_message("saved")
-    elsif get_layout == "admin" && translatable_item.is_a?(Person)
-      render :legacy_edit
     else
       render :edit
     end

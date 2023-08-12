@@ -12,35 +12,6 @@ class Admin::ErrorSummaryComponentTest < ViewComponent::TestCase
     assert_empty page.text
   end
 
-  test "uses the noun to construct the title if one is passed in" do
-    render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors, noun: "withdrawal explanation"))
-    assert_selector "h2", text: "To save the withdrawal explanation please fix the following issues:"
-  end
-
-  test "editions use the self.format_name method to construct the noun in the title if one is not passed in" do
-    detailed_guide = build(:detailed_guide, title: nil)
-    detailed_guide.validate
-    render_inline(Admin::ErrorSummaryComponent.new(object: detailed_guide))
-
-    assert_selector "h2", text: "To save the detailed guidance please fix the following issues:"
-  end
-
-  test "other objects use the class of the object to construct the title if no noun is passed in" do
-    render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors))
-
-    assert_selector "h2", text: "To save the error summary test object please fix the following issues:"
-  end
-
-  test "uses the `verb` to constuct the title if passed in" do
-    render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors, verb: "karate chop"))
-    assert_selector "h2", text: "To karate chop the error summary test object please fix the following issues:"
-  end
-
-  test "defaults the verb of the to `save` if a verb is not passed in" do
-    render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors))
-    assert_selector "h2", text: "To save the error summary test object please fix the following issues:"
-  end
-
   test "constructs a list of links which link to an id based on the objects class and attribute of the error" do
     render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors))
 
@@ -103,6 +74,40 @@ class Admin::ErrorSummaryComponentTest < ViewComponent::TestCase
 
     assert_selector ".gem-c-error-summary__list-item a", count: 0
     assert_selector ".gem-c-error-summary__list-item span", text: "This is a top level error that is agnostic of model level validations. It has probably been added by an updater service or a controller and does not link to an input."
+  end
+
+  test "renders errors when 'ActiveModel::Errors' are passed in" do
+    render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors.errors, parent_class: "error_summary_test_object"))
+
+    first_link = page.all(".gem-c-error-summary__list-item")[0].find("a")
+    second_link = page.all(".gem-c-error-summary__list-item")[1].find("a")
+    third_link = page.all(".gem-c-error-summary__list-item")[2].find("a")
+
+    assert_equal page.all(".gem-c-error-summary__list-item").count, 3
+    assert_equal page.all(".gem-c-error-summary__list-item a").count, 3
+    assert_equal first_link.text, "Title can't be blank"
+    assert_equal first_link[:href], "#error_summary_test_object_title"
+    assert_equal second_link.text, "Date can't be blank"
+    assert_equal second_link[:href], "#error_summary_test_object_date"
+    assert_equal third_link.text, "Date is invalid"
+    assert_equal third_link[:href], "#error_summary_test_object_date"
+  end
+
+  test "renders errors when an array of 'ActiveModel::Error' objects are passed in" do
+    render_inline(Admin::ErrorSummaryComponent.new(object: @object_with_errors.errors.errors, parent_class: "error_summary_test_object"))
+
+    first_link = page.all(".gem-c-error-summary__list-item")[0].find("a")
+    second_link = page.all(".gem-c-error-summary__list-item")[1].find("a")
+    third_link = page.all(".gem-c-error-summary__list-item")[2].find("a")
+
+    assert_equal page.all(".gem-c-error-summary__list-item").count, 3
+    assert_equal page.all(".gem-c-error-summary__list-item a").count, 3
+    assert_equal first_link.text, "Title can't be blank"
+    assert_equal first_link[:href], "#error_summary_test_object_title"
+    assert_equal second_link.text, "Date can't be blank"
+    assert_equal second_link[:href], "#error_summary_test_object_date"
+    assert_equal third_link.text, "Date is invalid"
+    assert_equal third_link[:href], "#error_summary_test_object_date"
   end
 end
 

@@ -6,6 +6,7 @@ class Admin::OrganisationsControllerTest < ActionController::TestCase
   end
 
   should_be_an_admin_controller
+  should_render_bootstrap_implementation_with_preview_next_release
 
   def example_organisation_attributes
     attributes_for(:organisation).except(:logo, :analytics_identifier)
@@ -450,7 +451,7 @@ class Admin::OrganisationsControllerTest < ActionController::TestCase
     get :features, params: { id: organisation, locale: "en" }
     assert_response :success
 
-    selected_organisation = css_select('#organisation option[selected="selected"]')
+    selected_organisation = css_select('#organisation_filter option[selected="selected"]')
     assert_equal selected_organisation.text, organisation.name
   end
 
@@ -479,6 +480,6 @@ class Admin::OrganisationsControllerTest < ActionController::TestCase
     create(:feature_list, locale: :en, featurable: organisation, features: [first_feature])
     get :features, params: { id: organisation }
 
-    assert_match(/Please note that you can only feature a maximum of 6 documents.*/, response.body)
+    assert_match(/A maximum of 6 documents will be featured on GOV.UK.*/, response.body)
   end
 end

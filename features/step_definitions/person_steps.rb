@@ -11,18 +11,12 @@ Given(/^a person called "([^"]*)" exists with a translation for the locale "([^"
   add_translation_to_person(person, locale:, biography: "Unimportant")
 end
 
-Given(/^a person called "([^"]*)" exists in the role of "([^"]*)"$/) do |name, role_name|
-  @person = create_person(name)
-  @role = create(:ministerial_role, supports_historical_accounts: true, name: role_name)
-  create(:role_appointment, role: @role, person: @person)
-end
-
 When(/^I add a new person called "([^"]*)"$/) do |name|
   visit_people_admin
-  click_link "Create person"
+  click_link "Create new person"
   fill_in_person_name name
   fill_in "Biography", with: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  attach_file using_design_system? ? "Upload a file" : "Image", jpg_image
+  attach_file "Upload a file", jpg_image
   click_button "Save"
 end
 
@@ -38,7 +32,7 @@ end
 When(/^I remove the person "([^"]*)"$/) do |name|
   visit_people_admin
   click_link name
-  click_link "Delete" if using_design_system?
+  click_link "Delete"
   click_button "Delete"
 end
 
@@ -52,18 +46,14 @@ When(/^I edit the "([^"]*)" translation for the person "([^"]*)" updating the bi
 
   visit admin_person_path(person)
   click_link "Translations"
-  click_link using_design_system? ? "Edit #{locale}" : locale
+  click_link "Edit #{locale}"
   fill_in "Biography", with: text
   click_on "Save"
 end
 
 Then(/^I should be able to see "([^"]*)" in the list of people$/) do |name|
   visit_people_admin
-  if using_design_system?
-    expect(page).to have_selector(".govuk-table__row:nth-child(1)", text: name)
-  else
-    expect(page).to have_selector(".person .name", text: name)
-  end
+  expect(page).to have_selector(".govuk-table__row:nth-child(1)", text: name)
 end
 
 Then(/^I should not be able to see "([^"]*)" in the list of people$/) do |name|
@@ -71,16 +61,9 @@ Then(/^I should not be able to see "([^"]*)" in the list of people$/) do |name|
 end
 
 Then(/^I should see the translation "([^"]*)" and body text "([^"]*)"$/) do |locale, text|
-  if using_design_system?
-    within ".govuk-table" do
-      expect(page).to have_content(locale)
-      click_link "Edit #{locale}"
-    end
-  else
-    within "#person-translations" do
-      expect(page).to have_selector(".locale", text: locale)
-      click_on locale
-    end
+  within ".govuk-table" do
+    expect(page).to have_content(locale)
+    click_link "Edit #{locale}"
   end
 
   expect(page).to have_content(text)

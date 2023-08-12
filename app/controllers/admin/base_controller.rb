@@ -42,11 +42,15 @@ class Admin::BaseController < ApplicationController
   end
 
   def preview_design_system?(next_release: false)
+    # Temporarily force this flag to 'on' for users in production, regardless of their permissions
+    return true if next_release && !Rails.env.test?
+
     current_user.can_preview_design_system? || (next_release && current_user.can_preview_next_release?)
   end
+  helper_method :preview_design_system?
 
-  def render_design_system(design_system_view, legacy_view, next_release: false)
-    if preview_design_system?(next_release:)
+  def render_design_system(design_system_view, legacy_view)
+    if get_layout == "design_system"
       render design_system_view
     else
       render legacy_view
@@ -62,7 +66,8 @@ private
   def typecast_for_attachable_routing(attachable)
     case attachable
     when Edition then attachable.becomes(Edition)
-    when Response then attachable.becomes(Response)
+    when ConsultationResponse then attachable.becomes(ConsultationResponse)
+    when CallForEvidenceResponse then attachable.becomes(CallForEvidenceResponse)
     else attachable
     end
   end

@@ -12,7 +12,7 @@ namespace :publishing_api do
       publisher.publish(
         {
           format: "special_route",
-          publishing_app: "whitehall",
+          publishing_app: Whitehall::PublishingApp::WHITEHALL,
           rendering_app: Whitehall::RenderingApp::WHITEHALL_FRONTEND,
           update_type: "major",
           type: "prefix",
@@ -39,7 +39,7 @@ namespace :publishing_api do
             destination: route[:destination],
           },
         ],
-        publishing_app: "whitehall",
+        publishing_app: Whitehall::PublishingApp::WHITEHALL,
         public_updated_at: Time.zone.now.iso8601,
         update_type: "major",
       )
@@ -71,17 +71,27 @@ namespace :publishing_api do
 
     desc "Republish the past prime ministers index page to Publishing API"
     task republish_past_prime_ministers_index: :environment do
-      PublishPrimeMinistersIndexPage.new.publish
+      PresentPageToPublishingApi.new.publish(PublishingApi::HistoricalAccountsIndexPresenter)
     end
 
     desc "Republish the how government works page to Publishing API"
     task republish_how_government_works: :environment do
-      PublishHowGovernmentWorksPage.new.publish
+      PresentPageToPublishingApi.new.publish(PublishingApi::HowGovernmentWorksPresenter)
     end
 
     desc "Republish the fields of operation index page to Publishing API"
     task republish_operational_fields_index: :environment do
-      PublishOperationalFieldsIndexPage.new.publish
+      PresentPageToPublishingApi.new.publish(PublishingApi::OperationalFieldsIndexPresenter)
+    end
+
+    desc "Republish the ministers index page to Publishing API"
+    task republish_ministers_index: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::MinistersIndexPresenter)
+    end
+
+    desc "Republish the embassies index page to Publishing API"
+    task republish_embassies_index: :environment do
+      PresentPageToPublishingApi.new.publish(PublishingApi::EmbassiesIndexPresenter)
     end
   end
 
@@ -242,6 +252,16 @@ namespace :publishing_api do
         end
       end
       puts "Finished enqueueing items for Publishing API"
+    end
+
+    desc "Republish all published Worldwide CorporateInformationPages"
+    task worldwide_corporate_information_pages: :environment do
+      worldwide_corporate_information_pages = CorporateInformationPage.joins(:worldwide_organisation).where(state: "published")
+      puts "Enqueueing #{worldwide_corporate_information_pages.count} Worldwide CorporateInformationPages"
+      worldwide_corporate_information_pages.each do |corporate_information_page|
+        PublishingApiDocumentRepublishingWorker.perform_async_in_queue("bulk_republishing", corporate_information_page.document_id, true)
+      end
+      puts "Finished enqueueing Worldwide CorporateInformationPages for Publishing API"
     end
 
     desc "Republish all documents of a given organisation"

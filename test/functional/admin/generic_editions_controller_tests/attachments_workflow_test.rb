@@ -6,11 +6,11 @@ class AttachableEditionTest < ActionController::TestCase
   setup { login_as :writer }
 
   def assert_tab(link_text, path)
-    assert_select "ul.nav-tabs li a[href*=?]", path, link_text
+    assert_select ".app-c-secondary-navigation__list .app-c-secondary-navigation__list-item  .govuk-link[href*=?]", path, link_text
   end
 
   def assert_not_tab(link_text)
-    assert_select "ul.nav-tabs li", text: link_text, count: 0
+    assert_select ".app-c-secondary-navigation__list .app-c-secondary-navigation__list-item", link_text, count: 0
   end
 
   view_test 'GET :new displays a "Document" tab' do
@@ -36,7 +36,7 @@ class AttachableEditionsWithInlineSupportTest < ActionController::TestCase
     get :edit, params: { id: edition }
     attachment = edition.attachments.first
 
-    assert_select "#govspeak_help", text: /Attachments/
+    assert_select "#govspeak_tab", text: /Attachments/
     assert_select "li", text: %r{#{attachment.title}}
     assert_select "li code", text: "!@1"
   end

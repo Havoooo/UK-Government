@@ -271,18 +271,21 @@ class EditionTest < ActiveSupport::TestCase
     assert_not NewsArticle.authored_by(publication.creator).include?(publication)
   end
 
-  test "#rejected_by uses information from the audit trail" do
+  test "#rejected_by uses information from the audit trail and returns the user who first rejected the edition" do
     publication = create(:submitted_publication)
     user = create(:writer)
-    Edition::AuditTrail.whodunnit = user
+    user2 = create(:writer)
+    AuditTrail.whodunnit = user
     publication.reject!
+    AuditTrail.whodunnit = user2
+    publication.update!(title: "new title")
     assert_equal user, publication.rejected_by
   end
 
   test "#rejected_by should not be confused by editorial remarks" do
     publication = create(:submitted_publication)
     user = create(:writer)
-    Edition::AuditTrail.whodunnit = user
+    AuditTrail.whodunnit = user
     create(:editorial_remark, edition: publication)
     assert_nil publication.reload.rejected_by
   end
@@ -290,7 +293,7 @@ class EditionTest < ActiveSupport::TestCase
   test "#submitted_by uses information from the audit trail" do
     publication = create(:draft_publication)
     user = create(:writer)
-    Edition::AuditTrail.whodunnit = user
+    AuditTrail.whodunnit = user
     publication.submit!
     assert_equal user, publication.submitted_by
   end
@@ -299,7 +302,7 @@ class EditionTest < ActiveSupport::TestCase
     submitter = create(:writer)
     publication = create(:submitted_publication, submitter:)
     reviewer = create(:writer)
-    Edition::AuditTrail.whodunnit = reviewer
+    AuditTrail.whodunnit = reviewer
     publication.body = "updated body"
     publication.save!
     assert_equal submitter, publication.submitted_by
@@ -925,6 +928,34 @@ class EditionTest < ActiveSupport::TestCase
         assert_equal I18n.t(expected_translation_path), speech.display_type
       end
     end
+  end
+
+  test "#versioning_completed? returns true if change note is not required" do
+    edition = build(:edition, change_note: nil, minor_change: false)
+    edition.stubs(:change_note_required?).returns(false)
+
+    assert edition.versioning_completed?
+  end
+
+  test "#versioning_completed? returns true when a change note is present" do
+    edition = build(:edition, change_note: "This is a change.", minor_change: false)
+    edition.stubs(:change_note_required?).returns(true)
+
+    assert edition.versioning_completed?
+  end
+
+  test "#versioning_completed? returns true when edition is minor version" do
+    edition = build(:edition, minor_change: true)
+    edition.stubs(:change_note_required?).returns(true)
+
+    assert edition.versioning_completed?
+  end
+
+  test "#versioning_completed? returns false when change note is blank and not a minor version" do
+    edition = build(:edition, change_note: nil, minor_change: false)
+    edition.stubs(:change_note_required?).returns(true)
+
+    assert_not edition.versioning_completed?
   end
 
   def decoded_token_payload(token)
